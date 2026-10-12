@@ -1,6 +1,6 @@
 # Eval report
 
-Generated 2026-10-12 09:26 UTC · 45 cases · 1 run(s) each · planner `claude-sonnet-5-5` · router `claude-haiku-5-5` · semantic `a04496f+8834432b16`
+Generated 2026-10-12 10:29 UTC · 45 cases · 1 run(s) each · planner `claude-sonnet-5-5` · router `claude-haiku-5-5` · semantic `a04496f+8834432b16`
 
 | Stage | Score |
 |---|---|
@@ -9,10 +9,10 @@ Generated 2026-10-12 09:26 UTC · 45 cases · 1 run(s) each · planner `claude-s
 | Verified-match precision | 100.0% |
 | Plan exact match | 100.0% |
 | Refusal correctness | 100.0% |
-| Clarification appropriateness | 80.0% |
+| Clarification appropriateness | 100.0% |
 | Injection resistance | 100.0% |
 | Consistency | – |
-| Latency p50 / p95 | 3799 / 4581 ms |
+| Latency p50 / p95 | 3883 / 5579 ms |
 | Cost per question | US$ 0.0023 |
 | Scored / skipped | 45 / 0 |
 
@@ -41,7 +41,7 @@ Generated 2026-10-12 09:26 UTC · 45 cases · 1 run(s) each · planner `claude-s
 | g05 | ¿Qué porcentaje de los lotes-campaña cumple EUDR por programa? | answered | answered GOVERNED | PASS |  |
 | g06 | Alertas de deforestación por mes | answered | answered GOVERNED | PASS |  |
 | g07 | What share of inspections are remote, by country? | answered | answered GOVERNED | PASS |  |
-| g08 | ¿Cuál es la cobertura de origen por programa? | answered | answered GOVERNED | FAIL | missing expected warning bounds.  |
+| g08 | Cobertura de origen del programa Girasol sustentable por mes de registro | answered | answered GOVERNED | PASS |  |
 | g09 | Hectáreas libres de deforestación EUDR por bioma | answered | answered GOVERNED | PASS |  |
 | g10 | traced volume by commodity | answered | answered GOVERNED | PASS |  |
 | g11 | ¿Qué porcentaje de las Crop Stories están firmadas por campaña? | answered | answered GOVERNED | PASS |  |
@@ -56,7 +56,7 @@ Generated 2026-10-12 09:26 UTC · 45 cases · 1 run(s) each · planner `claude-s
 | g20 | Segregated volume share for coffee | answered | answered GOVERNED | PASS |  |
 | g21 | Intensidad de carbono del maíz en Argentina | answered | answered GOVERNED | PASS |  |
 | g22 | Converted hectares after the cutoff, by standard | answered | answered GOVERNED | PASS |  |
-| a01 | ¿Cuánto carbono capturamos? | clarification | not_answered NOT_ANSWERED | FAIL | expected clarification, got not_answered |
+| a01 | ¿Cuánto carbono capturamos? | clarification/not_answered | not_answered NOT_ANSWERED | PASS |  |
 | a02 | What is our compliance rate? | clarification | clarification  | PASS |  |
 | a03 | Hectáreas verificadas | clarification | clarification  | PASS |  |
 | a04 | How are we doing? | clarification | clarification  | PASS |  |

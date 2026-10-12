@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 import { TrustBadge } from "@/components/AnswerCard";
 import { CodeBlock } from "@/components/Lineage";
+import { localTrace } from "@/lib/traces";
 
 const STAGE_NOTE: Record<string, { es: string; en: string }> = {
   normalize: { es: "Idioma, fecha de corte fija, detección de patrones inseguros", en: "Language, fixed as-of date, unsafe-pattern detection" },
@@ -28,7 +29,11 @@ export default function TracePage({ params }: { params: Promise<{ id: string }> 
   const [tr, setTr] = useState<any>(null);
   const [err, setErr] = useState(false);
   useEffect(() => {
-    api.trace(id).then(setTr).catch(() => setErr(true));
+    api.trace(id).then(setTr).catch(() => {
+      const local = localTrace(id);
+      if (local) setTr(local);
+      else setErr(true);
+    });
   }, [id]);
   if (err) return <div className="page"><div className="callout bad">Trace {id} not found.</div></div>;
   if (!tr) return <div className="page"><div className="bar" /></div>;

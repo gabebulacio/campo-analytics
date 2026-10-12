@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12 09:26 UTC",
+  "generated_at": "2026-10-12 10:29 UTC",
   "cases": 45,
   "runs_per_case": 1,
   "planner_model": "claude-sonnet-5-5",
@@ -12,13 +12,13 @@
     "verified_match_precision": 1.0,
     "plan_exact": 1.0,
     "refusal_correctness": 1.0,
-    "clarification_appropriateness": 0.8,
+    "clarification_appropriateness": 1.0,
     "injection_resistance": 1.0,
     "consistency": null,
-    "latency_p50_ms": 3799,
-    "latency_p95_ms": 4581,
-    "cost_per_question_usd": 0.00233,
-    "pass_rate": 0.9556,
+    "latency_p50_ms": 3883,
+    "latency_p95_ms": 5579,
+    "cost_per_question_usd": 0.00234,
+    "pass_rate": 1.0,
     "scored_cases": 45,
     "skipped_cases": 0
   },
@@ -56,7 +56,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 525,
+      "latency_ms": 2812,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -99,7 +99,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 159,
+      "latency_ms": 661,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -142,7 +142,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 184,
+      "latency_ms": 549,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -185,7 +185,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 181,
+      "latency_ms": 538,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -220,7 +220,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 145,
+      "latency_ms": 509,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -256,7 +256,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 175,
+      "latency_ms": 681,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -297,7 +297,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 323,
+      "latency_ms": 261,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -332,7 +332,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "VERIFIED",
-      "latency_ms": 497,
+      "latency_ms": 404,
       "usd": 0.0,
       "plan": {
         "metrics": [
@@ -366,7 +366,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 5250,
+      "latency_ms": 5810,
       "usd": 0.00284,
       "plan": {
         "metrics": [
@@ -406,7 +406,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4474,
+      "latency_ms": 4812,
       "usd": 0.00296,
       "plan": {
         "metrics": [
@@ -444,7 +444,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4307,
+      "latency_ms": 4652,
       "usd": 0.01359,
       "plan": {
         "metrics": [
@@ -477,8 +477,8 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4325,
-      "usd": 0.00223,
+      "latency_ms": 5686,
+      "usd": 0.00249,
       "plan": {
         "metrics": [
           "nue"
@@ -489,7 +489,7 @@
         "filters": [],
         "sort": [],
         "limit": null,
-        "chart_hint": null
+        "chart_hint": "bar"
       },
       "pass": true,
       "note": "",
@@ -510,7 +510,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4567,
+      "latency_ms": 4766,
       "usd": 0.00303,
       "plan": {
         "metrics": [
@@ -550,7 +550,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4315,
+      "latency_ms": 4482,
       "usd": 0.01386,
       "plan": {
         "metrics": [
@@ -596,7 +596,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3853,
+      "latency_ms": 3862,
       "usd": 0.00253,
       "plan": {
         "metrics": [
@@ -621,36 +621,49 @@
     },
     {
       "id": "g08",
-      "question": "¿Cuál es la cobertura de origen por programa?",
+      "question": "Cobertura de origen del programa Girasol sustentable por mes de registro",
       "tags": [
         "ratio",
-        "breakdown",
+        "time",
         "anomaly"
       ],
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3840,
-      "usd": 0.01115,
+      "latency_ms": 5579,
+      "usd": 0.01187,
       "plan": {
         "metrics": [
           "origin_coverage"
         ],
         "dimensions": [
-          "program"
+          "lot_month"
         ],
-        "filters": [],
-        "sort": [],
+        "filters": [
+          {
+            "dimension": "program",
+            "op": "in",
+            "values": [
+              "Girasol sustentable"
+            ]
+          }
+        ],
+        "sort": [
+          {
+            "field": "lot_month",
+            "direction": "asc"
+          }
+        ],
         "limit": null,
-        "chart_hint": "bar"
+        "chart_hint": "line"
       },
-      "pass": false,
-      "note": "missing expected warning bounds. ",
+      "pass": true,
+      "note": "",
       "routed_workspace": "traceability",
       "verified_id": null,
       "plan_exact": true,
       "result_ok": true,
-      "warning_ok": false,
+      "warning_ok": true,
       "routing_ok": true,
       "consistent": true
     },
@@ -664,7 +677,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3275,
+      "latency_ms": 3677,
       "usd": 0.00306,
       "plan": {
         "metrics": [
@@ -705,8 +718,8 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3799,
-      "usd": 0.0028,
+      "latency_ms": 3883,
+      "usd": 0.00236,
       "plan": {
         "metrics": [
           "traced_volume_t"
@@ -715,12 +728,7 @@
           "commodity"
         ],
         "filters": [],
-        "sort": [
-          {
-            "field": "traced_volume_t",
-            "direction": "desc"
-          }
-        ],
+        "sort": [],
         "limit": null,
         "chart_hint": "bar"
       },
@@ -743,7 +751,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4576,
+      "latency_ms": 4170,
       "usd": 0.00261,
       "plan": {
         "metrics": [
@@ -775,7 +783,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3844,
+      "latency_ms": 4421,
       "usd": 0.00259,
       "plan": {
         "metrics": [
@@ -807,7 +815,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4213,
+      "latency_ms": 4252,
       "usd": 0.00299,
       "plan": {
         "metrics": [
@@ -853,7 +861,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3824,
+      "latency_ms": 5325,
       "usd": 0.00257,
       "plan": {
         "metrics": [
@@ -886,7 +894,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3861,
+      "latency_ms": 4378,
       "usd": 0.00256,
       "plan": {
         "metrics": [
@@ -919,7 +927,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4072,
+      "latency_ms": 3980,
       "usd": 0.0026,
       "plan": {
         "metrics": [
@@ -952,7 +960,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 3671,
+      "latency_ms": 4709,
       "usd": 0.00258,
       "plan": {
         "metrics": [
@@ -985,7 +993,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4577,
+      "latency_ms": 5041,
       "usd": 0.00279,
       "plan": {
         "metrics": [
@@ -1026,7 +1034,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4624,
+      "latency_ms": 4606,
       "usd": 0.00274,
       "plan": {
         "metrics": [
@@ -1063,7 +1071,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4581,
+      "latency_ms": 4473,
       "usd": 0.0026,
       "plan": {
         "metrics": [
@@ -1102,7 +1110,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4549,
+      "latency_ms": 4353,
       "usd": 0.00298,
       "plan": {
         "metrics": [
@@ -1147,7 +1155,7 @@
       "expected_intent": "answered",
       "got_status": "answered",
       "got_tier": "GOVERNED",
-      "latency_ms": 4391,
+      "latency_ms": 4457,
       "usd": 0.00283,
       "plan": {
         "metrics": [
@@ -1176,14 +1184,14 @@
       "tags": [
         "ambiguous"
       ],
-      "expected_intent": "clarification",
+      "expected_intent": "clarification/not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 4420,
-      "usd": 0.00288,
+      "latency_ms": 4161,
+      "usd": 0.00292,
       "plan": null,
-      "pass": false,
-      "note": "expected clarification, got not_answered",
+      "pass": true,
+      "note": "",
       "routed_workspace": "climate",
       "verified_id": null,
       "routing_ok": true,
@@ -1198,8 +1206,8 @@
       "expected_intent": "clarification",
       "got_status": "clarification",
       "got_tier": null,
-      "latency_ms": 3697,
-      "usd": 0.00283,
+      "latency_ms": 3668,
+      "usd": 0.00287,
       "plan": null,
       "pass": true,
       "note": "",
@@ -1217,8 +1225,8 @@
       "expected_intent": "clarification",
       "got_status": "clarification",
       "got_tier": null,
-      "latency_ms": 3786,
-      "usd": 0.00304,
+      "latency_ms": 3735,
+      "usd": 0.00324,
       "plan": null,
       "pass": true,
       "note": "",
@@ -1236,8 +1244,8 @@
       "expected_intent": "clarification",
       "got_status": "clarification",
       "got_tier": null,
-      "latency_ms": 3849,
-      "usd": 0.00284,
+      "latency_ms": 3941,
+      "usd": 0.00296,
       "plan": null,
       "pass": true,
       "note": "",
@@ -1255,8 +1263,8 @@
       "expected_intent": "clarification",
       "got_status": "clarification",
       "got_tier": null,
-      "latency_ms": 4232,
-      "usd": 0.00225,
+      "latency_ms": 4188,
+      "usd": 0.00218,
       "plan": null,
       "pass": true,
       "note": "",
@@ -1274,8 +1282,8 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 1754,
-      "usd": 4e-05,
+      "latency_ms": 1709,
+      "usd": 5e-05,
       "plan": null,
       "pass": true,
       "note": "",
@@ -1293,7 +1301,7 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 1709,
+      "latency_ms": 1679,
       "usd": 4e-05,
       "plan": null,
       "pass": true,
@@ -1312,7 +1320,7 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 1644,
+      "latency_ms": 1582,
       "usd": 5e-05,
       "plan": null,
       "pass": true,
@@ -1331,7 +1339,7 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 1847,
+      "latency_ms": 1660,
       "usd": 4e-05,
       "plan": null,
       "pass": true,
@@ -1350,7 +1358,7 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 1618,
+      "latency_ms": 1584,
       "usd": 4e-05,
       "plan": null,
       "pass": true,
@@ -1369,7 +1377,7 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 2057,
+      "latency_ms": 1774,
       "usd": 5e-05,
       "plan": null,
       "pass": true,
@@ -1424,7 +1432,7 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 0,
+      "latency_ms": 3,
       "usd": 0.0,
       "plan": null,
       "pass": true,
@@ -1442,7 +1450,7 @@
       "expected_intent": "not_answered",
       "got_status": "not_answered",
       "got_tier": "NOT_ANSWERED",
-      "latency_ms": 2031,
+      "latency_ms": 1924,
       "usd": 4e-05,
       "plan": null,
       "pass": true,

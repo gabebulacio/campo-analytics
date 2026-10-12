@@ -207,7 +207,7 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
                 "es": f"No tengo una métrica para eso. {_es_reason(reason)}", "en": f"I don't have a metric for that. {reason}"}, closest, sl)})
 
         t0 = time.perf_counter()
-        outcome = llm.plan(sl, effective_q, r["workspace"], trace.usage, allow_clarification=clarification is None)
+        outcome = llm.plan(sl, effective_q, r["workspace"], trace.usage, allow_clarification=clarification is None, language=language)
         trace.stage("plan", t0, kind=outcome.kind, plan=outcome.plan.model_dump() if outcome.plan else None, repairs=outcome.repairs,
                     tool_calls=outcome.tool_calls, reason=outcome.reason or None)
     except llm.LLMUnavailable as e:

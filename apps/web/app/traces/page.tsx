@@ -6,12 +6,18 @@ import { Activity } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 import { TrustBadge } from "@/components/AnswerCard";
+import { localTraces } from "@/lib/traces";
 
 export default function Traces() {
   const { t, lang } = useI18n();
   const [items, setItems] = useState<any[] | null>(null);
   useEffect(() => {
-    api.traces().then(setItems).catch(() => setItems([]));
+    const local = localTraces().map((t) => ({ trace_id: t.trace_id, at: t.at, question: t.question, status: t.answer.status, tier: t.answer.tier, latency_ms: t.answer.latency_ms, usd: t.answer.cost?.usd }));
+    const merge = (remote: any[]) => {
+      const seen = new Set(remote.map((r) => r.trace_id));
+      setItems([...remote, ...local.filter((l) => !seen.has(l.trace_id))].sort((a, b) => String(b.at).localeCompare(String(a.at))));
+    };
+    api.traces().then(merge).catch(() => merge([]));
   }, []);
   return (
     <div className="page">

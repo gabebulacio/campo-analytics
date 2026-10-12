@@ -339,9 +339,11 @@ class PlannerOutcome:
     clarification_dimension: str | None = None
 
 
-def plan(sl: SemanticLayer, question: str, workspace: str, usage: Usage, allow_clarification: bool = True) -> PlannerOutcome:
+def plan(sl: SemanticLayer, question: str, workspace: str, usage: Usage, allow_clarification: bool = True, language: str | None = None) -> PlannerOutcome:
     system = _planner_system(sl, workspace)
     messages: list[dict] = [{"role": "user", "content": f"<question>{question}</question>"}]
+    if language:
+        messages[0]["content"] += f"\n(Write any clarification or refusal text in {'Spanish' if language == 'es' else 'English'}.)"
     if not allow_clarification:
         messages[0]["content"] += "\n(The user already answered one clarification. Do not ask another; submit a plan or refuse.)"
     out = PlannerOutcome(kind="error")

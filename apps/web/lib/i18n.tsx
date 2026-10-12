@@ -9,6 +9,7 @@ const STRINGS = {
   metrics: { es: "Métricas", en: "Metrics" },
   evals: { es: "Evaluaciones", en: "Evals" },
   traces: { es: "Trazas", en: "Traces" },
+  brief: { es: "Resumen ejecutivo", en: "Executive brief" },
   architecture: { es: "Arquitectura", en: "Architecture" },
   plan: { es: "Plan de implementación", en: "Implementation plan" },
   showMap: { es: "Ver mapa", en: "Show map" },

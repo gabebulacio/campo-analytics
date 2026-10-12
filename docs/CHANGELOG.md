@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 — 2026-10-12 · MVP polish
+
+- **Guided 5-minute tour** on the home page: verified → governed → clarification → refusal → guardrail, each with its talking point. Every step is a golden-set case.
+- **Live proof strip** under the title (governed metrics, accuracy, refusal/injection, median latency, cost per question), read from `/health` and the latest eval report.
+- **Executive brief** page (`/brief`): problem, measured results, design principle, what's real vs simulated, next steps. Printable.
+- **Trace fallback:** every answer is also kept in the browser, so `/trace/{id}` and `/traces` work when a serverless instance doesn't hold the trace.
+- **Planner language:** clarification and refusal text now follow the question's language (English questions got Spanish refusals before).
+- Suggestions collapse to six; answers scroll into view; "MVP" badge and byline.
+- README rewritten for readers (live link, scorecard, tour, real vs simulated). Presenter script in `docs/DEMO.md`.
+- Evals re-run: 45/45 pass, clarification appropriateness 80% → 100% (the golden set already accepted a refusal for `a01`; the old report predated that).
+
 ## 0.1.0 — 2026-10-12 · Interview cut (phases 0–4, local)
 
 **Built**
