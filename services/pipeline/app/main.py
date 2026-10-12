@@ -106,10 +106,13 @@ def feedback(body: FeedbackIn):
     if t:
         rec["question"] = t["question"]
         rec["plan"] = (t["answer"] or {}).get("plan")
-    path = settings.root / "data" / "out" / "feedback.jsonl"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(rec, ensure_ascii=False, default=str) + "\n")
+    path = settings.write_dir / "feedback.jsonl"
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(rec, ensure_ascii=False, default=str) + "\n")
+    except OSError:
+        return {"ok": False}
     return {"ok": True}
 
 

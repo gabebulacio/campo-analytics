@@ -1,5 +1,26 @@
 # Deploy
 
+## Current production (all on Vercel, no card needed)
+
+| Piece | Where |
+|---|---|
+| Web (`apps/web`) | Vercel project `campo-analytics` → https://campo-analytics.vercel.app, `gabrielbulacio.com`, `demo.` and `www.` |
+| API (pipeline) | Vercel project `campo-analytics-api` (FastAPI zero-config, Python 3.12) → https://campo-analytics-api-bulacio.vercel.app |
+
+Redeploy:
+```
+python tasks.py seed                                                       # if data or semantic layer changed
+BUNDLE_DIR=~/campo-api-bundle python deploy/build_api_bundle.py           # keep the bundle outside OneDrive
+cd ~/campo-api-bundle && vercel deploy --prod
+cd apps/web && vercel deploy --prod
+```
+API env vars (Vercel → campo-analytics-api → Settings → Environment Variables): `ANTHROPIC_API_KEY`, `ANTHROPIC_WORKSPACE_ID`, `WRITE_DIR=/tmp`, `DAILY_BUDGET_USD`, `RATE_LIMIT_PER_IP_PER_DAY`, `DEMO_MODE`.
+Web env var: `PIPELINE_URL` = the API URL. DNS: records added in Cloudflare via Domain Connect (DNS only).
+
+The Cloud Run path below remains the target for the Postgres/Mongo architecture.
+
+---
+
 Target: **https://demo.gabrielbulacio.com**
 
 ```

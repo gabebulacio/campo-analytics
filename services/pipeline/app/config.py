@@ -25,7 +25,9 @@ class Settings:
     semantic_path: Path = ROOT / "docs" / "semantic-layer" / "agri_traceability.yaml"
     duckdb_path: Path = ROOT / "data" / "out" / "analytics.duckdb"
     value_dict_path: Path = ROOT / "data" / "out" / "value_dictionaries.json"
-    traces_path: Path = ROOT / "data" / "out" / "traces.jsonl"
+    # Writable location for traces/feedback (Vercel: /tmp).
+    write_dir: Path = Path(os.getenv("WRITE_DIR", str(ROOT / "data" / "out")))
+    traces_path: Path = Path(os.getenv("WRITE_DIR", str(ROOT / "data" / "out"))) / "traces.jsonl"
     evals_report_path: Path = ROOT / "evals" / "report.json"
     database_url_reader: str | None = os.getenv("DATABASE_URL_READER") or None
     anthropic_api_key: str | None = os.getenv("ANTHROPIC_API_KEY") or None

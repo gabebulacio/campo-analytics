@@ -46,3 +46,10 @@ apps/web/next-env.d.ts
 Prep entrevista*.md
 .vscode/
 docs/company-research.md
+
+# Generated deploy bundle
+deploy/api-bundle/
+.vercel/
+
+.vercel
+.env*
