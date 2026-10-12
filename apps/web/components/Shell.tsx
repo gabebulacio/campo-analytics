@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Activity, BarChart3, BookOpen, FlaskConical, LayoutDashboard, Monitor, Moon, Sprout, Sun } from "lucide-react";
+import { Activity, BarChart3, BookOpen, FlaskConical, LayoutDashboard, Map as MapIcon, Monitor, Moon, Network, Sprout, Sun } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 
@@ -37,6 +37,8 @@ export function Shell({ children }: { children: ReactNode }) {
     { href: "/metrics", label: t("metrics"), icon: <BookOpen size={16} /> },
     { href: "/evals", label: t("evals"), icon: <FlaskConical size={16} /> },
     { href: "/traces", label: t("traces"), icon: <Activity size={16} /> },
+    { href: "/architecture", label: t("architecture"), icon: <Network size={16} />, sep: true },
+    { href: "/plan", label: t("plan"), icon: <MapIcon size={16} /> },
   ];
   const next: Record<Theme, Theme> = { system: "light", light: "dark", dark: "system" };
   const ThemeIcon = theme === "light" ? Sun : theme === "dark" ? Moon : Monitor;
@@ -62,7 +64,7 @@ export function Shell({ children }: { children: ReactNode }) {
         {nav.map((n) => {
           const active = n.href === "/" ? path === "/" : path.startsWith(n.href) || (n.href === "/traces" && path.startsWith("/trace"));
           return (
-            <Link key={n.href} href={n.href} className="nav-item" aria-current={active ? "page" : undefined}>
+            <Link key={n.href} href={n.href} className={`nav-item ${"sep" in n && n.sep ? "nav-sep" : ""}`} aria-current={active ? "page" : undefined}>
               {n.icon}
               {n.label}
             </Link>

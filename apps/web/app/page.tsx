@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 import type { Answer } from "@/lib/types";
 import { AnswerCard } from "@/components/AnswerCard";
+import { Overview } from "@/components/Overview";
 
 const WS_LABEL: Record<string, { es: string; en: string }> = {
   compliance: { es: "Cumplimiento", en: "Compliance" },
@@ -146,6 +147,7 @@ export default function AskPage() {
           <AnswerCard key={a.trace_id} answer={a} onAsk={ask} />
         ))}
       </section>
+      <Overview lang={lang} onAsk={(q) => { window.scrollTo({ top: 0, behavior: "smooth" }); ask(q); }} />
       <p className="footer-note">{t("dataNote")}</p>
     </div>
   );

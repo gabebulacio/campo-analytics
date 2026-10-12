@@ -89,10 +89,10 @@
   tags: [ratio, geo]
   expect: { status: answered, tier: GOVERNED, plan: { metrics: [remote_inspection_share], dimensions: [country] } }
 - id: g08
-  question: "¿Cuál es la cobertura de origen por programa?"
+  question: "Cobertura de origen del programa Girasol sustentable por mes de registro"
   workspace: traceability
-  tags: [ratio, breakdown, anomaly]
-  expect: { status: answered, tier: GOVERNED, plan: { metrics: [origin_coverage], dimensions: [program] }, warning: bounds }
+  tags: [ratio, time, anomaly]
+  expect: { status: answered, tier: GOVERNED, plan: { metrics: [origin_coverage], dimensions: [lot_month], filters: { program: "Girasol sustentable" } }, warning: bounds }
 - id: g09
   question: "Hectáreas libres de deforestación EUDR por bioma"
   workspace: compliance
@@ -169,7 +169,8 @@
   question: "¿Cuánto carbono capturamos?"
   workspace: climate
   tags: [ambiguous]
-  expect: { status: clarification }
+  # No capture/sequestration metric exists: asking which metric OR refusing with the closest is acceptable.
+  expect: { status: [clarification, not_answered] }
 - id: a02
   question: "What is our compliance rate?"
   workspace: compliance

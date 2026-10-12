@@ -14,7 +14,7 @@ import uuid
 from collections import OrderedDict
 from datetime import datetime, timezone
 
-from . import checks, explain, llm, semantic, verified, visualize
+from . import checks, explain, geo, llm, semantic, verified, visualize
 from .compiler import CompileError, compile_plan, compile_sample
 from .config import settings
 from .executor import ExecutionError, execute
@@ -285,6 +285,22 @@ def _execute_plan(sl, trace, base, plan: QueryPlan, tier: str, language: str, ve
     chart = visualize.choose(sl, plan, res)
     trace.stage("visualize", t0, chart=chart["type"], reason=chart["reason"])
 
+    # headline: the same metrics without dimensions (one row), shown as KPI tiles above the chart
+    headline = []
+    if plan.dimensions:
+        try:
+            hq = compile_plan(sl, QueryPlan(metrics=plan.metrics, dimensions=[], filters=plan.filters))
+            hr = execute(hq.sql, hq.params, hq.display_sql)
+            headline = [{"metric": m, "label": sl.metrics[m].label, "unit": sl.metrics[m].unit, "value": hr.rows[0][hr.columns.index(m)]} for m in plan.metrics]
+        except (CompileError, ExecutionError):
+            headline = []
+    elif res.rows:
+        headline = [{"metric": m, "label": sl.metrics[m].label, "unit": sl.metrics[m].unit, "value": res.rows[0][res.columns.index(m)]} for m in plan.metrics]
+    geo_points = None
+    if chart["type"] == "map":
+        d = plan.dimensions[0]
+        geo_points = {"dimension": d, "points": geo.points(d, [r[res.columns.index(d)] for r in res.rows])}
+
     # 10. explain
     t0 = time.perf_counter()
     summary = {lng: explain.summarize(sl, plan, res, lng) for lng in ("es", "en")}
@@ -308,6 +324,8 @@ def _execute_plan(sl, trace, base, plan: QueryPlan, tier: str, language: str, ve
         "summary": summary[language],
         "summary_i18n": summary,
         "chart": chart,
+        "headline": headline,
+        "geo": geo_points,
         "data": {"columns": res.columns, "rows": res.rows, "meta": _column_meta(sl, plan), "truncated": res.truncated},
         "warnings": warnings,
         "plan": plan.model_dump(),

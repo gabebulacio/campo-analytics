@@ -9,6 +9,11 @@ const STRINGS = {
   metrics: { es: "Métricas", en: "Metrics" },
   evals: { es: "Evaluaciones", en: "Evals" },
   traces: { es: "Trazas", en: "Traces" },
+  architecture: { es: "Arquitectura", en: "Architecture" },
+  plan: { es: "Plan de implementación", en: "Implementation plan" },
+  showMap: { es: "Ver mapa", en: "Show map" },
+  showBars: { es: "Ver barras", en: "Show bars" },
+  overall: { es: "Total del período filtrado", en: "Overall for the filtered period" },
   askTitle: { es: "Preguntale a tus datos", en: "Ask your data" },
   askLede: {
     es: "Cada número sale de una métrica definida en la capa semántica. La IA elige y combina; un compilador determinístico genera el SQL.",

@@ -141,3 +141,55 @@ def compile_only(plan: QueryPlan):
         return {"ok": False, "errors": [e.as_dict() for e in v.errors]}
     q = compile_plan(sl, v.plan)
     return {"ok": True, "sql": q.display_sql, "params": q.params, "tables": q.tables}
+
+
+_overview_cache: dict = {}
+
+
+@app.get("/overview")
+def overview():
+    """Portfolio snapshot computed with governed metrics only (deterministic, no LLM)."""
+    from . import geo
+    from .compiler import compile_plan
+    from .executor import execute
+    from .plan import Filter
+
+    sl = semantic.get()
+    if _overview_cache.get("version") == sl.version:
+        return _overview_cache["data"]
+
+    def run(metrics, dims=(), filters=()):
+        p = QueryPlan(metrics=list(metrics), dimensions=list(dims), filters=[Filter(dimension=k, values=[v]) for k, v in filters])
+        q = compile_plan(sl, p)
+        r = execute(q.sql, q.params, q.display_sql)
+        return r.columns, r.rows
+
+    eudr = (("standard", "EUDR"),)
+    kpis = []
+    for m, f in [("assessed_hectares", eudr), ("deforestation_free_share", eudr), ("compliance_rate", eudr), ("traced_volume_t", ()),
+                 ("origin_coverage", ()), ("emissions_intensity", ()), ("active_producers", ()), ("open_alerts", ())]:
+        _, rows = run([m], (), f)
+        kpis.append({"metric": m, "label": sl.metrics[m].label, "unit": sl.metrics[m].unit, "value": rows[0][0], "filter": dict(f)})
+
+    def series(metric, dim, f=()):
+        _, rows = run([metric], [dim], f)
+        pts = [{"x": r[0], "y": r[1]} for r in rows if r[0] is not None and r[1] is not None]
+        if dim == "campaign":
+            from .validator import latest_closed_campaign
+            last = latest_closed_campaign()
+            pts = [p for p in pts if str(p["x"]) <= last]
+        return {"metric": metric, "label": sl.metrics[metric].label, "unit": sl.metrics[metric].unit, "dimension": dim, "points": pts}
+
+    trends = {
+        "compliance_rate": series("compliance_rate", "campaign", eudr),
+        "emissions_intensity": series("emissions_intensity", "campaign"),
+        "regenerative_adoption_share": series("regenerative_adoption_share", "campaign"),
+        "alerts": series("alerts", "alert_month"),
+    }
+    _, rows = run(["deforestation_free_share", "assessed_hectares", "fields_with_conversion"], ["admin1"], eudr)
+    pts = geo.points("admin1", [r[0] for r in rows])
+    regions = [{"name": r[0], "deforestation_free_share": r[1], "assessed_hectares": r[2], "fields_with_conversion": r[3], "latlon": pts.get(str(r[0]))}
+               for r in rows if r[0] is not None]
+    data = {"kpis": kpis, "trends": trends, "regions": regions, "as_of": str(settings.as_of), "semantic_version": sl.version}
+    _overview_cache.update(version=sl.version, data=data)
+    return data

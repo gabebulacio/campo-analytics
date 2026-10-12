@@ -26,4 +26,5 @@ export const api = {
   traces: () => req<any[]>("/traces"),
   feedback: (trace_id: string, rating: "up" | "down") => req("/feedback", { method: "POST", body: JSON.stringify({ trace_id, rating }) }),
   evals: () => req<any>("/evals/latest"),
+  overview: () => req<any>("/overview"),
 };

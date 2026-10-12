@@ -12,7 +12,7 @@ export interface ColumnMeta {
 }
 
 export interface ChartSpec {
-  type: "kpi" | "line" | "bar" | "grouped_bar" | "stacked_bar" | "table";
+  type: "kpi" | "line" | "bar" | "grouped_bar" | "stacked_bar" | "table" | "map";
   x: string | null;
   series: string | null;
   y: string;
@@ -85,6 +85,8 @@ export interface Answer {
   summary: string;
   summary_i18n?: I18n;
   chart?: ChartSpec;
+  headline?: { metric: string; label: I18n; unit: string; value: number | null }[];
+  geo?: { dimension: string; points: Record<string, [number, number]> } | null;
   data?: { columns: string[]; rows: (string | number | null)[][]; meta: ColumnMeta[]; truncated: boolean };
   warnings: Warning[];
   plan?: QueryPlan;

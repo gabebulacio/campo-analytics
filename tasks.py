@@ -67,7 +67,7 @@ def elt_neon() -> None:
 
 
 def api() -> None:
-    run([py(), "-m", "uvicorn", "app.main:app", "--port", "8000", "--reload"], cwd=PIPE)
+    run([py(), "-m", "uvicorn", "app.main:app", "--port", "8001", "--reload"], cwd=PIPE)
 
 
 def web() -> None:
@@ -76,10 +76,10 @@ def web() -> None:
 
 def dev() -> None:
     procs = [
-        subprocess.Popen([py(), "-m", "uvicorn", "app.main:app", "--port", "8000"], cwd=PIPE),
+        subprocess.Popen([py(), "-m", "uvicorn", "app.main:app", "--port", "8001"], cwd=PIPE),
         subprocess.Popen([NPM, "run", "dev"], cwd=WEB),
     ]
-    print("\n  pipeline  http://localhost:8000/health\n  web       http://localhost:3000\n  (Ctrl+C to stop)\n")
+    print("\n  pipeline  http://localhost:8001/health\n  web       http://localhost:3000\n  (Ctrl+C to stop)\n")
     try:
         for p in procs:
             p.wait()

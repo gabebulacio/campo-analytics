@@ -7,7 +7,12 @@ import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 import { isPinned, pin } from "@/lib/pins";
 import { label } from "@/lib/format";
+import dynamic from "next/dynamic";
 import { Chart, DataTable, Kpis } from "./Chart";
+import { PipelineStrip } from "./PipelineStrip";
+import { fmt } from "@/lib/format";
+
+const MapView = dynamic(() => import("./MapView"), { ssr: false, loading: () => <div className="bar" style={{ height: 360 }} /> });
 import { LineageDrawer } from "./Lineage";
 
 export function TrustBadge({ tier, clarifying }: { tier: Tier; clarifying?: boolean }) {
@@ -28,7 +33,7 @@ export function TrustBadge({ tier, clarifying }: { tier: Tier; clarifying?: bool
 export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer; onAsk: (q: string, opts?: { clarification?: string; base?: Answer }) => void; compact?: boolean }) {
   const { t, lang } = useI18n();
   const [showLineage, setShowLineage] = useState(false);
-  const [view, setView] = useState<"chart" | "table">("chart");
+  const [view, setView] = useState<"chart" | "table" | "bars">("chart");
   const [vote, setVote] = useState<"up" | "down" | null>(null);
   const [pinned, setPinned] = useState(false);
   useEffect(() => setPinned(isPinned(answer.question, answer.clarification)), [answer.question, answer.clarification]);
@@ -36,6 +41,15 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
   const summary = answer.summary_i18n ? answer.summary_i18n[lang] : answer.summary;
   const chartType = answer.chart?.type;
   const hasChart = answer.status === "answered" && chartType && chartType !== "table" && chartType !== "kpi";
+  const isMap = chartType === "map" && !!answer.geo;
+  const mapPoints = isMap && answer.data ? answer.data.rows.map((r) => {
+    const di = answer.data!.columns.indexOf(answer.chart!.x!);
+    const yi = answer.data!.columns.indexOf(answer.chart!.y);
+    const second = answer.data!.meta.filter((m) => m.kind === "metric")[1];
+    const si = second ? answer.data!.columns.indexOf(second.name) : -1;
+    return { name: String(r[di]), latlon: answer.geo!.points[String(r[di])], value: r[yi] as number, size: si >= 0 ? (r[si] as number) : (r[yi] as number),
+      extra: answer.data!.meta.filter((m) => m.kind === "metric" && m.name !== answer.chart!.y).map((m) => ({ label: label(m.label, lang, m.name), value: fmt(r[answer.data!.columns.indexOf(m.name)], m.unit, lang) })) };
+  }).filter((p) => p.latlon) : [];
   const warnings = answer.warnings.filter((w) => w.level !== "info");
   const notes = answer.warnings.filter((w) => w.level === "info");
 
@@ -52,9 +66,14 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
         </div>
         {answer.status === "answered" && !compact && (
           <div className="answer-actions">
+            {isMap && (
+              <button className="btn sm" onClick={() => setView(view === "bars" ? "chart" : "bars")}>
+                <BarChart3 size={14} /> {view === "bars" ? t("showMap") : t("showBars")}
+              </button>
+            )}
             {hasChart && (
-              <button className="btn sm" onClick={() => setView(view === "chart" ? "table" : "chart")}>
-                {view === "chart" ? <Table2 size={14} /> : <BarChart3 size={14} />} {view === "chart" ? t("showTable") : t("showChart")}
+              <button className="btn sm" onClick={() => setView(view === "table" ? "chart" : "table")}>
+                {view !== "table" ? <Table2 size={14} /> : <BarChart3 size={14} />} {view !== "table" ? t("showTable") : t("showChart")}
               </button>
             )}
             <button className="btn sm" disabled={pinned} onClick={() => { pin({ question: answer.question, clarification: answer.clarification, plan: answer.plan }); setPinned(true); }}>
@@ -77,7 +96,20 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
       {answer.status === "answered" && (
         <>
           {chartType === "kpi" && <Kpis answer={answer} lang={lang} />}
-          {hasChart && view === "chart" && <Chart answer={answer} lang={lang} />}
+          {chartType !== "kpi" && answer.headline && answer.headline.length > 0 && (
+            <div className="headline">
+              {answer.headline.map((h) => (
+                <div key={h.metric} className="hl">
+                  <span className="eyebrow">{label(h.label, lang, h.metric)}</span>
+                  <span className="hl-v">{fmt(h.value, h.unit, lang)}</span>
+                  <span className="small faint">{t("overall")}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {isMap && view === "chart" && <MapView points={mapPoints} unit={answer.chart!.unit} lang={lang} legendLabel={label(answer.data!.meta.find((m) => m.name === answer.chart!.y)?.label, lang, answer.chart!.y)} />}
+          {isMap && view === "bars" && <Chart answer={{ ...answer, chart: { ...answer.chart!, type: "bar" } }} lang={lang} />}
+          {hasChart && !isMap && view === "chart" && <Chart answer={answer} lang={lang} />}
           {(chartType === "table" || view === "table") && <DataTable answer={answer} lang={lang} />}
           {notes.length > 0 && (
             <div className="callout info"><Info size={16} /><span>{notes.map((n) => n.message[lang]).join(" · ")}</span></div>
@@ -123,6 +155,7 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
         </div>
       )}
 
+      {!compact && <PipelineStrip answer={answer} lang={lang} />}
       <div className="meta-row">
         <span>{answer.latency_ms} ms</span>
         <span>US$ {(answer.cost?.usd ?? 0).toFixed(4)}</span>

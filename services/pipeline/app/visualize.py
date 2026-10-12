@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .executor import Result
+from .geo import GEO_DIMS
 from .plan import QueryPlan
 from .semantic import SemanticLayer
 
@@ -33,6 +34,8 @@ def choose(sl: SemanticLayer, plan: QueryPlan, result: Result) -> dict:
         spec.update(type="kpi", reason="no dimensions -> KPI")
     elif len(dims) == 1 and time_dims:
         spec.update(type="line", x=dims[0], reason="one time dimension -> line")
+    elif len(dims) == 1 and dims[0] in GEO_DIMS and n >= 2:
+        spec.update(type="map", x=dims[0], reason="one geographic dimension -> map (bar view available)")
     elif len(dims) == 1:
         if n <= MAX_BARS:
             spec.update(type="bar", x=dims[0], reason="one category -> bar, sorted")

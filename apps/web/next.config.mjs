@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const PIPELINE_URL = process.env.PIPELINE_URL || "http://127.0.0.1:8000";
+const PIPELINE_URL = process.env.PIPELINE_URL || "http://127.0.0.1:8001";
 
 const nextConfig = {
   reactStrictMode: true,
