@@ -1,0 +1,12 @@
+# Upload only what the pipeline image needs
+.git
+.venv
+.vscode
+apps/
+node_modules/
+data/out/
+docs/semantic-layer/portfolio/
+**/__pycache__/
+**/.pytest_cache/
+.env*
+Prep entrevista*.md

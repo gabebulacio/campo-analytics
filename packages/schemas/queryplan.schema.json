@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "Filter": {
+      "additionalProperties": false,
+      "properties": {
+        "dimension": {
+          "title": "Dimension",
+          "type": "string"
+        },
+        "op": {
+          "default": "in",
+          "enum": [
+            "in",
+            "not_in",
+            "gte",
+            "lte",
+            "between"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "dimension",
+        "values"
+      ],
+      "title": "Filter",
+      "type": "object"
+    },
+    "Sort": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "direction": {
+          "default": "desc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "title": "Direction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "title": "Sort",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "metrics": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "title": "Metrics",
+      "type": "array"
+    },
+    "dimensions": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 3,
+      "title": "Dimensions",
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "$ref": "#/$defs/Filter"
+      },
+      "title": "Filters",
+      "type": "array"
+    },
+    "sort": {
+      "items": {
+        "$ref": "#/$defs/Sort"
+      },
+      "title": "Sort",
+      "type": "array"
+    },
+    "limit": {
+      "anyOf": [
+        {
+          "maximum": 5000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Limit"
+    },
+    "chart_hint": {
+      "anyOf": [
+        {
+          "enum": [
+            "kpi",
+            "line",
+            "bar",
+            "grouped_bar",
+            "stacked_bar",
+            "table"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Chart Hint"
+    }
+  },
+  "required": [
+    "metrics"
+  ],
+  "title": "QueryPlan",
+  "type": "object",
+  "$id": "https://demo.gabrielbulacio.com/schemas/queryplan.schema.json"
+}

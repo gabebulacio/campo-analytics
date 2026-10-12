@@ -1,0 +1,39 @@
+# Hand-written QueryPlans (Phase 2 "done when": >= 30 compile and execute).
+# Disjoint from evals/golden and semantic examples by construction (no questions here).
+- { metrics: [assessed_hectares], filters: { standard: EUDR } }
+- { metrics: [assessed_hectares, deforestation_free_hectares], dimensions: [standard] }
+- { metrics: [deforestation_free_share], dimensions: [biome], filters: { standard: EUDR } }
+- { metrics: [converted_hectares_after_cutoff], dimensions: [standard] }
+- { metrics: [fields_with_conversion], dimensions: [admin1], filters: { standard: ISCC } }
+- { metrics: [compliance_rate], dimensions: [standard, campaign] }
+- { metrics: [compliance_rate], dimensions: [program], filters: { standard: EUDR, campaign: "2024/25" } }
+- { metrics: [compliant_field_seasons, evaluated_field_seasons], dimensions: [client], filters: { standard: REGEN_KPI } }
+- { metrics: [pending_evidence_field_seasons], dimensions: [crop_story_status], filters: { standard: EUDR } }
+- { metrics: [evaluated_field_seasons], dimensions: [compliance_status], filters: { standard: GHG_PROTOCOL } }
+- { metrics: [total_emissions_tco2e], dimensions: [campaign] }
+- { metrics: [production_t], dimensions: [crop], filters: { campaign: "2024/25" } }
+- { metrics: [emissions_intensity], dimensions: [commodity] }
+- { metrics: [nue], dimensions: [producer_size] }
+- { metrics: [regenerative_adoption_share, cover_crop_share], dimensions: [campaign] }
+- { metrics: [planted_hectares], dimensions: [admin1], filters: { crop: soy, campaign: "2024/25" } }
+- { metrics: [active_producers], dimensions: [country] }
+- { metrics: [crop_story_completion_rate], dimensions: [campaign] }
+- { metrics: [signed_crop_story_share], dimensions: [program] }
+- { metrics: [data_completeness], dimensions: [crop_story_status] }
+- { metrics: [forms_sent, form_response_rate], dimensions: [form_type] }
+- { metrics: [median_response_hours], dimensions: [channel, producer_size] }
+- { metrics: [form_response_rate], dimensions: [dispatch_month], filters: { channel: whatsapp } }
+- { metrics: [monitored_hectares], dimensions: [biome] }
+- { metrics: [alerts], dimensions: [alert_month], filters: { alert_type: deforestation } }
+- { metrics: [open_alerts], dimensions: [admin1] }
+- { metrics: [median_alert_resolution_days], dimensions: [alert_type] }
+- { metrics: [false_positive_rate], dimensions: [alert_severity] }
+- { metrics: [remote_inspection_share], dimensions: [country] }
+- { metrics: [inspection_cost_usd], dimensions: [inspection_mode] }
+- { metrics: [traced_volume_t], dimensions: [lot_month] }
+- { metrics: [segregated_volume_share], dimensions: [commodity] }
+- { metrics: [origin_coverage], dimensions: [program] }
+- { metrics: [compliant_volume_share], dimensions: [standard] }
+- { metrics: [qr_scans], dimensions: [client] }
+- { metrics: [planted_hectares, active_producers], filters: { country: AR } }
+- { metrics: [alerts], dimensions: [alert_type], filters: { alert_month: ["2026-01-01", "2026-09-30"] }, op_between: true }

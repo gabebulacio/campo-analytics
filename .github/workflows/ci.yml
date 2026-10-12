@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: services/pipeline/requirements.txt
+      - run: pip install -r services/pipeline/requirements.txt
+      - name: Lint
+        run: ruff check services/pipeline data evals --select E,F,I --ignore E501
+      - name: Build synthetic data + marts (DuckDB)
+        run: |
+          python data/generator/generate.py
+          python data/elt/run.py
+          cd services/pipeline && python -c "from app import values; values.build()"
+      - name: Tests (semantic linter, compiler snapshots, data quality, API)
+        run: python -m pytest -q services/pipeline/tests data/tests
+      - name: Shared schemas are up to date
+        run: |
+          cd services/pipeline && python -m app.schemas_export && cd ../..
+          git diff --exit-code packages/schemas
+      - name: Evals (CI gates)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python evals/run.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-report
+          path: evals/report.*
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - name: No raw hex colours outside tokens
+        run: "! grep -rnE '#[0-9A-Fa-f]{6}' app components lib --include=*.tsx --include=*.ts | grep -v globals.css"
+      - run: npm run build

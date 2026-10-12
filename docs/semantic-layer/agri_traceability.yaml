@@ -1,0 +1,930 @@
+# =============================================================================
+# Proposed semantic model: agricultural supply-chain traceability & compliance
+# =============================================================================
+# Purpose
+#   Single source of truth for the AI planner (see README "Answer pipeline
+#   contract"). The planner may only choose metrics, dimensions and filters
+#   defined here. Joins are declared here, never inferred.
+#
+# Domain
+#   Modeled on the public product surface of agri-traceability platforms
+#   (Verified Landscape / Crop Story / Traced Product, see
+#   docs/company-research.md). All data is synthetic. No real company data.
+#
+# Relationship to the portfolio semantic model
+#   This file is a SECOND, domain-specific model. Reuse conventions, linter
+#   rules and compiler from the portfolio model; do not merge namespaces.
+#   If both define a concept (e.g. date dimension), keep one shared
+#   definition in `shared/` and reference it from both.
+#
+# Conventions
+#   - Grain is explicit on every entity. Metrics declare the entity they
+#     aggregate from; the compiler only joins along `relationships`.
+#   - Ratios are ratios of sums (numerator and denominator aggregated
+#     separately), never averages of row-level ratios.
+#   - Area-weighted averages use `type: weighted_avg` with an explicit weight.
+#   - Every metric has: description, ES/EN synonyms, allowed_dimensions,
+#     workspace, and checks where meaningful.
+#   - Units are explicit (ha, t, kgCO2e, count, ratio).
+#   - requires_filter_or_group: the dimension must be filtered to one value
+#     OR used as a grouping dimension; otherwise the planner asks.
+# =============================================================================
+
+version: 0.1.0
+name: agri_traceability
+default_time_dimension: campaign
+as_of_policy: "Relative dates resolve against request as_of; campaigns resolve to campaign_id"
+
+# -----------------------------------------------------------------------------
+# Workspaces: the router picks one; the planner only sees its metrics.
+# -----------------------------------------------------------------------------
+workspaces:
+  compliance:
+    label: { es: "Cumplimiento y deforestación", en: "Compliance & deforestation" }
+    description: >
+      EUDR and other standards: land-use-change assessments, compliance status
+      by standard, non-compliant fields, evidence coverage.
+  climate:
+    label: { es: "Clima y prácticas", en: "Climate & practices" }
+    description: >
+      Emissions, emissions intensity, nutrient use efficiency, regenerative
+      practice adoption, Scope 3 and carbon program KPIs.
+  traceability:
+    label: { es: "Trazabilidad de producto", en: "Product traceability" }
+    description: >
+      Lots, volumes, segregation, origin coverage, compliant volume, QR scans.
+  monitoring:
+    label: { es: "Monitoreo satelital", en: "Satellite monitoring" }
+    description: >
+      Monitored area, alerts (deforestation, fire, flood, drought, NDVI anomaly,
+      silo bags), resolution times, remote vs on-site inspections.
+  engagement:
+    label: { es: "Productores y datos", en: "Producers & data" }
+    description: >
+      Active producers, Crop Story completion, form response rates and channels,
+      data completeness.
+
+# -----------------------------------------------------------------------------
+# Entities (Postgres marts). `source` documents lineage back to raw/Mongo.
+# -----------------------------------------------------------------------------
+entities:
+
+  client:
+    table: marts.dim_client
+    grain: one row per corporate or public-sector client
+    primary_key: client_id
+    source: "postgres raw.clients"
+    columns:
+      client_id: { type: string }
+      client_name: { type: string, pii: false }
+      client_segment: { type: string, values: [food_beverage, agribusiness, biofuel, public_sector, finance] }
+      hq_country: { type: string }
+
+  standard:
+    table: marts.dim_standard
+    grain: one row per standard or framework
+    primary_key: standard_id
+    source: "seeded reference data"
+    columns:
+      standard_id: { type: string, values: [EUDR, ISCC, EPA_45Z, 4C, 2BSVS, GHG_PROTOCOL, SBTI_FLAG, CORSIA, REGEN_KPI] }
+      standard_name: { type: string }
+      standard_family: { type: string, values: [deforestation, biofuel, coffee, climate, regenerative] }
+      luc_cutoff_date: { type: date, description: "Land-use-change cutoff (EUDR: 2020-12-31)" }
+
+  program:
+    table: marts.dim_program
+    grain: one row per client sourcing program (client x commodity x standard set)
+    primary_key: program_id
+    source: "postgres raw.programs"
+    columns:
+      program_id: { type: string }
+      client_id: { type: string }
+      program_name: { type: string }
+      commodity: { type: string }
+      origin_country: { type: string }
+      started_on: { type: date }
+
+  program_standard:
+    table: marts.bridge_program_standard
+    grain: one row per program x standard
+    primary_key: [program_id, standard_id]
+    columns:
+      program_id: { type: string }
+      standard_id: { type: string }
+
+  producer:
+    table: marts.dim_producer
+    grain: one row per producer (farm business)
+    primary_key: producer_id
+    source: "mongo producers -> raw.producers"
+    columns:
+      producer_id: { type: string }
+      producer_size_band: { type: string, values: [smallholder, medium, large] }
+      preferred_channel: { type: string, values: [whatsapp, sms, web] }
+      country: { type: string }
+      admin1: { type: string, description: "Province/state" }
+      onboarded_at: { type: date }
+
+  field:
+    table: marts.dim_field
+    grain: one row per field (plot) polygon
+    primary_key: field_id
+    source: "mongo fields (GeoJSON) -> raw.fields (PostGIS)"
+    columns:
+      field_id: { type: string }
+      producer_id: { type: string }
+      geom: { type: geometry(MultiPolygon, 4326) }
+      area_ha: { type: numeric, unit: ha, description: "Geodesic area of geom" }
+      country: { type: string }
+      admin1: { type: string }
+      admin2: { type: string, description: "Department/municipality" }
+      biome: { type: string, values: [pampa, chaco, cerrado, atlantic_forest, mesoamerican, other] }
+      geometry_valid: { type: boolean }
+
+  campaign:
+    table: marts.dim_campaign
+    grain: one row per crop season
+    primary_key: campaign_id
+    columns:
+      campaign_id: { type: string, example: "2025/26" }
+      hemisphere: { type: string, values: [south, north] }
+      start_date: { type: date }
+      end_date: { type: date }
+
+  field_season:
+    table: marts.fct_field_season
+    grain: one row per field x campaign x crop (the Crop Story grain)
+    primary_key: field_season_id
+    source: "mongo crop_story_events -> raw.crop_story_events -> staging -> marts"
+    columns:
+      field_season_id: { type: string }
+      field_id: { type: string }
+      campaign_id: { type: string }
+      program_id: { type: string, nullable: true }
+      crop: { type: string, values: [soy, maize, wheat, barley, sunflower, coffee, sorghum, rapeseed] }
+      planted_ha: { type: numeric, unit: ha }
+      harvested_ha: { type: numeric, unit: ha, nullable: true }
+      production_t: { type: numeric, unit: t, nullable: true }
+      crop_story_status: { type: string, values: [not_started, in_progress, complete, signed] }
+      signed_at: { type: timestamp, nullable: true, description: "Digital signature / blockchain anchoring time" }
+      anchor_tx_hash: { type: string, nullable: true }
+      n_applied_kg: { type: numeric, unit: kg }
+      n_removed_kg: { type: numeric, unit: kg, nullable: true }
+      emissions_kgco2e: { type: numeric, unit: kgCO2e, nullable: true }
+      no_till: { type: boolean }
+      cover_crop: { type: boolean }
+      crop_rotation: { type: boolean }
+      required_fields_total: { type: integer }
+      required_fields_filled: { type: integer }
+
+  luc_assessment:
+    table: marts.fct_luc_assessment
+    grain: one row per field x standard x assessment run (latest flag provided)
+    primary_key: luc_assessment_id
+    source: "satellite LUC pipeline -> raw.luc_assessments"
+    columns:
+      luc_assessment_id: { type: string }
+      field_id: { type: string }
+      standard_id: { type: string }
+      assessed_at: { type: timestamp }
+      is_latest: { type: boolean }
+      luc_result: { type: string, values: [no_conversion, conversion_detected, inconclusive] }
+      converted_ha_after_cutoff: { type: numeric, unit: ha }
+      report_pdf_uri: { type: string }
+
+  compliance_evaluation:
+    table: marts.fct_compliance_evaluation
+    grain: one row per field_season x standard (latest evaluation)
+    primary_key: [field_season_id, standard_id]
+    source: "rules engine over field_season + luc_assessment + form responses"
+    columns:
+      field_season_id: { type: string }
+      standard_id: { type: string }
+      compliance_status: { type: string, values: [compliant, non_compliant, pending_evidence, not_applicable] }
+      missing_requirements: { type: integer }
+      evaluated_at: { type: timestamp }
+
+  satellite_alert:
+    table: marts.fct_satellite_alert
+    grain: one row per alert on a field
+    primary_key: alert_id
+    source: "mongo satellite_alerts -> raw.satellite_alerts"
+    columns:
+      alert_id: { type: string }
+      field_id: { type: string }
+      alert_type: { type: string, values: [deforestation, fire, flood, drought, ndvi_anomaly, silo_bag] }
+      severity: { type: string, values: [low, medium, high] }
+      detected_at: { type: timestamp }
+      resolved_at: { type: timestamp, nullable: true }
+      resolution: { type: string, nullable: true, values: [false_positive, confirmed, mitigated] }
+
+  inspection:
+    table: marts.fct_inspection
+    grain: one row per inspection of a field or site
+    primary_key: inspection_id
+    columns:
+      inspection_id: { type: string }
+      field_id: { type: string }
+      inspection_mode: { type: string, values: [remote, on_site] }
+      inspected_at: { type: timestamp }
+      cost_usd: { type: numeric, unit: USD }
+
+  form_dispatch:
+    table: marts.fct_form_dispatch
+    grain: one row per form sent to a producer
+    primary_key: dispatch_id
+    source: "mongo form_dispatches + form_responses"
+    columns:
+      dispatch_id: { type: string }
+      producer_id: { type: string }
+      program_id: { type: string }
+      form_type: { type: string, values: [carbon_footprint, field_audit, agronomic_practices, legality_docs] }
+      channel: { type: string, values: [whatsapp, sms, web] }
+      sent_at: { type: timestamp }
+      responded_at: { type: timestamp, nullable: true }
+
+  lot:
+    table: marts.fct_lot
+    grain: one row per registered lot at a collection or processing site
+    primary_key: lot_id
+    source: "postgres raw.lots"
+    columns:
+      lot_id: { type: string }
+      program_id: { type: string }
+      site_id: { type: string }
+      site_type: { type: string, values: [collection, processing, export] }
+      commodity: { type: string }
+      registered_at: { type: timestamp }
+      volume_t: { type: numeric, unit: t }
+      segregated: { type: boolean, description: "Physically segregated (identity preserved / segregation model)" }
+      qr_scans: { type: integer }
+
+  lot_origin:
+    table: marts.bridge_lot_field_season
+    grain: one row per lot x contributing field_season
+    primary_key: [lot_id, field_season_id]
+    columns:
+      lot_id: { type: string }
+      field_season_id: { type: string }
+      volume_t: { type: numeric, unit: t, description: "Volume of the lot attributed to this origin" }
+
+# -----------------------------------------------------------------------------
+# Relationships: the ONLY joins the compiler may use.
+# -----------------------------------------------------------------------------
+relationships:
+  - { from: program.client_id,              to: client.client_id,            type: many_to_one }
+  - { from: program_standard.program_id,    to: program.program_id,          type: many_to_one }
+  - { from: program_standard.standard_id,   to: standard.standard_id,        type: many_to_one }
+  - { from: field.producer_id,              to: producer.producer_id,        type: many_to_one }
+  - { from: field_season.field_id,          to: field.field_id,              type: many_to_one }
+  - { from: field_season.campaign_id,       to: campaign.campaign_id,        type: many_to_one }
+  - { from: field_season.program_id,        to: program.program_id,          type: many_to_one }
+  - { from: luc_assessment.field_id,        to: field.field_id,              type: many_to_one }
+  - { from: luc_assessment.standard_id,     to: standard.standard_id,        type: many_to_one }
+  - { from: compliance_evaluation.field_season_id, to: field_season.field_season_id, type: many_to_one }
+  - { from: compliance_evaluation.standard_id,     to: standard.standard_id,          type: many_to_one }
+  - { from: satellite_alert.field_id,       to: field.field_id,              type: many_to_one }
+  - { from: inspection.field_id,            to: field.field_id,              type: many_to_one }
+  - { from: form_dispatch.producer_id,      to: producer.producer_id,        type: many_to_one }
+  - { from: form_dispatch.program_id,       to: program.program_id,          type: many_to_one }
+  - { from: lot.program_id,                 to: program.program_id,          type: many_to_one }
+  - { from: lot_origin.lot_id,              to: lot.lot_id,                  type: many_to_one }
+  - { from: lot_origin.field_season_id,     to: field_season.field_season_id, type: many_to_one }
+
+# -----------------------------------------------------------------------------
+# Dimensions exposed to the planner (entity.column + labels + synonyms).
+# -----------------------------------------------------------------------------
+dimensions:
+  client:          { expr: client.client_name,        label: { es: Cliente, en: Client },                 synonyms: [empresa, company, customer] }
+  client_segment:  { expr: client.client_segment,     label: { es: Segmento, en: Segment } }
+  program:         { expr: program.program_name,      label: { es: Programa, en: Program },               synonyms: [iniciativa, sourcing program] }
+  commodity:       { expr: program.commodity,         label: { es: Commodity, en: Commodity },            synonyms: [materia prima, producto] }
+  standard:        { expr: standard.standard_id,      label: { es: Estándar, en: Standard },              synonyms: [norma, certificación, regulación, framework] }
+  standard_family: { expr: standard.standard_family,  label: { es: Familia de estándar, en: Standard family } }
+  country:         { expr: field.country,             label: { es: País, en: Country } }
+  admin1:          { expr: field.admin1,              label: { es: Provincia/Estado, en: State/Province }, synonyms: [provincia, estado, region] }
+  admin2:          { expr: field.admin2,              label: { es: Departamento/Municipio, en: County/Municipality } }
+  biome:           { expr: field.biome,               label: { es: Bioma, en: Biome } }
+  producer_country: { expr: producer.country,         label: { es: País del productor, en: Producer country } }
+  producer_size:   { expr: producer.producer_size_band, label: { es: Tamaño de productor, en: Producer size }, synonyms: [pequeño productor, smallholder] }
+  campaign:        { expr: campaign.campaign_id,      label: { es: Campaña, en: Season },                 synonyms: [temporada, ciclo, season, cosecha] , type: time, order_by: campaign.start_date }
+  crop:            { expr: field_season.crop,         label: { es: Cultivo, en: Crop },                   synonyms: [cultivo, especie] }
+  crop_story_status: { expr: field_season.crop_story_status, label: { es: Estado Crop Story, en: Crop Story status } }
+  compliance_status: { expr: compliance_evaluation.compliance_status, label: { es: Estado de cumplimiento, en: Compliance status } }
+  luc_result:      { expr: luc_assessment.luc_result, label: { es: Resultado de cambio de uso, en: Land-use-change result } }
+  alert_type:      { expr: satellite_alert.alert_type, label: { es: Tipo de alerta, en: Alert type } }
+  alert_severity:  { expr: satellite_alert.severity,  label: { es: Severidad, en: Severity } }
+  inspection_mode: { expr: inspection.inspection_mode, label: { es: Tipo de inspección, en: Inspection mode } }
+  channel:         { expr: form_dispatch.channel,     label: { es: Canal, en: Channel },                  synonyms: [whatsapp, sms, web] }
+  form_type:       { expr: form_dispatch.form_type,   label: { es: Tipo de formulario, en: Form type } }
+  site_type:       { expr: lot.site_type,             label: { es: Tipo de sitio, en: Site type } }
+  alert_month:     { expr: "date_trunc('month', satellite_alert.detected_at)", label: { es: Mes de alerta, en: Alert month }, type: time }
+  lot_month:       { expr: "date_trunc('month', lot.registered_at)", label: { es: Mes de registro, en: Registration month }, type: time }
+  dispatch_month:  { expr: "date_trunc('month', form_dispatch.sent_at)", label: { es: Mes de envío, en: Send month }, type: time }
+
+# Reusable dimension sets for allowed_dimensions.
+dimension_sets:
+  geo_org: [client, client_segment, program, commodity, country, admin1, admin2, biome, producer_size]
+  season: [campaign, crop, crop_story_status]
+
+# -----------------------------------------------------------------------------
+# Metrics
+# -----------------------------------------------------------------------------
+metrics:
+
+  # ---------------------------- compliance ----------------------------------
+  assessed_hectares:
+    workspace: compliance
+    label: { es: Hectáreas evaluadas, en: Assessed hectares }
+    description: >
+      Area of distinct fields with a latest land-use-change assessment for the
+      selected standard. Counts each field once.
+    synonyms: [hectáreas verificadas, verified hectares, hectáreas analizadas]
+    type: sum_distinct
+    entity: luc_assessment
+    expr: field.area_ha
+    distinct_on: field.field_id
+    filters: ["luc_assessment.is_latest = true"]
+    unit: ha
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, luc_result, country, admin1, admin2, biome, producer_size]
+    checks: { min: 0 }
+
+  deforestation_free_hectares:
+    workspace: compliance
+    label: { es: Hectáreas libres de deforestación, en: Deforestation-free hectares }
+    description: Assessed hectares whose latest assessment found no conversion after the standard's cutoff date.
+    synonyms: [libre de deforestación, deforestation free, sin conversión]
+    type: sum_distinct
+    entity: luc_assessment
+    expr: field.area_ha
+    distinct_on: field.field_id
+    filters: ["luc_assessment.is_latest = true", "luc_assessment.luc_result = 'no_conversion'"]
+    unit: ha
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, country, admin1, admin2, biome, producer_size]
+    checks: { min: 0, lte_metric: assessed_hectares }
+
+  deforestation_free_share:
+    workspace: compliance
+    label: { es: "% libre de deforestación", en: "Deforestation-free share" }
+    description: Deforestation-free hectares divided by assessed hectares.
+    synonyms: [porcentaje libre de deforestación, share deforestation free]
+    type: ratio
+    numerator: deforestation_free_hectares
+    denominator: assessed_hectares
+    unit: ratio
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, country, admin1, admin2, biome, producer_size]
+    checks: { min: 0, max: 1 }
+
+  converted_hectares_after_cutoff:
+    workspace: compliance
+    label: { es: Hectáreas convertidas post fecha de corte, en: Hectares converted after cutoff }
+    description: Sum of area converted after the cutoff date, from latest assessments.
+    synonyms: [hectáreas deforestadas, deforested hectares, conversión]
+    type: sum
+    entity: luc_assessment
+    expr: luc_assessment.converted_ha_after_cutoff
+    filters: ["luc_assessment.is_latest = true"]
+    unit: ha
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, country, admin1, admin2, biome, producer_size]
+    checks: { min: 0 }
+
+  fields_with_conversion:
+    workspace: compliance
+    label: { es: Lotes con conversión detectada, en: Fields with conversion detected }
+    description: Count of fields whose latest assessment detected conversion after cutoff.
+    synonyms: [lotes no conformes, campos con deforestación, flagged fields]
+    type: count_distinct
+    entity: luc_assessment
+    expr: luc_assessment.field_id
+    filters: ["luc_assessment.is_latest = true", "luc_assessment.luc_result = 'conversion_detected'"]
+    unit: count
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, country, admin1, admin2, biome, producer_size]
+    checks: { min: 0 }
+
+  compliant_field_seasons:
+    workspace: compliance
+    label: { es: Lotes-campaña conformes, en: Compliant field-seasons }
+    description: Field-seasons with compliance_status = compliant for the selected standard.
+    synonyms: [conformes, compliant fields, cumplen]
+    type: count_distinct
+    entity: compliance_evaluation
+    expr: compliance_evaluation.field_season_id
+    filters: ["compliance_evaluation.compliance_status = 'compliant'"]
+    unit: count
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, geo_org, season]
+
+  evaluated_field_seasons:
+    workspace: compliance
+    label: { es: Lotes-campaña evaluados, en: Evaluated field-seasons }
+    description: Field-seasons with an applicable evaluation (excludes not_applicable).
+    type: count_distinct
+    entity: compliance_evaluation
+    expr: compliance_evaluation.field_season_id
+    filters: ["compliance_evaluation.compliance_status <> 'not_applicable'"]
+    unit: count
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, compliance_status, geo_org, season]
+
+  compliance_rate:
+    workspace: compliance
+    label: { es: Tasa de cumplimiento, en: Compliance rate }
+    description: Compliant field-seasons over evaluated field-seasons for the selected standard.
+    synonyms: ["% cumplimiento", "% conformes", compliance share]
+    type: ratio
+    numerator: compliant_field_seasons
+    denominator: evaluated_field_seasons
+    unit: ratio
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, geo_org, season]
+    checks: { min: 0, max: 1 }
+
+  pending_evidence_field_seasons:
+    workspace: compliance
+    label: { es: Lotes-campaña con evidencia pendiente, en: Field-seasons pending evidence }
+    description: Field-seasons that cannot be evaluated yet because required evidence is missing.
+    synonyms: [faltan datos, missing evidence, pendientes]
+    type: count_distinct
+    entity: compliance_evaluation
+    expr: compliance_evaluation.field_season_id
+    filters: ["compliance_evaluation.compliance_status = 'pending_evidence'"]
+    unit: count
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [standard, standard_family, geo_org, season]
+
+  # ------------------------------ climate -----------------------------------
+  total_emissions_tco2e:
+    workspace: climate
+    label: { es: Emisiones totales, en: Total emissions }
+    description: Sum of field-season emissions (cradle-to-farm-gate), in tonnes CO2e.
+    synonyms: [huella de carbono, carbon footprint, emisiones, GEI, GHG]
+    type: sum
+    entity: field_season
+    expr: field_season.emissions_kgco2e / 1000.0
+    unit: tCO2e
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0 }
+
+  production_t:
+    workspace: climate
+    label: { es: Producción, en: Production }
+    description: Harvested production in tonnes.
+    synonyms: [toneladas producidas, cosecha, output]
+    type: sum
+    entity: field_season
+    expr: field_season.production_t
+    unit: t
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0 }
+
+  emissions_intensity:
+    workspace: climate
+    label: { es: Intensidad de emisiones, en: Emissions intensity }
+    description: >
+      kgCO2e per tonne produced. Ratio of sums over field-seasons that have
+      BOTH emissions and production recorded (avoids biased denominators).
+    synonyms: [kg CO2e por tonelada, carbon intensity, intensidad de carbono, CI]
+    type: ratio
+    numerator: { type: sum, entity: field_season, expr: field_season.emissions_kgco2e, filters: ["field_season.emissions_kgco2e is not null", "field_season.production_t > 0"] }
+    denominator: { type: sum, entity: field_season, expr: field_season.production_t, filters: ["field_season.emissions_kgco2e is not null", "field_season.production_t > 0"] }
+    unit: kgCO2e/t
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0, max: 5000 }
+
+  nue:
+    workspace: climate
+    label: { es: Eficiencia de uso de nitrógeno, en: Nitrogen use efficiency }
+    description: Nitrogen removed in harvest over nitrogen applied (ratio of sums).
+    synonyms: [NUE, eficiencia de nitrógeno, nutrient use efficiency]
+    type: ratio
+    numerator: { type: sum, entity: field_season, expr: field_season.n_removed_kg, filters: ["field_season.n_applied_kg > 0", "field_season.n_removed_kg is not null"] }
+    denominator: { type: sum, entity: field_season, expr: field_season.n_applied_kg, filters: ["field_season.n_applied_kg > 0", "field_season.n_removed_kg is not null"] }
+    unit: ratio
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0, max: 3 }
+
+  regenerative_adoption_share:
+    workspace: climate
+    label: { es: "% superficie con prácticas regenerativas", en: Regenerative practice adoption }
+    description: >
+      Planted hectares with at least two of: no-till, cover crop, crop rotation,
+      over total planted hectares.
+    synonyms: [agricultura regenerativa, regenerative, prácticas sustentables]
+    type: ratio
+    numerator: { type: sum, entity: field_season, expr: field_season.planted_ha, filters: ["(field_season.no_till::int + field_season.cover_crop::int + field_season.crop_rotation::int) >= 2"] }
+    denominator: { type: sum, entity: field_season, expr: field_season.planted_ha }
+    unit: ratio
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0, max: 1 }
+
+  cover_crop_share:
+    workspace: climate
+    label: { es: "% con cultivo de cobertura", en: Cover crop share }
+    description: Planted hectares with cover crop over planted hectares.
+    synonyms: [cultivos de servicio, cover crops]
+    type: ratio
+    numerator: { type: sum, entity: field_season, expr: field_season.planted_ha, filters: ["field_season.cover_crop = true"] }
+    denominator: { type: sum, entity: field_season, expr: field_season.planted_ha }
+    unit: ratio
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0, max: 1 }
+
+  # ---------------------------- engagement ----------------------------------
+  planted_hectares:
+    workspace: engagement
+    also_in: [climate, monitoring]
+    label: { es: Hectáreas sembradas, en: Planted hectares }
+    description: Sum of planted area across field-seasons.
+    synonyms: [superficie, área sembrada, hectáreas]
+    type: sum
+    entity: field_season
+    expr: field_season.planted_ha
+    unit: ha
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0 }
+
+  active_producers:
+    workspace: engagement
+    label: { es: Productores activos, en: Active producers }
+    description: Distinct producers with at least one field-season in the period.
+    synonyms: [productores, farmers, growers]
+    type: count_distinct
+    entity: field_season
+    expr: field.producer_id
+    unit: count
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0 }
+
+  crop_story_completion_rate:
+    workspace: engagement
+    label: { es: Tasa de Crop Story completas, en: Crop Story completion rate }
+    description: Field-seasons with Crop Story complete or signed over all field-seasons.
+    synonyms: [crop stories completas, registros completos]
+    type: ratio
+    numerator: { type: count_distinct, entity: field_season, expr: field_season.field_season_id, filters: ["field_season.crop_story_status in ('complete','signed')"] }
+    denominator: { type: count_distinct, entity: field_season, expr: field_season.field_season_id }
+    unit: ratio
+    allowed_dimensions: [geo_org, campaign, crop]
+    checks: { min: 0, max: 1 }
+
+  signed_crop_story_share:
+    workspace: engagement
+    also_in: [compliance]
+    label: { es: "% Crop Story firmadas", en: Signed Crop Story share }
+    description: Field-seasons with a digitally signed (anchored) Crop Story over all field-seasons.
+    synonyms: [firmadas, blockchain, ancladas]
+    type: ratio
+    numerator: { type: count_distinct, entity: field_season, expr: field_season.field_season_id, filters: ["field_season.crop_story_status = 'signed'"] }
+    denominator: { type: count_distinct, entity: field_season, expr: field_season.field_season_id }
+    unit: ratio
+    allowed_dimensions: [geo_org, campaign, crop]
+    checks: { min: 0, max: 1 }
+
+  data_completeness:
+    workspace: engagement
+    label: { es: Completitud de datos, en: Data completeness }
+    description: Required fields filled over required fields total (ratio of sums).
+    synonyms: [calidad de datos, completitud, data quality]
+    type: ratio
+    numerator: { type: sum, entity: field_season, expr: field_season.required_fields_filled }
+    denominator: { type: sum, entity: field_season, expr: field_season.required_fields_total }
+    unit: ratio
+    allowed_dimensions: [geo_org, season]
+    checks: { min: 0, max: 1 }
+
+  forms_sent:
+    workspace: engagement
+    label: { es: Formularios enviados, en: Forms sent }
+    type: count
+    entity: form_dispatch
+    expr: form_dispatch.dispatch_id
+    unit: count
+    allowed_dimensions: [channel, form_type, program, client, dispatch_month, producer_size, producer_country]
+
+  form_response_rate:
+    workspace: engagement
+    label: { es: Tasa de respuesta de formularios, en: Form response rate }
+    description: Forms answered within 14 days over forms sent.
+    synonyms: [tasa de respuesta, response rate, respuestas whatsapp]
+    type: ratio
+    numerator: { type: count, entity: form_dispatch, expr: form_dispatch.dispatch_id, filters: ["form_dispatch.responded_at is not null", "form_dispatch.responded_at <= form_dispatch.sent_at + interval '14 days'"] }
+    denominator: forms_sent
+    unit: ratio
+    allowed_dimensions: [channel, form_type, program, client, dispatch_month, producer_size, producer_country]
+    checks: { min: 0, max: 1 }
+
+  median_response_hours:
+    workspace: engagement
+    label: { es: Mediana de horas de respuesta, en: Median response time (hours) }
+    type: median
+    entity: form_dispatch
+    expr: "extract(epoch from (form_dispatch.responded_at - form_dispatch.sent_at)) / 3600.0"
+    filters: ["form_dispatch.responded_at is not null"]
+    unit: hours
+    allowed_dimensions: [channel, form_type, program, client, dispatch_month, producer_size, producer_country]
+    checks: { min: 0 }
+
+  # ---------------------------- monitoring ----------------------------------
+  monitored_hectares:
+    workspace: monitoring
+    label: { es: Hectáreas monitoreadas, en: Monitored hectares }
+    description: Area of distinct fields with valid geometry linked to at least one field-season in the period.
+    synonyms: [superficie monitoreada, monitored area]
+    type: sum_distinct
+    entity: field_season
+    expr: field.area_ha
+    distinct_on: field.field_id
+    filters: ["field.geometry_valid = true"]
+    unit: ha
+    allowed_dimensions: [geo_org, campaign, crop]
+    checks: { min: 0 }
+
+  alerts:
+    workspace: monitoring
+    label: { es: Alertas, en: Alerts }
+    synonyms: [alertas satelitales, eventos, satellite alerts]
+    type: count
+    entity: satellite_alert
+    expr: satellite_alert.alert_id
+    unit: count
+    allowed_dimensions: [alert_type, alert_severity, alert_month, country, admin1, admin2, biome, producer_size]
+
+  open_alerts:
+    workspace: monitoring
+    label: { es: Alertas abiertas, en: Open alerts }
+    type: count
+    entity: satellite_alert
+    expr: satellite_alert.alert_id
+    filters: ["satellite_alert.resolved_at is null"]
+    unit: count
+    allowed_dimensions: [alert_type, alert_severity, country, admin1, admin2, biome, producer_size]
+
+  median_alert_resolution_days:
+    workspace: monitoring
+    label: { es: Mediana de días de resolución, en: Median alert resolution (days) }
+    type: median
+    entity: satellite_alert
+    expr: "extract(epoch from (satellite_alert.resolved_at - satellite_alert.detected_at)) / 86400.0"
+    filters: ["satellite_alert.resolved_at is not null"]
+    unit: days
+    allowed_dimensions: [alert_type, alert_severity, alert_month, country, admin1]
+    checks: { min: 0 }
+
+  false_positive_rate:
+    workspace: monitoring
+    label: { es: Tasa de falsos positivos, en: False positive rate }
+    description: Resolved alerts marked false_positive over resolved alerts.
+    type: ratio
+    numerator: { type: count, entity: satellite_alert, expr: satellite_alert.alert_id, filters: ["satellite_alert.resolution = 'false_positive'"] }
+    denominator: { type: count, entity: satellite_alert, expr: satellite_alert.alert_id, filters: ["satellite_alert.resolved_at is not null"] }
+    unit: ratio
+    allowed_dimensions: [alert_type, alert_severity, alert_month, country, admin1]
+    checks: { min: 0, max: 1 }
+
+  remote_inspection_share:
+    workspace: monitoring
+    label: { es: "% inspecciones remotas", en: Remote inspection share }
+    description: Remote inspections over all inspections.
+    synonyms: [inspecciones remotas, ahorro de inspecciones]
+    type: ratio
+    numerator: { type: count, entity: inspection, expr: inspection.inspection_id, filters: ["inspection.inspection_mode = 'remote'"] }
+    denominator: { type: count, entity: inspection, expr: inspection.inspection_id }
+    unit: ratio
+    allowed_dimensions: [country, admin1, admin2]
+    checks: { min: 0, max: 1 }
+
+  inspection_cost_usd:
+    workspace: monitoring
+    label: { es: Costo de inspecciones, en: Inspection cost }
+    type: sum
+    entity: inspection
+    expr: inspection.cost_usd
+    unit: USD
+    allowed_dimensions: [inspection_mode, country, admin1, admin2]
+    checks: { min: 0 }
+
+  # --------------------------- traceability ---------------------------------
+  traced_volume_t:
+    workspace: traceability
+    label: { es: Volumen trazado, en: Traced volume }
+    description: Total registered lot volume.
+    synonyms: [toneladas trazadas, volumen, lotes]
+    type: sum
+    entity: lot
+    expr: lot.volume_t
+    unit: t
+    allowed_dimensions: [client, program, commodity, site_type, lot_month]
+    checks: { min: 0 }
+
+  segregated_volume_share:
+    workspace: traceability
+    label: { es: "% volumen segregado", en: Segregated volume share }
+    type: ratio
+    numerator: { type: sum, entity: lot, expr: lot.volume_t, filters: ["lot.segregated = true"] }
+    denominator: traced_volume_t
+    unit: ratio
+    allowed_dimensions: [client, program, commodity, site_type, lot_month]
+    checks: { min: 0, max: 1 }
+
+  origin_coverage:
+    workspace: traceability
+    label: { es: Cobertura de origen, en: Origin coverage }
+    description: >
+      Share of lot volume attributed to identified field-seasons
+      (sum of lot_origin.volume_t over lot.volume_t).
+    synonyms: [trazabilidad al lote, traceability to farm, origen identificado]
+    type: ratio
+    numerator: { type: sum, entity: lot_origin, expr: lot_origin.volume_t }
+    denominator: traced_volume_t
+    unit: ratio
+    allowed_dimensions: [client, program, commodity, site_type, lot_month]
+    checks: { min: 0, max: 1.0001 }
+
+  compliant_volume_share:
+    workspace: traceability
+    also_in: [compliance]
+    label: { es: "% volumen conforme", en: Compliant volume share }
+    description: >
+      Lot volume whose origin field-seasons are compliant for the selected
+      standard, over total lot volume. Unattributed volume counts as not compliant.
+    synonyms: [volumen libre de deforestación, compliant volume, volumen EUDR]
+    type: ratio
+    numerator: { type: sum, entity: lot_origin, expr: lot_origin.volume_t, filters: ["compliance_evaluation.compliance_status = 'compliant'"], joins_via: [field_season, compliance_evaluation] }
+    denominator: traced_volume_t
+    unit: ratio
+    requires_filter_or_group: [standard]
+    allowed_dimensions: [client, program, commodity, site_type, lot_month, standard, standard_family]
+    checks: { min: 0, max: 1 }
+
+  qr_scans:
+    workspace: traceability
+    label: { es: Escaneos de QR, en: QR scans }
+    type: sum
+    entity: lot
+    expr: lot.qr_scans
+    unit: count
+    allowed_dimensions: [client, program, commodity, lot_month]
+
+# -----------------------------------------------------------------------------
+# Value dictionaries: refreshed by ELT; used by the validator for fuzzy match.
+# -----------------------------------------------------------------------------
+value_dictionaries:
+  refresh: after_elt
+  dimensions: [client, client_segment, program, commodity, standard, country, admin1, biome, crop, campaign, alert_type, channel, form_type, site_type]
+  aliases:
+    standard:
+      EUDR: [eudr, deforestación ue, reglamento europeo, eu deforestation]
+      EPA_45Z: [45z, biocombustibles, clean fuel credit]
+      SBTI_FLAG: [sbti, flag]
+      REGEN_KPI: [regenerativa, regenerative]
+    crop:
+      soy: [soja, soya]
+      maize: [maíz, maiz, corn]
+      wheat: [trigo]
+      barley: [cebada, malting barley]
+      sunflower: [girasol]
+      coffee: [café, cafe]
+    country:
+      AR: [argentina]
+      BR: [brasil, brazil]
+      PY: [paraguay]
+      UY: [uruguay]
+      MX: [méxico, mexico]
+
+# -----------------------------------------------------------------------------
+# Result checks shared across metrics (in addition to per-metric checks).
+# -----------------------------------------------------------------------------
+result_checks:
+  reconciliation:
+    description: When a sum metric is broken down by a single dimension, the parts must add up to the unfiltered total within tolerance.
+    applies_to_types: [sum, count]
+    tolerance: 0.001
+  freshness:
+    field_season: { column: signed_at, expected_cadence_days: 30 }
+    satellite_alert: { column: detected_at, expected_cadence_days: 7 }
+    lot: { column: registered_at, expected_cadence_days: 7 }
+  required_filters_message:
+    es: "Esta métrica depende del estándar. ¿Para cuál? (EUDR, ISCC, 45Z, …)"
+    en: "This metric depends on the standard. Which one? (EUDR, ISCC, 45Z, …)"
+
+# -----------------------------------------------------------------------------
+# Verified queries (trusted assets). Matching one yields the VERIFIED tier.
+# -----------------------------------------------------------------------------
+verified_queries:
+  - id: vq_eudr_deforestation_free_share_by_country
+    owner: analytics
+    verified_at: 2026-10-11
+    questions:
+      es: ["¿Qué porcentaje de la superficie es libre de deforestación según EUDR por país?"]
+      en: ["What share of area is EUDR deforestation-free by country?"]
+    plan: { metrics: [deforestation_free_share, assessed_hectares], dimensions: [country], filters: { standard: EUDR } }
+
+  - id: vq_compliance_rate_by_standard_campaign
+    owner: analytics
+    verified_at: 2026-10-11
+    parameters: { campaign: { type: campaign, default: latest } }
+    questions:
+      es: ["¿Cuál es la tasa de cumplimiento por estándar en la campaña {campaign}?"]
+      en: ["What is the compliance rate by standard for season {campaign}?"]
+    plan: { metrics: [compliance_rate, evaluated_field_seasons], dimensions: [standard], filters: { campaign: "{campaign}" } }
+
+  - id: vq_flagged_fields_eudr_by_admin1
+    owner: analytics
+    verified_at: 2026-10-11
+    questions:
+      es: ["¿Cuántos lotes tienen conversión detectada para EUDR por provincia?"]
+      en: ["How many fields have conversion detected under EUDR by province?"]
+    plan: { metrics: [fields_with_conversion, converted_hectares_after_cutoff], dimensions: [admin1], filters: { standard: EUDR } }
+
+  - id: vq_emissions_intensity_by_crop_campaign
+    owner: analytics
+    verified_at: 2026-10-11
+    questions:
+      es: ["¿Cómo evolucionó la intensidad de emisiones por cultivo?"]
+      en: ["How has emissions intensity evolved by crop?"]
+    plan: { metrics: [emissions_intensity], dimensions: [campaign, crop] }
+
+  - id: vq_regen_adoption_by_program
+    owner: analytics
+    verified_at: 2026-10-11
+    questions:
+      es: ["¿Qué porcentaje de la superficie aplica prácticas regenerativas por programa?"]
+      en: ["What share of area uses regenerative practices by program?"]
+    plan: { metrics: [regenerative_adoption_share, planted_hectares], dimensions: [program] }
+
+  - id: vq_response_rate_by_channel
+    owner: analytics
+    verified_at: 2026-10-11
+    questions:
+      es: ["¿Cuál es la tasa de respuesta de formularios por canal?"]
+      en: ["What is the form response rate by channel?"]
+    plan: { metrics: [form_response_rate, forms_sent, median_response_hours], dimensions: [channel] }
+
+  - id: vq_open_alerts_by_type_severity
+    owner: analytics
+    verified_at: 2026-10-11
+    questions:
+      es: ["¿Cuántas alertas abiertas hay por tipo y severidad?"]
+      en: ["How many open alerts are there by type and severity?"]
+    plan: { metrics: [open_alerts], dimensions: [alert_type, alert_severity] }
+
+  - id: vq_compliant_volume_by_program
+    owner: analytics
+    verified_at: 2026-10-11
+    parameters: { standard: { type: standard, default: EUDR } }
+    questions:
+      es: ["¿Qué porcentaje del volumen es conforme a {standard} por programa?"]
+      en: ["What share of volume is {standard}-compliant by program?"]
+    plan: { metrics: [compliant_volume_share], dimensions: [program], filters: { standard: "{standard}" } }
+    note: "Pair with vq-free origin_coverage/traced_volume_t tiles; they don't depend on the standard."
+
+# -----------------------------------------------------------------------------
+# Few-shot examples for the planner. MUST be disjoint from evals/golden.
+# -----------------------------------------------------------------------------
+examples:
+  - question: "Hectáreas sembradas de soja por provincia en 2024/25"
+    plan: { metrics: [planted_hectares], dimensions: [admin1], filters: { crop: soy, campaign: "2024/25" } }
+  - question: "NUE promedio por tamaño de productor"
+    plan: { metrics: [nue], dimensions: [producer_size] }
+    note: "NUE is a ratio of sums; 'promedio' does not mean average of field ratios."
+  - question: "Which programs have the lowest origin coverage?"
+    plan: { metrics: [origin_coverage], dimensions: [program], sort: { origin_coverage: asc }, limit: 10 }
+  - question: "¿Cuánto bajó el costo de inspección con las inspecciones remotas?"
+    plan: { metrics: [inspection_cost_usd], dimensions: [inspection_mode] }
+
+# -----------------------------------------------------------------------------
+# Known gaps: questions this model intentionally cannot answer yet.
+# The planner must refuse these and suggest the closest metric.
+# -----------------------------------------------------------------------------
+known_gaps:
+  - topic: "Carbon credits issued / sold"
+    reason: "No credit issuance or registry entity modeled."
+    closest: [total_emissions_tco2e, regenerative_adoption_share]
+  - topic: "Revenue, price premiums, payments to producers"
+    reason: "No financial entities modeled."
+    closest: [traced_volume_t, compliant_volume_share]
+  - topic: "Human rights / labor compliance"
+    reason: "Not captured in Crop Story fields."
+    closest: [compliance_rate]
+  - topic: "Yield forecasts"
+    reason: "Model is descriptive; no forecast entity."
+    closest: [production_t, planted_hectares]
+
+# -----------------------------------------------------------------------------
+# QuickSight migration mapping (template; fill with real dashboard fields).
+# -----------------------------------------------------------------------------
+migration_map:
+  - quicksight_field: "Verified Ha"
+    maps_to: assessed_hectares
+    note: "Confirm whether 'verified' means assessed or compliant; may map to deforestation_free_hectares."
+  - quicksight_field: "% Compliance"
+    maps_to: compliance_rate
+    note: "Check if old calc averaged per-producer percentages (would differ)."
+  - quicksight_field: "CO2 / ton"
+    maps_to: emissions_intensity
+    note: "Old calc may be avg of field intensities; new is ratio of sums."
