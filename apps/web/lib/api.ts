@@ -17,7 +17,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  ask: (body: { question: string; clarification?: string; lang?: Lang; pending_plan?: QueryPlan; dimension?: string }) =>
+  ask: (body: { question: string; clarification?: string; lang?: Lang; pending_plan?: QueryPlan; dimension?: string; previous?: { question: string; plan: QueryPlan } }) =>
     req<Answer>("/ask", { method: "POST", body: JSON.stringify(body) }),
   health: () => req<{ status: string; engine: string; llm_configured: boolean; semantic_version: string; metrics: number; planner_model: string; as_of: string }>("/health"),
   suggestions: (lang: Lang) => req<{ question: string; workspace: string; verified: boolean }[]>(`/suggestions?lang=${lang}`),

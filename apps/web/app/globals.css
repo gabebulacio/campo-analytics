@@ -314,3 +314,6 @@ table.simple td.r { text-align: right; }
 .site-project-head { display: flex; justify-content: space-between; align-items: baseline; }
 .site-links { display: flex; gap: 18px; flex-wrap: wrap; }
 @media (max-width: 900px) { .hide-sm { display: none; } .nav-item { white-space: nowrap; flex: none; } .nav-sep { margin-top: 0; } .nav-sep::after { display: none; } }
+.followup { display: flex; gap: 8px; align-items: center; }
+.followup input { flex: 1; min-width: 0; height: 32px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); padding: 0 10px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; }
+.followup input:focus { outline: none; border-color: var(--link); }

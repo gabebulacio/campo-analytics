@@ -11,6 +11,7 @@ const STAGE_NOTE: Record<string, { es: string; en: string }> = {
   normalize: { es: "Idioma, fecha de corte fija, detección de patrones inseguros", en: "Language, fixed as-of date, unsafe-pattern detection" },
   cache: { es: "Respuesta servida desde caché (pregunta + versión semántica)", en: "Answer served from cache (question + semantic version)" },
   match_verified: { es: "Match determinístico contra consultas verificadas (sin LLM)", en: "Deterministic match against verified queries (no LLM)" },
+  follow_up: { es: "Ajuste de una respuesta anterior: se edita su plan (sin router)", en: "Follow-up on a previous answer: its plan is edited (no router)" },
   route: { es: "Modelo rápido: workspace + intención", en: "Fast model: workspace + intent" },
   plan: { es: "Planificador con herramientas: QueryPlan, aclaración o rechazo", en: "Tool-using planner: QueryPlan, clarification or refusal" },
   validate: { es: "Plan validado contra la capa semántica", en: "Plan validated against the semantic layer" },

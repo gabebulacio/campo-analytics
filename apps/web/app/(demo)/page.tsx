@@ -49,7 +49,7 @@ export default function AskPage() {
     return () => clearInterval(id);
   }, [loading]);
 
-  async function ask(question: string, opts?: { clarification?: string; base?: Answer }) {
+  async function ask(question: string, opts?: { clarification?: string; base?: Answer; refine?: Answer }) {
     const text = question.trim();
     if (!text || loading) return;
     setError(null);
@@ -62,6 +62,11 @@ export default function AskPage() {
     });
     try {
       const body: Parameters<typeof api.ask>[0] = { question: text, lang };
+      if (opts?.refine?.plan) {
+        // Follow-up: send the answer being adjusted so the planner edits its plan.
+        const r = opts.refine;
+        body.previous = { question: r.refines ? `${r.refines} → ${r.question}` : r.question, plan: r.plan! };
+      }
       if (opts?.clarification) {
         body.clarification = opts.clarification;
         if (opts.base?.pending_plan && opts.base.clarify?.dimension) {

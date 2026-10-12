@@ -339,9 +339,20 @@ class PlannerOutcome:
     clarification_dimension: str | None = None
 
 
-def plan(sl: SemanticLayer, question: str, workspace: str, usage: Usage, allow_clarification: bool = True, language: str | None = None) -> PlannerOutcome:
+def plan(sl: SemanticLayer, question: str, workspace: str, usage: Usage, allow_clarification: bool = True, language: str | None = None,
+         previous: dict | None = None) -> PlannerOutcome:
     system = _planner_system(sl, workspace)
     messages: list[dict] = [{"role": "user", "content": f"<question>{question}</question>"}]
+    if previous:
+        # Follow-up: the planner edits the previous plan instead of starting over.
+        messages[0]["content"] = (
+            f"<previous_question>{previous['question']}</previous_question>\n"
+            f"<previous_plan>{json.dumps(previous['plan'], ensure_ascii=False)}</previous_plan>\n"
+            f"<follow_up>{question}</follow_up>\n"
+            "The user is adjusting the answer above. Return the previous plan edited as the follow-up asks: keep every metric, "
+            "dimension and filter it doesn't change. A follow-up that asks for a different view (table, bars, stacked) only changes chart_hint. "
+            "If the follow-up is a new, unrelated question, plan it on its own."
+        )
     if language:
         messages[0]["content"] += f"\n(Write any clarification or refusal text in {'Spanish' if language == 'es' else 'English'}.)"
     if not allow_clarification:

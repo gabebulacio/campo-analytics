@@ -101,6 +101,7 @@ export interface Answer {
   cost: { usd: number; input_tokens: number; output_tokens: number; cache_read_tokens?: number; calls?: unknown[] };
   stages: { stage: string; ms: number; [k: string]: unknown }[];
   cached_from?: string;
+  refines?: string;
 }
 
 export interface ClarificationReq {

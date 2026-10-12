@@ -30,12 +30,13 @@ export function TrustBadge({ tier, clarifying }: { tier: Tier; clarifying?: bool
   }
 }
 
-export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer; onAsk: (q: string, opts?: { clarification?: string; base?: Answer }) => void; compact?: boolean }) {
+export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer; onAsk: (q: string, opts?: { clarification?: string; base?: Answer; refine?: Answer }) => void; compact?: boolean }) {
   const { t, lang } = useI18n();
   const [showLineage, setShowLineage] = useState(false);
   const [view, setView] = useState<"chart" | "table" | "bars">("chart");
   const [vote, setVote] = useState<"up" | "down" | null>(null);
   const [pinned, setPinned] = useState(false);
+  const [followUp, setFollowUp] = useState("");
   useEffect(() => setPinned(isPinned(answer.question, answer.clarification)), [answer.question, answer.clarification]);
 
   const summary = answer.summary_i18n ? answer.summary_i18n[lang] : answer.summary;
@@ -63,6 +64,7 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
           </div>
           <h2>{answer.question}</h2>
           {answer.clarification && <span className="small muted">→ {answer.clarification}</span>}
+          {answer.refines && <span className="small muted">{lang === "es" ? "Ajuste de:" : "Adjusting:"} {answer.refines}</span>}
         </div>
         {answer.status === "answered" && !compact && (
           <div className="answer-actions">
@@ -153,6 +155,28 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
             </>
           )}
         </div>
+      )}
+
+      {answer.status === "answered" && answer.plan && !compact && (
+        <form
+          className="followup"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const text = followUp.trim();
+            if (!text) return;
+            onAsk(text, { refine: answer });
+            setFollowUp("");
+          }}
+        >
+          <input
+            value={followUp}
+            maxLength={300}
+            onChange={(e) => setFollowUp(e.target.value)}
+            placeholder={lang === "es" ? "Ajustar esta respuesta: «por provincia», «solo Argentina», «como tabla»…" : "Adjust this answer: “by province”, “only Argentina”, “as a table”…"}
+            aria-label={lang === "es" ? "Ajustar esta respuesta" : "Adjust this answer"}
+          />
+          <button className="btn sm" type="submit" disabled={!followUp.trim()}>{lang === "es" ? "Ajustar" : "Adjust"}</button>
+        </form>
       )}
 
       {!compact && <PipelineStrip answer={answer} lang={lang} />}

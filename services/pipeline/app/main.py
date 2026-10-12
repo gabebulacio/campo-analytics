@@ -23,12 +23,19 @@ app.add_middleware(CORSMiddleware, allow_origins=list(settings.cors_origins), al
 _hits: dict[tuple[str, date], int] = defaultdict(int)
 
 
+class PreviousTurn(BaseModel):
+    """The answer a follow-up refines: its question and the plan that produced it."""
+    question: str = Field(min_length=1, max_length=500)
+    plan: dict
+
+
 class AskIn(BaseModel):
     question: str = Field(min_length=1, max_length=500)
     clarification: str | None = Field(default=None, max_length=200)
     lang: str | None = Field(default=None, pattern="^(es|en)$")
     pending_plan: dict | None = None
     dimension: str | None = None
+    previous: PreviousTurn | None = None
 
 
 class FeedbackIn(BaseModel):
@@ -67,7 +74,8 @@ def ask(body: AskIn, request: Request):
         if _hits[k] >= settings.rate_limit_per_ip_per_day:
             raise HTTPException(429, detail={"es": "Llegaste al límite diario de preguntas de la demo.", "en": "Daily demo question limit reached."})
         _hits[k] += 1
-    return pipeline.answer(body.question, body.clarification, body.lang, body.pending_plan, body.dimension)
+    prev = body.previous.model_dump() if body.previous else None
+    return pipeline.answer(body.question, body.clarification, body.lang, body.pending_plan, body.dimension, previous=prev)
 
 
 @app.get("/catalog")

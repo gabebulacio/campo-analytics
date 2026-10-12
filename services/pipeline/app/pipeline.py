@@ -115,7 +115,8 @@ def _column_meta(sl: SemanticLayer, plan: QueryPlan) -> list[dict]:
 
 
 # ------------------------------------------------------------------ main
-def answer(question: str, clarification: str | None = None, lang: str | None = None, pending_plan: dict | None = None, dimension: str | None = None) -> dict:
+def answer(question: str, clarification: str | None = None, lang: str | None = None, pending_plan: dict | None = None, dimension: str | None = None,
+           previous: dict | None = None) -> dict:
     sl = semantic.get()
     if pending_plan and dimension and clarification:
         # validator-driven clarification (e.g. which standard): apply the choice deterministically
@@ -144,11 +145,19 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
 
     base = {"trace_id": trace.id, "question": question, "clarification": clarification, "language": language,
             "as_of": str(settings.as_of), "semantic_version": sl.version, "engine": settings.engine}
+    prev_plan = None
+    if previous:
+        try:
+            prev_plan = QueryPlan.model_validate(previous["plan"])
+        except Exception:
+            previous = None  # unusable context: treat as a fresh question
+    if previous:
+        base["refines"] = previous["question"][:500]
 
     if not question:
         return _finish(trace, {**base, **_not_answered("empty", {"es": "Escribí una pregunta.", "en": "Type a question."}, [], sl)})
 
-    key = _cache_key(question, clarification, sl.version)
+    key = _cache_key(question, (clarification or "") + (f"|prev:{prev_plan.model_dump_json()}" if previous else ""), sl.version)
     if key in CACHE:
         t0 = time.perf_counter()
         cached = json.loads(json.dumps(CACHE[key]))
@@ -165,9 +174,12 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
 
     # 2. verified query match (deterministic, before any LLM call)
     t0 = time.perf_counter()
-    vmatch, near = verified.match(sl, effective_q if not clarification else question)
-    trace.stage("match_verified", t0, matched=vmatch.id if vmatch else None, score=round(vmatch.score, 1) if vmatch else None,
-                near=[(n.id, round(n.score, 1)) for n in near])
+    if previous:  # a follow-up is an edit of a specific plan, never a fresh verified match
+        vmatch, near = None, []
+    else:
+        vmatch, near = verified.match(sl, effective_q if not clarification else question)
+        trace.stage("match_verified", t0, matched=vmatch.id if vmatch else None, score=round(vmatch.score, 1) if vmatch else None,
+                    near=[(n.id, round(n.score, 1)) for n in near])
     if vmatch and not clarification:
         notes = []
         for pname, val in vmatch.params.items():
@@ -191,8 +203,13 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
 
     try:
         t0 = time.perf_counter()
-        r = llm.route(sl, effective_q, trace.usage)
-        trace.stage("route", t0, **r)
+        if previous:  # the previous plan already fixes the workspace; skip the router
+            ws = next((sl.metrics[m].workspace for m in prev_plan.metrics if m in sl.metrics), "")
+            r = {"workspace": ws, "intent": "answerable", "confidence": 1.0, "language": language, "gap_topic": ""}
+            trace.stage("follow_up", t0, refines=previous["question"][:200], workspace=ws)
+        else:
+            r = llm.route(sl, effective_q, trace.usage)
+            trace.stage("route", t0, **r)
         language = lang or r.get("language", language)
         base["language"] = language
         if r["intent"] == "unsafe":
@@ -207,7 +224,8 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
                 "es": f"No tengo una métrica para eso. {_es_reason(reason)}", "en": f"I don't have a metric for that. {reason}"}, closest, sl)})
 
         t0 = time.perf_counter()
-        outcome = llm.plan(sl, effective_q, r["workspace"], trace.usage, allow_clarification=clarification is None, language=language)
+        outcome = llm.plan(sl, effective_q, r["workspace"], trace.usage, allow_clarification=clarification is None, language=language,
+                           previous={"question": previous["question"], "plan": prev_plan.model_dump()} if previous else None)
         trace.stage("plan", t0, kind=outcome.kind, plan=outcome.plan.model_dump() if outcome.plan else None, repairs=outcome.repairs,
                     tool_calls=outcome.tool_calls, reason=outcome.reason or None)
     except llm.LLMUnavailable as e:
@@ -221,6 +239,10 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
     if outcome.kind == "clarification":
         return _finish(trace, {**base, "status": "clarification", "tier": None, "summary": outcome.question,
                                "clarify": {"question": outcome.question, "options": outcome.options}, "warnings": []})
+    if outcome.kind == "refusal" and previous:
+        # Not an edit of the previous plan (e.g. a new question typed in the follow-up box): answer it on its own,
+        # with the router choosing the workspace.
+        return answer(question, clarification, lang)
     if outcome.kind == "refusal":
         return _finish(trace, {**base, **_not_answered("refused", {"es": outcome.reason, "en": outcome.reason}, outcome.closest, sl)})
     if outcome.kind != "plan":

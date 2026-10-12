@@ -6,6 +6,7 @@ const LABEL: Record<string, { es: string; en: string }> = {
   normalize: { es: "Normalizar", en: "Normalize" },
   cache: { es: "Caché", en: "Cache" },
   match_verified: { es: "Match verificado", en: "Verified match" },
+  follow_up: { es: "Ajuste", en: "Follow-up" },
   route: { es: "Router (IA)", en: "Router (AI)" },
   plan: { es: "Planner (IA)", en: "Planner (AI)" },
   apply_clarification: { es: "Aclaración", en: "Clarification" },
