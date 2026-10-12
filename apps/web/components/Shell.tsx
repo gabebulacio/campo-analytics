@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Activity, BarChart3, BookOpen, FileText, FlaskConical, LayoutDashboard, Map as MapIcon, Monitor, Moon, Network, Sun } from "lucide-react";
+import { Activity, BarChart3, BookOpen, Code2, FileText, FlaskConical, LayoutDashboard, Map as MapIcon, Monitor, Moon, Network, Sun } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 
@@ -54,6 +54,10 @@ export function Shell({ children }: { children: ReactNode }) {
           <span className="crumb-note hide-sm">{lang === "es" ? "demo de portfolio · datos sintéticos" : "portfolio demo · synthetic data"}</span>
         </nav>
         <div className="spacer" />
+        <a className="code-link" href="https://github.com/gabebulacio/campo-analytics" target="_blank" rel="noopener noreferrer" title={lang === "es" ? "Código en GitHub" : "Code on GitHub"}>
+          <Code2 size={16} />
+          <span className="hide-sm">{lang === "es" ? "Código" : "Code"}</span>
+        </a>
         <div className="seg" role="group" aria-label="Language">
           <button aria-pressed={lang === "es"} onClick={() => setLang("es")}>ES</button>
           <button aria-pressed={lang === "en"} onClick={() => setLang("en")}>EN</button>

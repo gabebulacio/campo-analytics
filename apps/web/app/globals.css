@@ -348,3 +348,6 @@ table.simple td.r { text-align: right; }
   .meta-row { gap: 10px; }
   .site { padding: 40px 16px 48px; }
 }
+.code-link { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); color: var(--ink-2); font-size: 13px; font-weight: 500; flex: none; }
+.code-link:hover { color: var(--ink); background: var(--surface-2); text-decoration: none; }
+@media (max-width: 900px) { .code-link { width: 32px; padding: 0; justify-content: center; } }
