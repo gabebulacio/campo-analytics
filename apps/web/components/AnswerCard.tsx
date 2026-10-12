@@ -172,7 +172,7 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
             value={followUp}
             maxLength={300}
             onChange={(e) => setFollowUp(e.target.value)}
-            placeholder={lang === "es" ? "Ajustar esta respuesta: «por provincia», «solo Argentina», «como tabla»…" : "Adjust this answer: “by province”, “only Argentina”, “as a table”…"}
+            placeholder={lang === "es" ? "Ajustar: «por provincia», «solo Argentina», «como tabla»…" : "Adjust: “by province”, “only Argentina”, “as a table”…"}
             aria-label={lang === "es" ? "Ajustar esta respuesta" : "Adjust this answer"}
           />
           <button className="btn sm" type="submit" disabled={!followUp.trim()}>{lang === "es" ? "Ajustar" : "Adjust"}</button>

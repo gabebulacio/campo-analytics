@@ -109,6 +109,7 @@ export default function Architecture() {
         <button className="btn no-print" onClick={() => window.print()}>{es ? "Imprimir / PDF" : "Print / PDF"}</button>
       </div>
 
+      <p className="small muted show-mobile">{es ? "Deslizá el diagrama hacia los costados para verlo completo." : "Swipe the diagram sideways to see all of it."}</p>
       <div className="panel diagram">
         <Diagram l={l} />
         <div className="legend-row">

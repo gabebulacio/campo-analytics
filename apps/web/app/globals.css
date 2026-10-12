@@ -317,3 +317,34 @@ table.simple td.r { text-align: right; }
 .followup { display: flex; gap: 8px; align-items: center; }
 .followup input { flex: 1; min-width: 0; height: 32px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); padding: 0 10px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; }
 .followup input:focus { outline: none; border-color: var(--link); }
+
+/* ---------- phones */
+.show-mobile { display: none; }
+.wide-cell { min-width: 260px; }
+@media (max-width: 700px) {
+  .show-mobile { display: block; }
+  .hide-mobile { display: none; }
+  .wide-cell { min-width: 0; }
+  .topbar { padding: 0 12px; gap: 8px; }
+  .crumbs { gap: 6px; flex: 1; overflow: hidden; white-space: nowrap; }
+  .crumb-home { font-size: 13px; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .brand { font-size: 14px; flex: none; }
+  .topbar .spacer { display: none; }
+  .seg button { padding: 4px 8px; }
+  main.content { padding: 16px 12px 56px; }
+  .page { gap: 20px; }
+  h1 { font-size: 24px; line-height: 30px; }
+  .answer { padding: 14px; gap: 12px; }
+  .panel.card, .card-n, .pillar, .ov-map, .trend-card { padding-left: 14px; padding-right: 14px; }
+  .kpi-card { min-height: 0; padding: 12px 14px 8px; }
+  .kpi-v { font-size: 24px; line-height: 30px; }
+  .trend-head { flex-wrap: wrap; }
+  .trend-v { font-size: 18px; }
+  .summary { font-size: 15px; line-height: 24px; }
+  .answer-actions { width: 100%; }
+  .followup input, .search, .askbox textarea { font-size: 16px; } /* iOS zooms into inputs under 16px */
+  .search { min-width: 0; width: 100%; }
+  table.data th, table.data td, table.simple th, table.simple td { padding-left: 8px; padding-right: 8px; }
+  .meta-row { gap: 10px; }
+  .site { padding: 40px 16px 48px; }
+}

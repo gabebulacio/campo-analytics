@@ -84,16 +84,16 @@ export default function Evals() {
       <div className="panel">
         <div className="table-wrap" style={{ maxHeight: 600, border: 0 }}>
           <table className="data">
-            <thead><tr><th>Case</th><th>Tags</th><th>Expected</th><th>Got</th><th>Tier</th><th className="r">ms</th><th>Result</th></tr></thead>
+            <thead><tr><th>Case</th><th className="hide-mobile">Tags</th><th className="hide-mobile">Expected</th><th>Got</th><th className="hide-mobile">Tier</th><th className="r hide-mobile">ms</th><th>Result</th></tr></thead>
             <tbody>
               {rep.results.map((r: any) => (
                 <tr key={r.id}>
-                  <td style={{ whiteSpace: "normal", minWidth: 260 }}><span className="mono small faint">{r.id}</span><div>{r.question}</div></td>
-                  <td className="small muted">{r.tags.join(", ")}</td>
-                  <td className="small">{r.expected_intent}</td>
+                  <td className="wide-cell" style={{ whiteSpace: "normal" }}><span className="mono small faint">{r.id}</span><div>{r.question}</div></td>
+                  <td className="small muted hide-mobile">{r.tags.join(", ")}</td>
+                  <td className="small hide-mobile">{r.expected_intent}</td>
                   <td className="small">{r.got_status}</td>
-                  <td className="small">{r.got_tier || "–"}</td>
-                  <td className="r">{r.latency_ms}</td>
+                  <td className="small hide-mobile">{r.got_tier || "–"}</td>
+                  <td className="r hide-mobile">{r.latency_ms}</td>
                   <td><span className={r.pass ? "pill-ok" : "pill-bad"}>{r.pass ? "PASS" : r.skipped ? "SKIP" : "FAIL"}</span> <span className="small faint">{r.note}</span></td>
                 </tr>
               ))}

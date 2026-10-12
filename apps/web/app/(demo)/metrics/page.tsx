@@ -42,18 +42,18 @@ export default function Metrics() {
             </div>
             <div className="panel table-wrap" style={{ maxHeight: "none" }}>
               <table className="data">
-                <thead><tr><th>{lang === "es" ? "Métrica" : "Metric"}</th><th>{lang === "es" ? "Tipo" : "Type"}</th><th>{lang === "es" ? "Unidad" : "Unit"}</th><th>{lang === "es" ? "Dimensiones permitidas" : "Allowed dimensions"}</th></tr></thead>
+                <thead><tr><th>{lang === "es" ? "Métrica" : "Metric"}</th><th className="hide-mobile">{lang === "es" ? "Tipo" : "Type"}</th><th className="hide-mobile">{lang === "es" ? "Unidad" : "Unit"}</th><th className="hide-mobile">{lang === "es" ? "Dimensiones permitidas" : "Allowed dimensions"}</th></tr></thead>
                 <tbody>
                   {ms.map((m: any) => (
                     <tr key={m.name}>
-                      <td style={{ whiteSpace: "normal", minWidth: 280 }}>
+                      <td className="wide-cell" style={{ whiteSpace: "normal" }}>
                         <b>{label(m.label, lang)}</b> <span className="mono faint small">{m.name}</span>
                         <div className="small muted">{m.description}</div>
                         {m.requires_filter_or_group?.length > 0 && <span className="badge b-warn" style={{ marginTop: 4 }}>{lang === "es" ? "requiere" : "requires"}: {m.requires_filter_or_group.join(", ")}</span>}
                       </td>
-                      <td className="mono small">{m.type}</td>
-                      <td className="mono small">{m.unit}</td>
-                      <td style={{ whiteSpace: "normal" }} className="small muted">{m.allowed_dimensions.join(", ")}</td>
+                      <td className="mono small hide-mobile">{m.type}</td>
+                      <td className="mono small hide-mobile">{m.unit}</td>
+                      <td style={{ whiteSpace: "normal" }} className="small muted hide-mobile">{m.allowed_dimensions.join(", ")}</td>
                     </tr>
                   ))}
                 </tbody>

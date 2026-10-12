@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { Answer, Lang } from "@/lib/types";
 import { fmt, label } from "@/lib/format";
@@ -22,7 +23,20 @@ function Tip({ active, payload, labelText, unit, lang }: any) {
   );
 }
 
+function useNarrow() {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 600px)");
+    const on = () => setNarrow(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return narrow;
+}
+
 export function Chart({ answer, lang }: { answer: Answer; lang: Lang }) {
+  const narrow = useNarrow();
   const { chart, data } = answer;
   if (!chart || !data || chart.type === "table" || chart.type === "kpi") return null;
   const idx = Object.fromEntries(data.columns.map((c, i) => [c, i]));
@@ -106,10 +120,10 @@ export function Chart({ answer, lang }: { answer: Answer; lang: Lang }) {
   return (
     <div style={{ width: "100%", height: h }} role="img" aria-label={`${yLabel} by ${chart.x}`}>
       <ResponsiveContainer>
-        <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 32, bottom: 4, left: 8 }}>
+        <BarChart data={rows} layout="vertical" margin={{ top: 4, right: narrow ? 60 : 64, bottom: 4, left: narrow ? 0 : 8 }}>
           <CartesianGrid horizontal={false} stroke="var(--line)" />
           <XAxis type="number" tickFormatter={tickFmt} {...axis} axisLine={{ stroke: "var(--line-strong)" }} />
-          <YAxis type="category" dataKey="x" {...axis} axisLine={false} width={170} tick={{ fill: "var(--ink-2)", fontSize: 12 }} />
+          <YAxis type="category" dataKey="x" {...axis} axisLine={false} width={narrow ? 96 : 170} tick={{ fill: "var(--ink-2)", fontSize: narrow ? 11 : 12 }} />
           <Tooltip cursor={{ fill: "var(--surface-2)" }} content={(p: any) => <Tip {...p} labelText={p.label} unit={unit} lang={lang} />} />
           <Bar dataKey="v" name={yLabel} fill={SERIES[0]} radius={[0, 4, 4, 0]} barSize={18} isAnimationActive={false} label={{ position: "right", fill: "var(--ink-2)", fontSize: 12, formatter: (v: any) => fmt(v, unit, lang, true) }} />
         </BarChart>
