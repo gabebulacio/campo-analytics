@@ -48,7 +48,8 @@ def health():
     db_ok = settings.duckdb_path.exists() if settings.engine == "duckdb" else True
     return {"status": "ok" if db_ok else "degraded", "engine": settings.engine, "database_ready": db_ok, "semantic_version": sl.version,
             "metrics": len(sl.metrics), "llm_configured": bool(settings.anthropic_api_key), "planner_model": settings.model_planner,
-            "router_model": settings.model_fast, "as_of": str(settings.as_of), "time": datetime.now(timezone.utc).isoformat()}
+            "router_model": settings.model_fast, "as_of": str(settings.as_of),
+            "llm_spend_today_usd": round(pipeline.spent_today(), 4), "daily_budget_usd": settings.daily_budget_usd, "time": datetime.now(timezone.utc).isoformat()}
 
 
 @app.post("/ask")

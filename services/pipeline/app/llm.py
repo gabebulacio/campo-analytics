@@ -218,7 +218,7 @@ def _tools(sl: SemanticLayer, workspace: str, terminal_only: bool = False) -> li
             "description": "Terminal. Ask ONE short question when the request maps to several different metrics or periods. Provide 2-4 concrete options the user can click; each option must be answerable with catalog metrics.",
             "input_schema": {
                 "type": "object",
-                "properties": {"question": {"type": "string"}, "options": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 4}},
+                "properties": {"question": {"type": "string"}, "options": {"type": "array", "items": {"type": "string"}}},
                 "required": ["question", "options"],
                 "additionalProperties": False,
             },
@@ -228,7 +228,7 @@ def _tools(sl: SemanticLayer, workspace: str, terminal_only: bool = False) -> li
             "description": "Terminal. The question cannot be answered with the catalog (missing metric, needs an undeclared join, or unsafe). Give a short reason and up to 3 closest metric names from the catalog.",
             "input_schema": {
                 "type": "object",
-                "properties": {"reason": {"type": "string"}, "closest_metrics": {"type": "array", "items": {"type": "string"}, "maxItems": 3}},
+                "properties": {"reason": {"type": "string"}, "closest_metrics": {"type": "array", "items": {"type": "string"}}},
                 "required": ["reason", "closest_metrics"],
                 "additionalProperties": False,
             },
@@ -396,9 +396,9 @@ def plan(sl: SemanticLayer, question: str, workspace: str, usage: Usage, allow_c
                 elif u.name == "ask_clarification":
                     if not allow_clarification:
                         return PlannerOutcome(kind="refusal", reason="La pregunta sigue siendo ambigua después de una aclaración.", tool_calls=out.tool_calls)
-                    done = PlannerOutcome(kind="clarification", question=args["question"], options=args["options"], tool_calls=out.tool_calls)
+                    done = PlannerOutcome(kind="clarification", question=args["question"], options=[o for o in args["options"] if o][:4], tool_calls=out.tool_calls)
                 else:
-                    closest = [c for c in args.get("closest_metrics", []) if c in sl.metrics]
+                    closest = [c for c in args.get("closest_metrics", []) if c in sl.metrics][:3]
                     done = PlannerOutcome(kind="refusal", reason=args["reason"], closest=closest, tool_calls=out.tool_calls)
                 results.append({"type": "tool_result", "tool_use_id": u.id, "content": "ok"})
             elif u.name in TERMINAL:

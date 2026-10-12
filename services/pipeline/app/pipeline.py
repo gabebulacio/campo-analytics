@@ -26,6 +26,11 @@ log = logging.getLogger("pipeline")
 
 TRACES: OrderedDict[str, dict] = OrderedDict()
 CACHE: dict[str, dict] = {}
+SPEND: dict[str, float] = {}  # UTC date -> US$ of LLM usage (per process)
+
+
+def spent_today() -> float:
+    return SPEND.get(datetime.now(timezone.utc).date().isoformat(), 0.0)
 MAX_TRACES = 500
 
 
@@ -171,6 +176,13 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
             "id": vmatch.id, "owner": vmatch.owner, "verified_at": vmatch.verified_at, "canonical_question": vmatch.question, "params": vmatch.params, "score": round(vmatch.score, 1)}, extra_warnings=notes, cache_key=key)
 
     # 3. route + 4. plan (LLM)
+    if settings.anthropic_api_key and spent_today() >= settings.daily_budget_usd:
+        sugg = [{"metric": None, "question": n.question, "verified_query_id": n.id} for n in near]
+        trace.stage("spend_guard", time.perf_counter(), spent_usd=round(spent_today(), 4), budget_usd=settings.daily_budget_usd)
+        return _finish(trace, {**base, **_not_answered("budget", {
+            "es": "La demo alcanzó su presupuesto diario de IA. Las preguntas verificadas siguen funcionando; probá una de las sugeridas o volvé mañana.",
+            "en": "The demo reached its daily AI budget. Verified questions still work; try a suggested one or come back tomorrow."}, [], sl, suggestions=sugg)})
+
     if not settings.anthropic_api_key:
         sugg = [{"metric": None, "question": n.question, "verified_query_id": n.id} for n in near]
         return _finish(trace, {**base, **_not_answered("llm_unavailable", {
@@ -332,6 +344,9 @@ def _not_answered(code: str, message: dict, closest: list[str], sl: SemanticLaye
 
 
 def _finish(trace: Trace, ans: dict) -> dict:
+    if trace.usage.usd:
+        day = datetime.now(timezone.utc).date().isoformat()
+        SPEND[day] = SPEND.get(day, 0.0) + trace.usage.usd
     ans["latency_ms"] = trace.elapsed_ms
     ans["cost"] = trace.usage.as_dict()
     ans["stages"] = trace.stages

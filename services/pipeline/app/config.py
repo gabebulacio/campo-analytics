@@ -34,6 +34,8 @@ class Settings:
     model_planner: str = os.getenv("LLM_MODEL_PLANNER", "claude-sonnet-5-5")
     model_fast: str = os.getenv("LLM_MODEL_FAST", "claude-haiku-5-5")
     max_output_tokens: int = int(os.getenv("MAX_OUTPUT_TOKENS", "2000"))
+    # Spend guard: above this many US$ of LLM usage per day, serve only verified/cached answers.
+    daily_budget_usd: float = float(os.getenv("DAILY_BUDGET_USD", "0.50"))
     rate_limit_per_ip_per_day: int = int(os.getenv("RATE_LIMIT_PER_IP_PER_DAY", "15"))
     demo_mode: bool = _bool("DEMO_MODE", True)
     exploratory_sql: bool = _bool("EXPLORATORY_SQL", False)
