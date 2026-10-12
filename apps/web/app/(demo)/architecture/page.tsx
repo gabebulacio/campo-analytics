@@ -199,7 +199,7 @@ export default function Architecture() {
           </table>
         </div>
       </section>
-      <p className="footer-note">{es ? "Demo independiente con datos sintéticos. Código: github.com/gabebulacio/ai-analytics-demo" : "Independent demo with synthetic data. Code: github.com/gabebulacio/ai-analytics-demo"}</p>
+      <p className="footer-note">{es ? "Demo independiente con datos sintéticos. Código: github.com/gabebulacio/campo-analytics" : "Independent demo with synthetic data. Code: github.com/gabebulacio/campo-analytics"}</p>
     </div>
   );
 }

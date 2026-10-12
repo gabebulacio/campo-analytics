@@ -36,7 +36,7 @@ Time: about 30–40 minutes the first time. Cost: US$ 0 at demo traffic, plus An
 
 ## 1. Push the repo to GitHub (once)
 ```
-git remote add origin https://github.com/gabebulacio/ai-analytics-demo.git
+git remote add origin https://github.com/gabebulacio/campo-analytics.git
 git push -u origin main
 ```
 GitHub Actions runs CI on every push: lint, tests, schema drift, evals, web build.
@@ -69,10 +69,10 @@ curl https://pipeline-xxxxx-rj.a.run.app/health      # expect "llm_configured": 
 Set a **budget alert at US$ 5**: Billing → Budgets & alerts.
 
 ## 3. Vercel: deploy the web app
-1. https://vercel.com/new → import `gabebulacio/ai-analytics-demo`.
+1. https://vercel.com/new → import `gabebulacio/campo-analytics`.
 2. Set **Root Directory** to `apps/web`. The framework (Next.js) is detected automatically.
 3. Add the environment variable `PIPELINE_URL` = the Cloud Run URL from step 2, without a trailing slash.
-4. Deploy. You get `https://ai-analytics-demo-xxx.vercel.app`. Open it and ask a verified question.
+4. Deploy. You get `https://campo-analytics-xxx.vercel.app`. Open it and ask a verified question.
 
 ## 4. Domain: demo.gabrielbulacio.com
 1. In Vercel, go to Project → Settings → Domains and add `demo.gabrielbulacio.com`.

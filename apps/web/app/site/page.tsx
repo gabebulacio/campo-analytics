@@ -27,7 +27,7 @@ export default function Home() {
           <div className="site-links">
             <a href={DEMO}>Open the demo</a>
             <a href={`${DEMO}/case`}>Case study</a>
-            <a href="https://github.com/gabebulacio/ai-analytics-demo">Code</a>
+            <a href="https://github.com/gabebulacio/campo-analytics">Code</a>
           </div>
         </article>
       </section>

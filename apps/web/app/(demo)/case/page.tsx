@@ -109,7 +109,7 @@ export default function CaseStudy() {
 
       <p className="footer-note">
         {es ? "Demo independiente con datos sintéticos e información pública." : "Independent demo with synthetic data and public information."}{" "}
-        <a href="https://github.com/gabebulacio/ai-analytics-demo">{es ? "Código en GitHub" : "Code on GitHub"}</a>
+        <a href="https://github.com/gabebulacio/campo-analytics">{es ? "Código en GitHub" : "Code on GitHub"}</a>
       </p>
     </div>
   );
