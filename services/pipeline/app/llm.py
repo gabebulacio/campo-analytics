@@ -67,7 +67,8 @@ def client() -> anthropic.Anthropic:
     if not settings.anthropic_api_key:
         raise LLMUnavailable("ANTHROPIC_API_KEY is not set")
     if _client is None:
-        _client = anthropic.Anthropic(api_key=settings.anthropic_api_key, timeout=45.0, max_retries=2)
+        headers = {"anthropic-workspace-id": settings.anthropic_workspace_id} if settings.anthropic_workspace_id else None
+        _client = anthropic.Anthropic(api_key=settings.anthropic_api_key, timeout=45.0, max_retries=2, default_headers=headers)
     return _client
 
 

@@ -29,6 +29,8 @@ class Settings:
     evals_report_path: Path = ROOT / "evals" / "report.json"
     database_url_reader: str | None = os.getenv("DATABASE_URL_READER") or None
     anthropic_api_key: str | None = os.getenv("ANTHROPIC_API_KEY") or None
+    # Needed only for keys not scoped to a workspace (Console -> Settings -> Workspaces -> ID).
+    anthropic_workspace_id: str | None = os.getenv("ANTHROPIC_WORKSPACE_ID") or None
     model_planner: str = os.getenv("LLM_MODEL_PLANNER", "claude-sonnet-5-5")
     model_fast: str = os.getenv("LLM_MODEL_FAST", "claude-haiku-5-5")
     max_output_tokens: int = int(os.getenv("MAX_OUTPUT_TOKENS", "2000"))
