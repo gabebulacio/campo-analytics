@@ -62,7 +62,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <button aria-pressed={lang === "es"} onClick={() => setLang("es")}>ES</button>
           <button aria-pressed={lang === "en"} onClick={() => setLang("en")}>EN</button>
         </div>
-        <button className="icon-btn" onClick={() => setTheme(next[theme])} aria-label={`Theme: ${theme}`} title={`Theme: ${theme}`}>
+        <button className="icon-btn theme-btn" onClick={() => setTheme(next[theme])} aria-label={`Theme: ${theme}`} title={`Theme: ${theme}`}>
           <ThemeIcon size={16} />
         </button>
       </header>
