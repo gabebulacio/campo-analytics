@@ -53,7 +53,8 @@ Then: **Evals** (per-stage scorecard), **Traces** (stage-by-stage replay of any 
 | Semantic layer: 35 metrics, declared joins, value dictionaries, known gaps | Real; a proposed model to validate with domain owners |
 | Producers, fields, Crop Stories, lots, alerts | Synthetic and seeded, placed in real departments |
 | Land-use change flags (EUDR cutoff) | Simulated from a seeded history. Next: JRC GFC2020 + MapBiomas ([ADR 0004](docs/decisions/0004-interview-cut.md)) |
-| Postgres/PostGIS + MongoDB as sources | ELT is portable SQL (DuckDB locally, Neon Postgres via `tasks.py elt-neon`); Mongo loader included |
+| MongoDB Atlas as the document source | Real: `tasks.py migrate` loads the raw collections into Atlas and the ELT extracts from there |
+| Marts on Postgres/PostGIS | Same SQL runs on both; the marts are on DuckDB today (`tasks.py elt-neon` targets Neon) |
 | Auth, multi-tenant, row-level security; Postgres-backed cache and traces | Next (hardening phase) |
 
 ## Run it locally (~2 minutes)
@@ -73,7 +74,7 @@ Open http://localhost:3000. Verified questions (green shield) work without any k
 | `python tasks.py test` | 179 tests |
 | `python tasks.py evals` | 45-case golden set, per-stage scores → `evals/report.md` (`--runs 3` for consistency, `--compare` for models) |
 | `python tasks.py elt-neon` | load the same raw data into Neon Postgres (`DATABASE_URL_OWNER`) |
-| `python data/loaders/load_mongo.py` | load the raw document collections into MongoDB Atlas |
+| `python tasks.py migrate` | raw documents → MongoDB Atlas → ELT extracts from Atlas → marts (`MONGODB_URI`) |
 
 Shareable links: `/?q=<question>` asks on load. Deployment: [docs/DEPLOY.md](docs/DEPLOY.md).
 

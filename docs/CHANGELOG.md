@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 — 2026-10-12 · MongoDB Atlas as the document source
+
+- The ELT can extract the document collections from MongoDB Atlas (`--source mongo`) instead of the generated files; `python tasks.py migrate` loads Atlas, extracts from it and rebuilds the marts. Verified: all 15 marts are identical (row counts and content hashes) to the file-based build.
+- The 2dsphere index on `fields` is partial (`geometry_valid: true`): the generator plants self-intersecting polygons for the data-quality checks, and raw keeps them as received.
+- Marts stay on DuckDB for now. Postgres is ready behind `DATABASE_URL_*`: real health check, `BUNDLE_ENGINE=postgres` bundle without the DuckDB file, `psycopg` in the serverless requirements.
+
 ## 0.3.0 — 2026-10-12 · Portfolio framing
 
 - `gabrielbulacio.com` now serves a short personal page (middleware, `app/site`); the demo lives on `demo.gabrielbulacio.com`. Old demo paths on the apex redirect there.

@@ -1,10 +1,12 @@
 """Build deploy/api-bundle/: the pipeline as a Vercel Python serverless function.
 
-  python deploy/build_api_bundle.py      (after `python tasks.py seed`)
+  python deploy/build_api_bundle.py                        (after `python tasks.py seed`)
+  BUNDLE_ENGINE=postgres python deploy/build_api_bundle.py (after `python tasks.py migrate`)
   cd deploy/api-bundle && vercel deploy --prod
 
-The bundle mirrors the repo layout so app/config.py resolves paths unchanged,
-and ships the prebuilt read-only DuckDB marts (synthetic data, ~19 MB).
+The bundle mirrors the repo layout so app/config.py resolves paths unchanged.
+duckdb ships the prebuilt read-only marts (synthetic data, ~19 MB); postgres
+ships no data and reads DATABASE_URL_READER from the Vercel project env.
 """
 
 from __future__ import annotations
@@ -16,12 +18,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = Path(os.environ.get("BUNDLE_DIR", str(ROOT / "deploy" / "api-bundle")))
+ENGINE = os.environ.get("BUNDLE_ENGINE", "duckdb")
 
 REQUIREMENTS = """fastapi>=0.115
 pydantic>=2.8
 pyyaml>=6.0
 sqlglot>=25.0
 duckdb>=1.1
+psycopg[binary]>=3.2
 anthropic>=1.0
 rapidfuzz>=3.9
 python-dotenv>=1.0
@@ -43,8 +47,10 @@ VERCEL = {"framework": "fastapi"}
 def main() -> None:
     db = ROOT / "data" / "out" / "analytics.duckdb"
     vd = ROOT / "data" / "out" / "value_dictionaries.json"
-    if not db.exists() or not vd.exists():
-        raise SystemExit("run `python tasks.py seed` first")
+    if ENGINE not in ("duckdb", "postgres"):
+        raise SystemExit("BUNDLE_ENGINE must be duckdb or postgres")
+    if not vd.exists() or (ENGINE == "duckdb" and not db.exists()):
+        raise SystemExit("run `python tasks.py seed` (duckdb) or `python tasks.py migrate` (postgres) first")
     # keep .vercel/ (project link) across rebuilds
     if OUT.exists():
         for child in OUT.iterdir():
@@ -55,7 +61,8 @@ def main() -> None:
     (OUT / "docs" / "semantic-layer").mkdir(parents=True)
     shutil.copy(ROOT / "docs" / "semantic-layer" / "agri_traceability.yaml", OUT / "docs" / "semantic-layer")
     (OUT / "data" / "out").mkdir(parents=True)
-    shutil.copy(db, OUT / "data" / "out")
+    if ENGINE == "duckdb":
+        shutil.copy(db, OUT / "data" / "out")
     shutil.copy(vd, OUT / "data" / "out")
     (OUT / "data" / "generator").mkdir(parents=True)
     shutil.copy(ROOT / "data" / "generator" / "geography.py", OUT / "data" / "generator")

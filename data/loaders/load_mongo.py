@@ -21,8 +21,8 @@ load_dotenv(ROOT / ".env.local")
 
 def main(db_name: str = "analytics_raw") -> None:
     uri = os.environ.get("MONGODB_URI")
-    if not uri:
-        raise SystemExit("MONGODB_URI is not set (.env.local)")
+    if not uri or "<db_password>" in uri:
+        raise SystemExit("MONGODB_URI is not set (or still has <db_password>) in .env.local")
     db = MongoClient(uri, serverSelectionTimeoutMS=10_000)[db_name]
     for f in sorted((ROOT / "data" / "out" / "raw" / "mongo").glob("*.jsonl")):
         docs = [json.loads(line) for line in f.open(encoding="utf-8")]
@@ -31,7 +31,9 @@ def main(db_name: str = "analytics_raw") -> None:
         for i in range(0, len(docs), 2000):
             coll.insert_many(docs[i:i + 2000], ordered=False)
         if f.stem == "fields":
-            coll.create_index([("geometry", "2dsphere")])
+            # The generator plants self-intersecting polygons (geometry_valid: false) for the data-quality
+            # checks. Raw keeps them as received; the spatial index covers only valid geometries.
+            coll.create_index([("geometry", "2dsphere")], partialFilterExpression={"geometry_valid": True})
         print(f"{f.stem:20s} {len(docs):>7,d} docs")
 
 

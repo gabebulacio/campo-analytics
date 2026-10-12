@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from . import pipeline, semantic, values
+from . import executor, pipeline, semantic, values
 from .config import settings
 from .plan import QueryPlan
 
@@ -45,7 +45,14 @@ def _client_ip(req: Request) -> str:
 @app.get("/health")
 def health():
     sl = semantic.get()
-    db_ok = settings.duckdb_path.exists() if settings.engine == "duckdb" else True
+    if settings.engine == "duckdb":
+        db_ok = settings.duckdb_path.exists()
+    else:  # a real round trip; also wakes a suspended Neon compute before the first question
+        try:
+            executor.execute("select 1 from marts.dim_field limit 1", [])
+            db_ok = True
+        except Exception:
+            db_ok = False
     return {"status": "ok" if db_ok else "degraded", "engine": settings.engine, "database_ready": db_ok, "semantic_version": sl.version,
             "metrics": len(sl.metrics), "llm_configured": bool(settings.anthropic_api_key), "planner_model": settings.model_planner,
             "router_model": settings.model_fast, "as_of": str(settings.as_of),

@@ -12,7 +12,8 @@ const STATUS: { c: T; s: T; n: T }[] = [
   { c: { es: "Capa semántica", en: "Semantic layer" }, s: { es: "Real", en: "Real" }, n: { es: "Un modelo propuesto; en un caso real se valida con quienes son dueños de cada métrica", en: "A proposed model; in a real setting it gets validated with each metric's owners" } },
   { c: { es: "Productores, lotes, Crop Stories, alertas", en: "Producers, fields, Crop Stories, alerts" }, s: { es: "Sintético", en: "Synthetic" }, n: { es: "Generados con semilla, ubicados en departamentos reales", en: "Seeded, placed in real departments" } },
   { c: { es: "Cambio de uso del suelo (EUDR)", en: "Land-use change (EUDR)" }, s: { es: "Simulado", en: "Simulated" }, n: { es: "El paso siguiente es JRC GFC2020 + MapBiomas", en: "Next step: JRC GFC2020 + MapBiomas" } },
-  { c: { es: "Postgres/PostGIS y Mongo como fuentes", en: "Postgres/PostGIS and Mongo as sources" }, s: { es: "Parcial", en: "Partial" }, n: { es: "El ELT es SQL portable; acá corre sobre DuckDB", en: "The ELT is portable SQL; here it runs on DuckDB" } },
+  { c: { es: "MongoDB Atlas como fuente de documentos", en: "MongoDB Atlas as the document source" }, s: { es: "Real", en: "Real" }, n: { es: "El ELT extrae de Atlas, aplana y arma los marts", en: "The ELT extracts from Atlas, flattens and builds the marts" } },
+  { c: { es: "Marts en Postgres/PostGIS", en: "Marts on Postgres/PostGIS" }, s: { es: "Parcial", en: "Partial" }, n: { es: "Mismo SQL; hoy los marts corren en DuckDB", en: "Same SQL; the marts run on DuckDB today" } },
   { c: { es: "Login, multi-cliente, seguridad por fila", en: "Login, multi-tenant, row-level security" }, s: { es: "Pendiente", en: "Not built" }, n: { es: "Necesario antes de mostrarle algo a un cliente", en: "Needed before any client sees it" } },
 ];
 

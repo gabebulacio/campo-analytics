@@ -1,5 +1,9 @@
 """ELT: raw sources -> raw schema -> staging -> marts.
 
+Sources (document collections)
+  files    (default) the generated JSONL in data/out/raw/mongo
+  mongo    MONGODB_URI, database analytics_raw (load it with data/loaders/load_mongo.py)
+
 Targets
   duckdb   (default) data/out/analytics.duckdb - zero-setup local run
   postgres DATABASE_URL_OWNER (Neon). Grants SELECT on marts to app_reader.
@@ -29,6 +33,32 @@ def _jsonl(path: Path):
     with path.open(encoding="utf-8") as fh:
         for line in fh:
             yield json.loads(line)
+
+
+class Docs:
+    """Reads one document collection from the generated files or from MongoDB."""
+
+    def __init__(self, source: str, db_name: str = "analytics_raw"):
+        self.source = source
+        self.db = None
+        if source == "mongo":
+            from pymongo import MongoClient
+
+            uri = os.environ.get("MONGODB_URI")
+            if not uri or "<db_password>" in uri:
+                raise SystemExit("MONGODB_URI is not set (or still has <db_password>) in .env.local")
+            self.db = MongoClient(uri, serverSelectionTimeoutMS=10_000)[db_name]
+
+    def __call__(self, collection: str):
+        if self.db is None:
+            yield from _jsonl(RAW / "mongo" / f"{collection}.jsonl")
+            return
+        n = 0
+        for doc in self.db[collection].find({}, batch_size=5000):
+            n += 1
+            yield doc
+        if n == 0:
+            raise SystemExit(f"mongo collection '{collection}' is empty; run data/loaders/load_mongo.py first")
 
 
 def _get(doc, *keys):
@@ -86,7 +116,7 @@ PG_TYPES = {
 }
 
 
-def flatten() -> dict[str, list[tuple[str, str]]]:
+def flatten(docs: Docs) -> dict[str, list[tuple[str, str]]]:
     """Write one CSV per raw table; return {table: [(col, type)]}."""
     FLAT.mkdir(parents=True, exist_ok=True)
     schemas: dict[str, list[tuple[str, str]]] = {}
@@ -94,7 +124,7 @@ def flatten() -> dict[str, list[tuple[str, str]]]:
         with (FLAT / f"{table}.csv").open("w", newline="", encoding="utf-8") as fh:
             w = csv.writer(fh)
             w.writerow([c for c, _ in cols])
-            for doc in _jsonl(RAW / f"{src}.jsonl"):
+            for doc in docs(src.removeprefix("mongo/")):
                 w.writerow(["" if v is None else v for v in fn(doc)])
         schemas[table] = cols
     for table in PG_TABLES:
@@ -153,7 +183,9 @@ def run_duckdb(schemas) -> None:
 def run_postgres(schemas) -> None:
     import psycopg
 
-    url = os.environ["DATABASE_URL_OWNER"]
+    url = os.environ.get("DATABASE_URL_OWNER")
+    if not url:
+        raise SystemExit("DATABASE_URL_OWNER is not set in .env.local")
     with psycopg.connect(url, autocommit=True) as con:
         for s in ("raw", "staging", "marts"):
             con.execute(f"drop schema if exists {s} cascade")
@@ -177,11 +209,16 @@ def run_postgres(schemas) -> None:
 
 
 def main() -> None:
+    from dotenv import load_dotenv
+
+    load_dotenv(ROOT / ".env.local")
     ap = argparse.ArgumentParser()
+    ap.add_argument("--source", choices=["files", "mongo"], default="files", help="where the document collections come from")
     ap.add_argument("--target", choices=["duckdb", "postgres"], default="duckdb")
     a = ap.parse_args()
     t0 = time.time()
-    schemas = flatten()
+    schemas = flatten(Docs(a.source))
+    print(f"extracted documents from {a.source}")
     if a.target == "duckdb":
         run_duckdb(schemas)
         print(f"built {DUCKDB_PATH} in {time.time() - t0:.1f}s")
