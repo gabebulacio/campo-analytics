@@ -20,9 +20,13 @@ const KEY = "dashboard:v1";
 export function loadDashboard(): DashboardSpec {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const d: DashboardSpec = JSON.parse(raw);
+      if (d.name === "Mi tablero") d.name = "My dashboard"; // old default, still in some browsers
+      return d;
+    }
   } catch {}
-  return { version: 1, name: "Mi tablero", tiles: [] };
+  return { version: 1, name: "My dashboard", tiles: [] };
 }
 
 export function saveDashboard(d: DashboardSpec) {
