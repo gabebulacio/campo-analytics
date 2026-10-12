@@ -8,8 +8,7 @@ import type { Answer } from "@/lib/types";
 import { AnswerCard } from "@/components/AnswerCard";
 import { Overview } from "@/components/Overview";
 import { saveTrace } from "@/lib/traces";
-import { DemoTour } from "@/components/DemoTour";
-import { ProofStrip } from "@/components/ProofStrip";
+import { Starters } from "@/components/Starters";
 
 const WS_LABEL: Record<string, { es: string; en: string }> = {
   compliance: { es: "Cumplimiento", en: "Compliance" },
@@ -28,7 +27,7 @@ export default function AskPage() {
   const [error, setError] = useState<string | null>(null);
   const [sugg, setSugg] = useState<{ question: string; workspace: string; verified: boolean }[]>([]);
   const [ws, setWs] = useState<string>("all");
-  const [allSugg, setAllSugg] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const answersRef = useRef<HTMLElement>(null);
   const ta = useRef<HTMLTextAreaElement>(null);
 
@@ -55,7 +54,12 @@ export default function AskPage() {
     if (!text || loading) return;
     setError(null);
     setLoading(text);
-    requestAnimationFrame(() => answersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    requestAnimationFrame(() => {
+      const el = answersRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      if (top < 64 || top > window.innerHeight * 0.7) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
     try {
       const body: Parameters<typeof api.ask>[0] = { question: text, lang };
       if (opts?.clarification) {
@@ -73,12 +77,11 @@ export default function AskPage() {
       setError(e?.message && e.message !== "Failed to fetch" ? e.message : t("error"));
     } finally {
       setLoading(null);
-      ta.current?.focus();
     }
   }
 
-  const filtered = sugg.filter((s) => ws === "all" || s.workspace === ws);
-  const shown = allSugg ? filtered : filtered.slice(0, 6);
+  const shown = sugg.filter((s) => ws === "all" || s.workspace === ws);
+  const asked = new Set(answers.map((a) => a.question));
   const workspaces = Array.from(new Set(sugg.map((s) => s.workspace)));
   const stages = [t("thinking"), t("planning"), t("querying"), t("checking")];
 
@@ -86,10 +89,8 @@ export default function AskPage() {
     <div className="page">
       <section className="hero">
         <div>
-          <div className="eyebrow">MVP · {lang === "es" ? "BI generativo sobre capa semántica" : "Generative BI over a semantic layer"}</div>
-          <h1 style={{ marginTop: 6 }}>{t("askTitle")}</h1>
+          <h1>{t("askTitle")}</h1>
           <p className="muted" style={{ marginTop: 6, maxWidth: "72ch" }}>{t("askLede")}</p>
-          <ProofStrip lang={lang} />
         </div>
         <form
           className="askbox"
@@ -117,30 +118,30 @@ export default function AskPage() {
             <ArrowUp size={18} />
           </button>
         </form>
-        <DemoTour lang={lang} busy={!!loading} onAsk={(q) => ask(q)} />
         <div className="suggest">
-          <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-            <span className="eyebrow">{t("suggested")}</span>
-            <div className="ws-tabs" role="group">
-              <button aria-pressed={ws === "all"} onClick={() => setWs("all")}>{t("all")}</button>
-              {workspaces.map((w) => (
-                <button key={w} aria-pressed={ws === w} onClick={() => setWs(w)}>{WS_LABEL[w]?.[lang] ?? w}</button>
-              ))}
-            </div>
-          </div>
-          <div className="suggest-row">
-            {shown.map((s) => (
-              <button key={s.question} className="chip" onClick={() => ask(s.question)} disabled={!!loading}>
-                {s.verified && <span className="vtag" title={t("verified")}><ShieldCheck size={13} /></span>}
-                {s.question}
-              </button>
-            ))}
-            {filtered.length > 6 && (
-              <button className="btn ghost sm" onClick={() => setAllSugg(!allSugg)}>
-                {allSugg ? (lang === "es" ? "Ver menos" : "Show fewer") : (lang === "es" ? `Ver todas (${filtered.length})` : `Show all (${filtered.length})`)}
-              </button>
-            )}
-          </div>
+          <span className="small muted">{lang === "es" ? "Para empezar, probá estas:" : "To start, try these:"}</span>
+          <Starters lang={lang} busy={!!loading} asked={asked} onAsk={(q) => ask(q)} />
+          <button className="more-toggle small" aria-expanded={moreOpen} onClick={() => setMoreOpen(!moreOpen)}>
+            {moreOpen ? (lang === "es" ? "Ocultar ejemplos" : "Hide examples") : (lang === "es" ? `Más ejemplos (${sugg.length})` : `More examples (${sugg.length})`)}
+          </button>
+          {moreOpen && (
+            <>
+              <div className="ws-tabs" role="group">
+                <button aria-pressed={ws === "all"} onClick={() => setWs("all")}>{t("all")}</button>
+                {workspaces.map((w) => (
+                  <button key={w} aria-pressed={ws === w} onClick={() => setWs(w)}>{WS_LABEL[w]?.[lang] ?? w}</button>
+                ))}
+              </div>
+              <div className="suggest-row">
+                {shown.map((s) => (
+                  <button key={s.question} className="chip" onClick={() => ask(s.question)} disabled={!!loading}>
+                    {s.verified && <span className="vtag" title={t("verified")}><ShieldCheck size={13} /></span>}
+                    {s.question}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
 

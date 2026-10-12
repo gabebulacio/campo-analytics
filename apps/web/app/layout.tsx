@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
-import { Shell } from "@/components/Shell";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Campo Analytics — Generative BI demo",
-  description: "Ask a business question, get a dashboard where every number is traceable to its definition, SQL and source rows. Synthetic data.",
+  title: "Gabriel Bulacio",
+  description: "Analytics engineer. Semantic layers, data platforms and AI on governed data.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <I18nProvider>
-          <Shell>{children}</Shell>
+          {children}
         </I18nProvider>
       </body>
     </html>

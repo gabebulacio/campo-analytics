@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-10-12 · Portfolio framing
+
+- `gabrielbulacio.com` now serves a short personal page (middleware, `app/site`); the demo lives on `demo.gabrielbulacio.com`. Old demo paths on the apex redirect there.
+- Demo top bar is a breadcrumb back to the personal page, labelled as a portfolio demo with synthetic data.
+- Ask page: the guided-tour cards and the stats strip are replaced by a plain numbered list of five starter questions; other examples are collapsed. Answers render right under it.
+- Fixed a scroll jump: asking scrolled down to the answers and then focusing the input pulled the page back up. The input is no longer refocused, and the page scrolls only when the answer area is off-screen.
+- The executive brief became a first-person case study (`/case`) without gradients, slogans or stat cards.
+
 ## 0.2.0 — 2026-10-12 · MVP polish
 
 - **Guided 5-minute tour** on the home page: verified → governed → clarification → refusal → guardrail, each with its talking point. Every step is a golden-set case.

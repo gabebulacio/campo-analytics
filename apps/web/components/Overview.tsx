@@ -85,10 +85,9 @@ export function Overview({ lang, onAsk }: { lang: Lang; onAsk: (q: string) => vo
     <section className="overview">
       <div className="section-head">
         <div>
-          <div className="eyebrow">{es ? "Panorama del portafolio" : "Portfolio overview"}</div>
-          <h2>{es ? "Todo calculado con métricas gobernadas" : "Everything computed with governed metrics"}</h2>
+          <h2>{es ? "Panorama" : "Overview"}</h2>
+          <p className="small muted">{es ? `Datos al ${data.as_of}. Hacé clic en un indicador para ver el desglose.` : `Data as of ${data.as_of}. Click an indicator to see the breakdown.`}</p>
         </div>
-        <span className="badge b-info"><Layers size={13} />{es ? "Sin IA · compilador determinístico" : "No AI · deterministic compiler"} · as_of {data.as_of}</span>
       </div>
       <div className="kpi-grid">
         {data.kpis.map((k: any) => {

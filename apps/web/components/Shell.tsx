@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Activity, BarChart3, BookOpen, FileText, FlaskConical, LayoutDashboard, Map as MapIcon, Monitor, Moon, Network, Sprout, Sun } from "lucide-react";
+import { Activity, BarChart3, BookOpen, FileText, FlaskConical, LayoutDashboard, Map as MapIcon, Monitor, Moon, Network, Sun } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 
@@ -37,7 +37,7 @@ export function Shell({ children }: { children: ReactNode }) {
     { href: "/metrics", label: t("metrics"), icon: <BookOpen size={16} /> },
     { href: "/evals", label: t("evals"), icon: <FlaskConical size={16} /> },
     { href: "/traces", label: t("traces"), icon: <Activity size={16} /> },
-    { href: "/brief", label: t("brief"), icon: <FileText size={16} />, sep: true },
+    { href: "/case", label: t("brief"), icon: <FileText size={16} />, sep: true },
     { href: "/architecture", label: t("architecture"), icon: <Network size={16} /> },
     { href: "/plan", label: t("plan"), icon: <MapIcon size={16} /> },
   ];
@@ -47,11 +47,12 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="shell">
       <header className="topbar">
-        <Link href="/" className="brand">
-          <span className="brand-mark"><Sprout size={14} /></span>
-          Campo Analytics
-          <span className="badge b-mvp hide-sm">MVP</span>
-        </Link>
+        <nav className="crumbs" aria-label="Breadcrumb">
+          <a href="https://gabrielbulacio.com" className="crumb-home">Gabriel Bulacio</a>
+          <span className="crumb-sep">/</span>
+          <Link href="/" className="brand">Campo Analytics</Link>
+          <span className="crumb-note hide-sm">{lang === "es" ? "demo de portfolio · datos sintéticos" : "portfolio demo · synthetic data"}</span>
+        </nav>
         <div className="spacer" />
         <div className="seg" role="group" aria-label="Language">
           <button aria-pressed={lang === "es"} onClick={() => setLang("es")}>ES</button>
@@ -77,7 +78,6 @@ export function Shell({ children }: { children: ReactNode }) {
               <div><span className={`status-dot ${health.ok ? "" : "off"}`} />{health.ok ? `pipeline · ${health.engine}` : "pipeline offline"}</div>
               <div><span className={`status-dot ${health.llm ? "" : "off"}`} />{health.llm ? "LLM planner on" : "LLM off (verified only)"}</div>
               <div className="mono">semantic {health.version}</div>
-              <div className="byline-foot">Gabriel Bulacio · 2026</div>
             </>
           ) : (
             "…"
