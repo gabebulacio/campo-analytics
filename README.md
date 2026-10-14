@@ -176,3 +176,7 @@ MongoDB Atlas (raw field events / documents → ELT into Postgres)
 - The deforestation flag is **computed**, not invented: overlay each synthetic field on the JRC 2020 forest map and MapBiomas post-2020 classes.
 - Raster work happens offline in Earth Engine. Only per-field and per-department results are exported (CSV/GeoParquet), to stay inside the free-tier database limits.
 - Every real source carries its license and citation in `data/reference/SOURCES.md` and in the app's footer. The UI labels the data as "public reference layers + synthetic producer data".
+
+---
+
+License: [MIT](LICENSE). The data is synthetic.

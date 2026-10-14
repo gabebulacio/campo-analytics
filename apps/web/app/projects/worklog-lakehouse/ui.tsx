@@ -50,7 +50,7 @@ export function Diagram() {
   const sx = (i: number) => x0 + i * (sw + gap);
   return (
     <div className="panel diagram">
-      <svg viewBox="0 0 1100 530" role="img" aria-label={t(D.aria)}>
+      <svg viewBox="0 0 1100 652" role="img" aria-label={t(D.aria)}>
         <ArrowDefs id="ahw" />
         <text className="lbl" x={20} y={14}>{t(D.rowSources)}</text>
         {D.sources.map((s, i) => (
@@ -70,22 +70,34 @@ export function Diagram() {
           </g>
         ))}
 
-        <text className="lbl" x={20} y={338}>{t(D.rowOps)}</text>
-        <Box x={20} y={346} w={520} h={70} cls="det" title={t(D.orchestrator.t)} sub={t(D.orchestrator.s)} />
-        <path className="arr" d="M120 346 V308" markerEnd="url(#ahw)" />
-        <Box x={560} y={346} w={180} h={70} cls="data" title={t(D.mapping.t)} sub={t(D.mapping.s)} />
-        <path className="arr" d={`M650 346 V326 H${sx(1) + sw / 2} V308`} markerEnd="url(#ahw)" />
-        <Box x={760} y={346} w={320} h={70} cls="ok" title={t(D.ops.t)} sub={t(D.ops.s)} />
+        {/* Spark path: same bronze in, same logic, compared with the Python tables by the parity gate */}
+        <text className="lbl" x={lang === "he" ? 718 : 384} y={338} direction={lang === "he" ? "rtl" : "ltr"} textAnchor="start">{t(D.rowSpark)}</text>
+        <path className="arr" d={`M150 306 V381 H${sx(1) - 2}`} markerEnd="url(#ahw)" />
+        {D.spark.map((s, i) => (
+          <g key={s.t.en}>
+            <Box x={sx(i + 1)} y={346} w={sw} h={70} cls="det" title={t(s.t)} sub={t(s.s)} />
+            <path className="arr" d={`M${sx(i + 1) + sw} 381 H${sx(i + 2) - 2}`} markerEnd="url(#ahw)" />
+          </g>
+        ))}
+        <Box x={sx(4)} y={346} w={sw} h={70} cls="ok" title={t(D.parity.t)} sub={t(D.parity.s)} />
         <path className="arr" d={`M${sx(4) + sw / 2} 306 V344`} markerEnd="url(#ahw)" />
+
+        <text className="lbl" x={20} y={462}>{t(D.rowOps)}</text>
+        <Box x={20} y={470} w={520} h={70} cls="det" title={t(D.orchestrator.t)} sub={t(D.orchestrator.s)} />
+        <path className="arr" d="M110 470 V308" markerEnd="url(#ahw)" />
+        <Box x={560} y={470} w={180} h={70} cls="data" title={t(D.mapping.t)} sub={t(D.mapping.s)} />
+        <path className="arr" d={`M650 470 V452 H370 V326 H${sx(1) + sw / 2} V308`} markerEnd="url(#ahw)" />
+        <Box x={760} y={470} w={320} h={70} cls="ok" title={t(D.ops.t)} sub={t(D.ops.s)} />
+        <path className="arr" d={`M${sx(4) + sw / 2} 416 V468`} markerEnd="url(#ahw)" />
         {/* mixed Hebrew + identifiers: lay this one out right-to-left so the words keep their order */}
-        <text className="lbl" x={lang === "he" ? 1080 : 760} y={434} direction={lang === "he" ? "rtl" : "ltr"} textAnchor="start">
+        <text className="lbl" x={lang === "he" ? 1080 : 760} y={558} direction={lang === "he" ? "rtl" : "ltr"} textAnchor="start">
           {t(D.secrets)}
         </text>
 
-        <text className="lbl" x={20} y={452}>{t(D.rowDelivery)}</text>
-        <Box x={20} y={460} w={520} h={56} cls="ok" title={t(D.ci.t)} sub={t(D.ci.s)} />
-        <path className="arr" d="M540 488 H558" markerEnd="url(#ahw)" />
-        <Box x={560} y={460} w={520} h={56} cls="det" title={t(D.deploy.t)} sub={t(D.deploy.s)} />
+        <text className="lbl" x={20} y={576}>{t(D.rowDelivery)}</text>
+        <Box x={20} y={584} w={520} h={56} cls="ok" title={t(D.ci.t)} sub={t(D.ci.s)} />
+        <path className="arr" d="M540 612 H558" markerEnd="url(#ahw)" />
+        <Box x={560} y={584} w={520} h={56} cls="det" title={t(D.deploy.t)} sub={t(D.deploy.s)} />
       </svg>
       <div className="legend-row">
         {UI.legend.map((l) => {

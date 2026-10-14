@@ -9,12 +9,12 @@ export const T = {
   note: { en: "portfolio project · synthetic data", he: "פרויקט פורטפוליו · נתונים סינתטיים" },
   eyebrow: { en: "Project · 2026", he: "פרויקט · 2026" },
   lede: {
-    en: "A Microsoft Fabric medallion that turns two time-tracking systems, a user directory and a CRM into one governed star schema: who logged what, against which client, compared with what was sold. It deploys to Fabric, and the same notebook files run on a laptop.",
-    he: "Medallion ב-Microsoft Fabric שהופך שתי מערכות דיווח שעות, ספריית משתמשים ו-CRM ל-star schema אחד ומנוהל: מי דיווח מה, על איזה לקוח, ובהשוואה למה שנמכר. הוא נפרס ל-Fabric, ואותם קובצי notebook רצים גם על לפטופ.",
+    en: "A Microsoft Fabric medallion in PySpark and Python that turns two time-tracking systems, a user directory and a CRM into one governed star schema: who logged what, against which client, compared with what was sold. Both engines run the same logic, a parity gate proves they produce identical tables, and everything deploys to Fabric with fabric-cicd.",
+    he: "Medallion ב-Microsoft Fabric, ב-PySpark וב-Python, שהופך שתי מערכות דיווח שעות, ספריית משתמשים ו-CRM ל-star schema אחד ומנוהל: מי דיווח מה, על איזה לקוח, ובהשוואה למה שנמכר. שני המנועים מריצים את אותה לוגיקה, שער השוואה מוכיח שהם מפיקים טבלאות זהות, והכול נפרס ל-Fabric עם fabric-cicd.",
   },
   kpis: [
     { v: "16", l: { en: "Fabric items: lakehouse, variable library, 11 notebooks (Python and Spark), 3 pipelines", he: "פריטי Fabric: lakehouse, variable library, 11 notebooks (Python ו-Spark), 3 pipelines" } },
-    { v: "28", l: { en: "Delta tables across bronze, silver, gold and ops", he: "טבלאות Delta בשכבות bronze, silver, gold ו-ops" } },
+    { v: "0", l: { en: "rows differ between the PySpark and Python paths (parity gate)", he: "שורות שונות בין מסלול ה-PySpark למסלול ה-Python (שער השוואה)" } },
     { v: "18", l: { en: "quality checks on every run", he: "בדיקות איכות בכל ריצה" } },
     { v: "< 20 s", l: { en: "per daily run, on a laptop", he: "לריצה יומית, על לפטופ" } },
   ],
@@ -59,8 +59,8 @@ export const T = {
         n: { en: "SILVER", he: "SILVER" },
         title: { en: "Canonical and replayable", he: "קנוני וניתן לשחזור" },
         body: {
-          en: "Both time sources in one schema, rebuilt from bronze each run. User history is SCD Type 2 in one Delta MERGE; an identity map links every login to a person.",
-          he: "שני מקורות השעות בסכמה אחת, שנבנית מחדש מ-bronze בכל ריצה. היסטוריית המשתמשים היא SCD Type 2 ב-Delta MERGE אחד, ומפת זהויות מקשרת כל שם משתמש לאדם.",
+          en: "Both time sources in one schema, rebuilt from bronze each run. User history is SCD Type 2 in one Delta MERGE; an identity map links every login to a person. Built in Python notebooks and in PySpark / Spark SQL.",
+          he: "שני מקורות השעות בסכמה אחת, שנבנית מחדש מ-bronze בכל ריצה. היסטוריית המשתמשים היא SCD Type 2 ב-Delta MERGE אחד, ומפת זהויות מקשרת כל שם משתמש לאדם. בנוי ב-Python notebooks וב-PySpark / Spark SQL.",
         },
         tables: ["silver_worklogs", "silver_user_history", "silver_user_identities", "silver_project_registry"],
       },
@@ -68,8 +68,8 @@ export const T = {
         n: { en: "GOLD", he: "GOLD" },
         title: { en: "Star schema for Power BI", he: "Star schema ל-Power BI" },
         body: {
-          en: "Lean facts, conformed dimensions with unknown members, project keys that never change, and marts that feed report tiles directly.",
-          he: "טבלאות fact רזות, dimensions אחידות עם רשומת \"לא ידוע\", מפתחות פרויקט שלא משתנים לעולם, ו-marts שמזינים ישירות את אריחי הדוח.",
+          en: "Lean facts, conformed dimensions with unknown members, project keys that never change, and marts that feed report tiles directly. The fact attribution also runs in Spark SQL.",
+          he: "טבלאות fact רזות, dimensions אחידות עם רשומת \"לא ידוע\", מפתחות פרויקט שלא משתנים לעולם, ו-marts שמזינים ישירות את אריחי הדוח. שיוך ה-fact רץ גם ב-Spark SQL.",
         },
         tables: ["fact_worklog · fact_assignment_month", "dim_user · dim_project · dim_deliverable · dim_date", "mart_sold_vs_utilized · mart_coverage_month", "mart_nonloggers · audit_unmatched_workers"],
       },
@@ -228,20 +228,20 @@ export const T = {
     items: [
       {
         n: "0001",
-        title: { en: "Python notebooks (DuckDB + delta-rs), not Spark", he: "Python notebooks (DuckDB + delta-rs), לא Spark" },
+        title: { en: "Right-size the engine: Python notebooks for the daily load", he: "מנוע בגודל הנכון: Python notebooks לטעינה היומית" },
         context: {
           en: "The workload is small: about 30k worklog rows a quarter, a few hundred users, a few thousand CRM rows. Fabric offers Spark notebooks and Python notebooks; Python notebooks run a single-node kernel with deltalake, DuckDB, pandas and pyarrow preinstalled. The project also had to run on a Windows laptop with no Java, Docker or WSL, so a reviewer can clone it and see the tables.",
           he: "העומס קטן: בערך 30 אלף שורות דיווח ברבעון, כמה מאות משתמשים וכמה אלפי שורות CRM. Fabric מציע Spark notebooks ו-Python notebooks; ה-Python notebooks רצים על kernel של צומת יחיד, עם deltalake, DuckDB, pandas ו-pyarrow מותקנים מראש. הפרויקט גם היה צריך לרוץ על לפטופ Windows בלי Java, Docker או WSL, כדי שמי שבודק אותו יוכל לשכפל אותו ולראות את הטבלאות.",
         },
         decision: {
-          en: "Every notebook is a Fabric Python notebook. Transformations are DuckDB SQL over Arrow; reads and writes go through delta-rs, including MERGE for SCD2. A local runner executes the same notebook files with a stand-in for `notebookutils`.",
-          he: "כל notebook הוא Fabric Python notebook. הטרנספורמציות הן DuckDB SQL על Arrow; קריאה וכתיבה עוברות דרך delta-rs, כולל MERGE ל-SCD2. מריץ מקומי מפעיל את אותם קובצי notebook עם תחליף ל-`notebookutils`.",
+          en: "Every notebook in the daily pipelines is a Fabric Python notebook. Transformations are DuckDB SQL over Arrow; reads and writes go through delta-rs, including MERGE for SCD2. A local runner executes the same notebook files with a stand-in for `notebookutils`.",
+          he: "כל notebook ב-pipelines היומיים הוא Fabric Python notebook. הטרנספורמציות הן DuckDB SQL על Arrow; קריאה וכתיבה עוברות דרך delta-rs, כולל MERGE ל-SCD2. מריץ מקומי מפעיל את אותם קובצי notebook עם תחליף ל-`notebookutils`.",
         },
         consequences: [
           { en: "Sessions start in seconds and use a fraction of the capacity units a Spark pool would. That matters on an F2/F4 capacity shared with reports.", he: "סשנים עולים תוך שניות וצורכים חלק קטן מיחידות הקיבולת ש-Spark pool היה צורך. זה משמעותי על קיבולת F2/F4 שמשותפת עם דוחות." },
-          { en: "One code path runs on the laptop, in CI and in Fabric.", he: "אותו קוד רץ על הלפטופ, ב-CI וב-Fabric." },
-          { en: "The SQL is close to Spark SQL. Moving silver and gold to Spark notebooks or materialized lake views is a mechanical port if volume outgrows one node.", he: "ה-SQL קרוב ל-Spark SQL. העברת silver ו-gold ל-Spark notebooks או ל-materialized lake views היא הסבה מכנית אם הנפח יגדל מעבר למה שצומת אחד מחזיק." },
-          { en: "What it doesn't show: Spark tuning (partitioning, OPTIMIZE and VACUUM schedules, V-Order). Revisit if a genuinely big source arrives.", he: "מה זה לא מראה: כוונון Spark (partitioning, תזמוני OPTIMIZE ו-VACUUM, V-Order). לבחון מחדש אם יגיע מקור גדול באמת." },
+          { en: "The Python path runs on the laptop, in CI and in Fabric; the Spark path runs in CI and Fabric.", he: "מסלול ה-Python רץ על הלפטופ, ב-CI וב-Fabric; מסלול ה-Spark רץ ב-CI וב-Fabric." },
+          { en: "The SQL is close to Spark SQL, and ADR 0004 carries the core logic over to PySpark, proven identical in CI.", he: "ה-SQL קרוב ל-Spark SQL, ו-ADR 0004 מעביר את לוגיקת הליבה ל-PySpark, עם הוכחה ב-CI שהתוצאה זהה." },
+          { en: "Next, for a genuinely big source: Spark tuning (partitioning, OPTIMIZE and VACUUM schedules, V-Order).", he: "השלב הבא, למקור גדול באמת: כוונון Spark (partitioning, תזמוני OPTIMIZE ו-VACUUM, V-Order)." },
         ],
       },
       {
@@ -280,7 +280,7 @@ export const T = {
       },
       {
         n: "0004",
-        title: { en: "A Spark shadow path, proven equal in CI", he: "מסלול Spark מקביל, שהוכח כזהה ב-CI" },
+        title: { en: "A Spark path, proven identical in CI", he: "מסלול Spark, עם הוכחה ב-CI שהוא זהה" },
         context: {
           en: "ADR 0001 chose Python notebooks because the volume doesn't need a cluster. That stays true, but most Fabric teams run Spark, and \"the SQL ports to Spark\" is worth more shown than said.",
           he: "ADR 0001 בחר ב-Python notebooks כי הנפח לא מצדיק cluster. זה עדיין נכון, אבל רוב הצוותים ב-Fabric עובדים עם Spark, ועדיף להראות ש\"ה-SQL עובר ל-Spark\" מאשר רק לומר את זה.",
@@ -315,8 +315,8 @@ export const T = {
   run: {
     h: { en: "Run it yourself", he: "להריץ בעצמך" },
     stack: {
-      en: "Python · DuckDB · Delta Lake (delta-rs) · Microsoft Fabric (Lakehouse, Notebooks, Data Pipelines, Variable Library) · fabric-cicd · GitHub Actions. All people, clients and emails are synthetic.",
-      he: "Python · DuckDB · Delta Lake (delta-rs) · Microsoft Fabric (Lakehouse, Notebooks, Data Pipelines, Variable Library) · fabric-cicd · GitHub Actions. כל האנשים, הלקוחות והמיילים סינתטיים.",
+      en: "PySpark · Spark SQL · Delta Lake · Microsoft Fabric (Lakehouse, Python and Spark notebooks, Data Pipelines, Variable Library) · fabric-cicd · Python · DuckDB · GitHub Actions. All people, clients and emails are synthetic.",
+      he: "PySpark · Spark SQL · Delta Lake · Microsoft Fabric (Lakehouse, Python and Spark notebooks, Data Pipelines, Variable Library) · fabric-cicd · Python · DuckDB · GitHub Actions. כל האנשים, הלקוחות והמיילים סינתטיים.",
     },
     more: { en: "Want to read the code?", he: "רוצים לקרוא את הקוד?" },
     repo: { en: "The code, tests and README are on GitHub.", he: "הקוד, הבדיקות וה-README נמצאים ב-GitHub." },
@@ -343,10 +343,10 @@ export const UI = {
     overview: { eyebrow: { en: "Overview", he: "סקירה" }, h1: { en: "Worklog Lakehouse", he: "Worklog Lakehouse" } },
     architecture: {
       eyebrow: { en: "Architecture", he: "ארכיטקטורה" },
-      h1: { en: "A Fabric medallion that runs anywhere", he: "Medallion ב-Fabric שרץ בכל מקום" },
+      h1: { en: "One medallion, two engines: PySpark and Python", he: "Medallion אחד, שני מנועים: PySpark ו-Python" },
       lead: {
-        en: "Four source systems land as raw extracts, move through bronze, silver and gold under one orchestrator, and pass a quality gate before Power BI reads them. The same notebook files run in Fabric, in CI and on a laptop.",
-        he: "ארבע מערכות מקור נוחתות כשליפות גולמיות, עוברות דרך bronze, silver ו-gold תחת orchestrator אחד, ועוברות שער איכות לפני ש-Power BI קורא אותן. אותם קובצי notebook רצים ב-Fabric, ב-CI ועל לפטופ.",
+        en: "Four source systems land as raw extracts, move through bronze, silver and gold under one orchestrator, and pass a quality gate before Power BI reads them. The core logic runs in Python notebooks and again in PySpark / Spark SQL, and a parity gate proves both produce identical tables.",
+        he: "ארבע מערכות מקור נוחתות כשליפות גולמיות, עוברות דרך bronze, silver ו-gold תחת orchestrator אחד, ועוברות שער איכות לפני ש-Power BI קורא אותן. לוגיקת הליבה רצה ב-Python notebooks ושוב ב-PySpark / Spark SQL, ושער השוואה מוכיח ששניהם מפיקים טבלאות זהות.",
       },
     },
     identity: {
@@ -408,6 +408,13 @@ export const UI = {
     ops: { t: { en: "ops_run_log · ops_quality_results", he: "ops_run_log · ops_quality_results" }, s: { en: "every step and every check, per run\nmonitoring and trends", he: "כל שלב וכל בדיקה, לכל ריצה\nניטור ומגמות" } },
     ci: { t: { en: "CI · GitHub Actions", he: "CI · GitHub Actions" }, s: { en: "lint · item checks · end-to-end runs · Spark vs Python parity", he: "lint · בדיקות פריטים · ריצות מקצה לקצה · השוואת Spark מול Python" } },
     deploy: { t: { en: "Deploy · fabric-cicd", he: "פריסה · fabric-cicd" }, s: { en: "Git-format items → dev / prod workspace · parameter.yml swaps IDs", he: "פריטים בפורמט Git → workspace של dev / prod · parameter.yml מחליף מזהים" } },
+    rowSpark: { en: "SPARK PATH · SAME LOGIC IN PYSPARK AND SPARK SQL", he: "מסלול SPARK · אותה לוגיקה ב-PYSPARK וב-SPARK SQL" },
+    spark: [
+      { t: { en: "Spark · users", he: "Spark · משתמשים" }, s: { en: "nb_spark_silver_users\nDelta MERGE API (SCD2)", he: "nb_spark_silver_users\nDelta MERGE API (SCD2)" } },
+      { t: { en: "Spark · worklogs", he: "Spark · דיווחים" }, s: { en: "nb_spark_silver_worklogs\nperson-day rule, Spark SQL", he: "nb_spark_silver_worklogs\nכלל יום-האדם, Spark SQL" } },
+      { t: { en: "Spark · fact", he: "Spark · fact" }, s: { en: "nb_spark_gold_fact\nranked matching rules", he: "nb_spark_gold_fact\nכללי התאמה מדורגים" } },
+    ],
+    parity: { t: { en: "Parity gate", he: "שער השוואה" }, s: { en: "nb_parity · Python vs Spark\nzero differences required", he: "nb_parity · Python מול Spark\nנדרשים אפס הבדלים" } },
     secrets: { en: "settings in wl_settings · secrets in Key Vault", he: "הגדרות ב-wl_settings · סודות ב-Key Vault" },
   },
 };

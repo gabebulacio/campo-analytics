@@ -53,7 +53,7 @@ export default function Overview() {
         <h2>{t(T.run.h)}</h2>
         <pre className="code">{`git clone ${LAKEHOUSE_CODE}
 cd worklog-lakehouse
-python run.py setup    # Python 3.11+, no Java or Spark
+python run.py setup    # Python path; add Java 17 + requirements-spark.txt for Spark
 python run.py demo     # backfill + 7 daily runs
 python run.py sql "select * from gold_mart_coverage_month"`}</pre>
         <p className="small muted">{t(T.run.stack)}</p>
