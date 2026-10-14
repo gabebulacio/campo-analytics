@@ -15,6 +15,13 @@ const nextConfig = {
   async redirects() {
     return [
       // Old subdomain: every link, including shared ?q= questions, lands on the same page under the new path.
+      // The bare root gets its own rule so it doesn't pick up a trailing slash (and a second redirect).
+      {
+        source: "/",
+        has: [{ type: "host", value: "demo.gabrielbulacio.com" }],
+        destination: `https://gabrielbulacio.com${CAMPO}`,
+        permanent: true,
+      },
       {
         source: "/:path*",
         has: [{ type: "host", value: "demo.gabrielbulacio.com" }],
