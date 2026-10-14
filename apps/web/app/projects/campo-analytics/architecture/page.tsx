@@ -5,19 +5,10 @@ import { CircleSlash, FlaskConical, Layers, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
 import type { Lang } from "@/lib/types";
+import { ArrowDefs, Box } from "@/components/DiagramBox";
 
 type T = { he: string; en: string };
 const tx = (o: T, l: Lang) => o[l];
-
-function Box({ x, y, w, h, cls, title, sub }: { x: number; y: number; w: number; h: number; cls: string; title: string; sub?: string }) {
-  return (
-    <g>
-      <rect className={`box ${cls}`} x={x} y={y} width={w} height={h} rx={8} />
-      <text className="t" x={x + 12} y={y + 22}>{title}</text>
-      {sub && sub.split("\n").map((line, i) => <text key={i} className="s" x={x + 12} y={y + 40 + i * 15}>{line}</text>)}
-    </g>
-  );
-}
 
 function Diagram({ l }: { l: Lang }) {
   const he = l === "he";
@@ -34,9 +25,7 @@ function Diagram({ l }: { l: Lang }) {
   const sw = 104, gap = 14, x0 = 20, y0 = 196;
   return (
     <svg viewBox="0 0 1100 520" role="img" aria-label={he ? "תרשים ארכיטקטורה" : "Architecture diagram"}>
-      <defs>
-        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" className="ah" /></marker>
-      </defs>
+      <ArrowDefs />
       {/* row 1: user + web */}
       <Box x={20} y={20} w={200} h={74} cls="" title={he ? "משתמש עסקי" : "Business user"} sub={he ? "שאלה בעברית / באנגלית" : "question in ES / EN"} />
       <Box x={260} y={20} w={250} h={74} cls="" title="Web · Next.js (Vercel)" sub={he ? "תשובה + גרף + שושלת\nדשבורדים כ-specs של JSON" : "answer + chart + lineage\ndashboards as JSON specs"} />

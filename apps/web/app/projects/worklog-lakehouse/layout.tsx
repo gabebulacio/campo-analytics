@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LakehouseShell } from "./LakehouseShell";
 
 export const metadata: Metadata = {
   title: "Worklog Lakehouse · Gabriel Bulacio",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function LakehouseLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <LakehouseShell>{children}</LakehouseShell>;
 }
