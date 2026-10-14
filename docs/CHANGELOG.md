@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 — 2026-10-14 · Worklog Lakehouse page, favicon, Claude Code setup
+
+- Site: a card on the personal page and a case study at `/projects/worklog-lakehouse` for the second project, a Microsoft Fabric medallion that also runs locally. Its code is its own repo, [gabebulacio/worklog-lakehouse](https://github.com/gabebulacio/worklog-lakehouse).
+- Favicon and home-screen icons from the Bulacio coat of arms, redrawn with heavier lines on a light tile so it reads at 16 px and on dark tab bars (`app/favicon.ico`, `app/icon.png`, `app/apple-icon.png`).
+- Claude Code setup: `CLAUDE.md` and project skills (`verify`, `semantic-layer`, `evals`, `pipeline`, `web-ui`, `new-project`, `deploy`, `adr`, `run-app`).
+
 ## 0.5.0 — 2026-10-14 · English and Hebrew
 
 - The UI languages are English (default) and Hebrew; Spanish is gone. Hebrew switches the page to right-to-left. Layout CSS now uses logical properties, so the same rules mirror. Code blocks, charts and the map stay left-to-right.

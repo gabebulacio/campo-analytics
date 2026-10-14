@@ -7,6 +7,8 @@
 The domain is agricultural supply-chain sustainability: fields, crops, standards (EUDR, ISCC, 45Z), land-use change checks, emissions, traceability and producer engagement. All producer-level data is **synthetic**.
 
 > Independent portfolio project by Gabriel Bulacio. Not affiliated with any company; it uses no company's name, logo or real data.
+>
+> This repo also hosts the site, gabrielbulacio.com. Another project: **[Worklog Lakehouse](https://github.com/gabebulacio/worklog-lakehouse)**, a Microsoft Fabric medallion (bronze → silver → gold, Git-format items, fabric-cicd) that runs locally too ([case study](https://gabrielbulacio.com/projects/worklog-lakehouse)).
 
 ---
 

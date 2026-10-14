@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LAKEHOUSE_BASE, LAKEHOUSE_CODE } from "@/lib/paths";
 
 // gabrielbulacio.com. Demos live under /projects/<name>.
 const DEMO = "/projects/campo-analytics";
@@ -13,6 +14,22 @@ export default function Home() {
 
       <section>
         <h2 className="site-h">Projects</h2>
+        <article className="site-project">
+          <div className="site-project-head">
+            <h3>Worklog Lakehouse</h3>
+            <span className="faint small">2026</span>
+          </div>
+          <p>
+            A Microsoft Fabric medallion that turns two time-tracking systems, a user directory and a CRM into one governed star schema for
+            Power BI. It deploys to Fabric with fabric-cicd, and the same notebooks run on a laptop. Identity resolution through ranked matching
+            rules, with ambiguous cases sent for review; project keys that never change; and a quality gate on every run. Synthetic data.
+          </p>
+          <p className="small muted">Python · DuckDB · Delta Lake · Microsoft Fabric · fabric-cicd · GitHub Actions</p>
+          <div className="site-links">
+            <Link href={LAKEHOUSE_BASE}>Case study</Link>
+            <a href={LAKEHOUSE_CODE}>Code</a>
+          </div>
+        </article>
         <article className="site-project">
           <div className="site-project-head">
             <h3>Campo Analytics</h3>
