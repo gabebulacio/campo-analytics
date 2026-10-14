@@ -63,8 +63,8 @@ export default function WorklogLakehouse() {
           project keys had to stay stable because finance referenced them.
         </p>
         <p>
-          The rewrite I did there matched the existing load row for row before it replaced it. This project rebuilds that kind of pipeline
-          from scratch, the way I&apos;d build it on Fabric, on a fictional company with synthetic data, so it can be public and anyone can run it.
+          This project rebuilds that kind of pipeline from scratch, the way I&apos;d build it on Fabric, on a fictional company with synthetic
+          data, so it can be public and anyone can run it. None of the original code, data or names are here.
         </p>
       </section>
 
