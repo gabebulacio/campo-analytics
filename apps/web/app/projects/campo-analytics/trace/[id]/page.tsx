@@ -7,21 +7,21 @@ import { TrustBadge } from "@/components/AnswerCard";
 import { CodeBlock } from "@/components/Lineage";
 import { localTrace } from "@/lib/traces";
 
-const STAGE_NOTE: Record<string, { es: string; en: string }> = {
-  normalize: { es: "Idioma, fecha de corte fija, detección de patrones inseguros", en: "Language, fixed as-of date, unsafe-pattern detection" },
-  cache: { es: "Respuesta servida desde caché (pregunta + versión semántica)", en: "Answer served from cache (question + semantic version)" },
-  match_verified: { es: "Match determinístico contra consultas verificadas (sin LLM)", en: "Deterministic match against verified queries (no LLM)" },
-  follow_up: { es: "Ajuste de una respuesta anterior: se edita su plan (sin router)", en: "Follow-up on a previous answer: its plan is edited (no router)" },
-  route: { es: "Modelo rápido: workspace + intención", en: "Fast model: workspace + intent" },
-  plan: { es: "Planificador con herramientas: QueryPlan, aclaración o rechazo", en: "Tool-using planner: QueryPlan, clarification or refusal" },
-  validate: { es: "Plan validado contra la capa semántica", en: "Plan validated against the semantic layer" },
-  apply_clarification: { es: "Aclaración aplicada al plan pendiente (sin LLM)", en: "Clarification applied to the pending plan (no LLM)" },
-  compile: { es: "Compilador determinístico → SQL", en: "Deterministic compiler → SQL" },
-  execute: { es: "Ejecución de solo lectura, timeout y tope de filas", en: "Read-only execution, timeout and row cap" },
-  check_result: { es: "Chequeos: vacío, rangos, conciliación, frescura", en: "Checks: empty, bounds, reconciliation, freshness" },
-  visualize: { es: "Reglas eligen el gráfico", en: "Rules choose the chart" },
-  explain: { es: "Resumen armado solo con números del resultado", en: "Summary built only from result numbers" },
-  sample_rows: { es: "Filas de origen para el linaje", en: "Source rows for lineage" },
+const STAGE_NOTE: Record<string, { he: string; en: string }> = {
+  normalize: { he: "שפה, תאריך חיתוך קבוע, זיהוי דפוסים לא בטוחים", en: "Language, fixed as-of date, unsafe-pattern detection" },
+  cache: { he: "התשובה הוגשה מהמטמון (שאלה + גרסה סמנטית)", en: "Answer served from cache (question + semantic version)" },
+  match_verified: { he: "התאמה דטרמיניסטית מול שאילתות מאומתות (בלי LLM)", en: "Deterministic match against verified queries (no LLM)" },
+  follow_up: { he: "כוונון של תשובה קודמת: עורכים את התוכנית שלה (בלי router)", en: "Follow-up on a previous answer: its plan is edited (no router)" },
+  route: { he: "מודל מהיר: workspace + כוונה", en: "Fast model: workspace + intent" },
+  plan: { he: "Planner עם כלים: QueryPlan, הבהרה או סירוב", en: "Tool-using planner: QueryPlan, clarification or refusal" },
+  validate: { he: "התוכנית אומתה מול השכבה הסמנטית", en: "Plan validated against the semantic layer" },
+  apply_clarification: { he: "ההבהרה הוחלה על התוכנית הממתינה (בלי LLM)", en: "Clarification applied to the pending plan (no LLM)" },
+  compile: { he: "מהדר דטרמיניסטי ← SQL", en: "Deterministic compiler → SQL" },
+  execute: { he: "הרצה לקריאה בלבד, timeout ומגבלת שורות", en: "Read-only execution, timeout and row cap" },
+  check_result: { he: "בדיקות: ריק, טווחים, התאמה, עדכניות", en: "Checks: empty, bounds, reconciliation, freshness" },
+  visualize: { he: "כללים בוחרים את הגרף", en: "Rules choose the chart" },
+  explain: { he: "סיכום שנבנה רק ממספרים מהתוצאה", en: "Summary built only from result numbers" },
+  sample_rows: { he: "שורות מקור לשושלת", en: "Source rows for lineage" },
 };
 
 export default function TracePage({ params }: { params: Promise<{ id: string }> }) {
@@ -77,7 +77,7 @@ export default function TracePage({ params }: { params: Promise<{ id: string }> 
         </div>
       )}
       <div className="panel card">
-        <h3>{lang === "es" ? "Respuesta" : "Answer"}</h3>
+        <h3>{lang === "he" ? "תשובה" : "Answer"}</h3>
         <p>{a.summary}</p>
       </div>
     </div>

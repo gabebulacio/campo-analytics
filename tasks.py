@@ -91,7 +91,7 @@ def dev() -> None:
         subprocess.Popen([py(), "-m", "uvicorn", "app.main:app", "--port", "8001"], cwd=PIPE),
         subprocess.Popen([NPM, "run", "dev"], cwd=WEB),
     ]
-    print("\n  pipeline  http://localhost:8001/health\n  web       http://localhost:3000\n  (Ctrl+C to stop)\n")
+    print("\n  pipeline  http://localhost:8001/health\n  web       http://localhost:3000/projects/campo-analytics\n  (Ctrl+C to stop)\n")
     try:
         for p in procs:
             p.wait()

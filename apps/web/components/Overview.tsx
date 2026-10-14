@@ -68,38 +68,38 @@ export function Overview({ lang, onAsk }: { lang: Lang; onAsk: (q: string) => vo
       </section>
     );
 
-  const es = lang === "es";
+  const he = lang === "he";
   const trends = data.trends;
   const askFor: Record<string, string> = {
-    assessed_hectares: es ? "Hectáreas evaluadas para EUDR por país" : "EUDR assessed hectares by country",
-    deforestation_free_share: es ? "¿Qué porcentaje de la superficie es libre de deforestación según EUDR por país?" : "What share of area is EUDR deforestation-free by country?",
-    compliance_rate: es ? "¿Cuál es la tasa de cumplimiento por estándar en la campaña 2024/25?" : "What is the compliance rate by standard for season 2024/25?",
-    traced_volume_t: es ? "Volumen trazado por commodity" : "Traced volume by commodity",
-    origin_coverage: es ? "¿Cuál es la cobertura de origen por programa?" : "Origin coverage by program",
-    emissions_intensity: es ? "¿Cómo evolucionó la intensidad de emisiones por cultivo?" : "How has emissions intensity evolved by crop?",
-    active_producers: es ? "¿Cuántos productores activos hay por país?" : "Active producers by country",
-    open_alerts: es ? "¿Cuántas alertas abiertas hay por tipo y severidad?" : "How many open alerts are there by type and severity?",
+    assessed_hectares: he ? "הקטארים שנבדקו ל-EUDR לפי מדינה" : "EUDR assessed hectares by country",
+    deforestation_free_share: he ? "איזה אחוז מהשטח נקי מבירוא יערות לפי EUDR, לפי מדינה?" : "What share of area is EUDR deforestation-free by country?",
+    compliance_rate: he ? "מה שיעור הציות לפי תקן בעונה 2024/25?" : "What is the compliance rate by standard for season 2024/25?",
+    traced_volume_t: he ? "נפח עם עקיבות לפי סחורה" : "Traced volume by commodity",
+    origin_coverage: he ? "מה כיסוי המקור לפי תוכנית?" : "Origin coverage by program",
+    emissions_intensity: he ? "איך השתנתה עצימות הפליטות לפי גידול?" : "How has emissions intensity evolved by crop?",
+    active_producers: he ? "כמה יצרנים פעילים יש לפי מדינה?" : "Active producers by country",
+    open_alerts: he ? "כמה התראות פתוחות יש לפי סוג וחומרה?" : "How many open alerts are there by type and severity?",
   };
 
   return (
     <section className="overview">
       <div className="section-head">
         <div>
-          <h2>{es ? "Panorama" : "Overview"}</h2>
-          <p className="small muted">{es ? `Datos al ${data.as_of}. Hacé clic en un indicador para ver el desglose.` : `Data as of ${data.as_of}. Click an indicator to see the breakdown.`}</p>
+          <h2>{he ? "תמונת מצב" : "Overview"}</h2>
+          <p className="small muted">{he ? `נתונים נכון ל-${data.as_of}. לחצו על מדד כדי לראות את הפירוט.` : `Data as of ${data.as_of}. Click an indicator to see the breakdown.`}</p>
         </div>
       </div>
       <div className="kpi-grid">
         {data.kpis.map((k: any) => {
           const spark = SPARK[k.metric] ? trends[SPARK[k.metric]] : null;
           return (
-            <button key={k.metric} className="kpi-card" onClick={() => onAsk(askFor[k.metric])} title={es ? "Preguntar por el desglose" : "Ask for the breakdown"}>
+            <button key={k.metric} className="kpi-card" onClick={() => onAsk(askFor[k.metric])} title={he ? "לשאול על הפירוט" : "Ask for the breakdown"}>
               <span className="kpi-top">
                 <span className="kpi-icon">{ICON[k.metric]}</span>
                 <span className="eyebrow">{label(k.label, lang)}</span>
               </span>
               <span className="kpi-v">{fmt(k.value, k.unit, lang, true)}</span>
-              <span className="small faint">{k.filter?.standard ? `${es ? "Estándar" : "Standard"}: ${k.filter.standard}` : es ? "Todos los programas" : "All programs"}</span>
+              <span className="small faint">{k.filter?.standard ? `${he ? "תקן" : "Standard"}: ${k.filter.standard}` : he ? "כל התוכניות" : "All programs"}</span>
               {spark && <Spark points={spark.points.slice(-24)} unit={spark.unit} lang={lang} color={k.metric === "open_alerts" ? "var(--series-2)" : "var(--series-1)"} />}
             </button>
           );
@@ -109,23 +109,23 @@ export function Overview({ lang, onAsk }: { lang: Lang; onAsk: (q: string) => vo
         <div className="panel ov-map">
           <div className="panel-head">
             <div>
-              <h3>{es ? "EUDR: % libre de deforestación por provincia" : "EUDR: deforestation-free share by province"}</h3>
-              <p className="small muted">{es ? "Color = % libre de deforestación · tamaño = hectáreas evaluadas" : "Colour = deforestation-free share · size = assessed hectares"}</p>
+              <h3>{he ? "EUDR: % ללא בירוא יערות לפי מחוז" : "EUDR: deforestation-free share by province"}</h3>
+              <p className="small muted">{he ? "צבע = % ללא בירוא יערות · גודל = הקטארים שנבדקו" : "Colour = deforestation-free share · size = assessed hectares"}</p>
             </div>
           </div>
           <MapView
             lang={lang}
             unit="ratio"
             sizeUnit="ha"
-            legendLabel={es ? "% libre" : "% free"}
+            legendLabel={he ? "% ללא בירוא" : "% free"}
             points={data.regions.filter((r: any) => r.latlon).map((r: any) => ({
               name: r.name,
               latlon: r.latlon,
               value: r.deforestation_free_share,
               size: r.assessed_hectares,
               extra: [
-                { label: es ? "Hectáreas evaluadas" : "Assessed ha", value: fmt(r.assessed_hectares, "ha", lang) },
-                { label: es ? "Lotes con conversión" : "Fields with conversion", value: fmt(r.fields_with_conversion, "count", lang) },
+                { label: he ? "הקטארים שנבדקו" : "Assessed ha", value: fmt(r.assessed_hectares, "ha", lang) },
+                { label: he ? "חלקות עם הסבה" : "Fields with conversion", value: fmt(r.fields_with_conversion, "count", lang) },
               ],
             }))}
           />
@@ -141,7 +141,7 @@ export function Overview({ lang, onAsk }: { lang: Lang; onAsk: (q: string) => vo
                   <span className="eyebrow">{label(t.label, lang)}{k === "compliance_rate" ? " · EUDR" : ""}</span>
                   <span className="trend-v">{fmt(last, t.unit, lang)}</span>
                 </div>
-                <span className="small faint">{t.points[0]?.x} → {t.points[t.points.length - 1]?.x} · {es ? "desde" : "from"} {fmt(first, t.unit, lang)}</span>
+                <span className="small faint">{t.points[0]?.x} {he ? "←" : "→"} {t.points[t.points.length - 1]?.x} · {he ? "בהתחלה:" : "from"} {fmt(first, t.unit, lang)}</span>
                 <Spark points={t.points} unit={t.unit} lang={lang} color={k === "emissions_intensity" ? "var(--series-3)" : "var(--series-1)"} />
               </div>
             );

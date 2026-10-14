@@ -12,17 +12,17 @@ from .plan import QueryPlan
 from .semantic import SemanticLayer
 
 
-def _w(code: str, level: str, es: str, en: str) -> dict:
-    return {"code": code, "level": level, "message": {"es": es, "en": en}}
+def _w(code: str, level: str, he: str, en: str) -> dict:
+    return {"code": code, "level": level, "message": {"he": he, "en": en}}
 
 
 def run(sl: SemanticLayer, plan: QueryPlan, result: Result) -> list[dict]:
     out: list[dict] = []
     if not result.rows:
-        out.append(_w("empty", "warn", "La consulta no devolvió filas. Probá ampliar los filtros o el período.", "The query returned no rows. Try widening the filters or the period."))
+        out.append(_w("empty", "warn", "השאילתה לא החזירה שורות. נסו להרחיב את המסננים או את התקופה.", "The query returned no rows. Try widening the filters or the period."))
         return out
     if result.truncated:
-        out.append(_w("truncated", "warn", f"Se muestran las primeras {settings.row_limit:,} filas.", f"Showing the first {settings.row_limit:,} rows."))
+        out.append(_w("truncated", "warn", f"מוצגות {settings.row_limit:,} השורות הראשונות.", f"Showing the first {settings.row_limit:,} rows."))
 
     idx = {c: i for i, c in enumerate(result.columns)}
     for mname in plan.metrics:
@@ -32,16 +32,16 @@ def run(sl: SemanticLayer, plan: QueryPlan, result: Result) -> list[dict]:
             continue
         lo, hi = m.checks.get("min"), m.checks.get("max")
         if lo is not None and min(vals) < lo:
-            out.append(_w("bounds", "bad", f"{m.label['es']}: hay valores por debajo de {lo}, lo que no debería ocurrir.", f"{m.label['en']}: values below {lo}, which should not happen."))
+            out.append(_w("bounds", "bad", f"{m.label['he']}: יש ערכים מתחת ל-{lo}, וזה לא אמור לקרות.", f"{m.label['en']}: values below {lo}, which should not happen."))
         if hi is not None and max(vals) > hi:
             bad = sum(1 for x in vals if x > hi)
             out.append(_w("bounds", "bad",
-                          f"{m.label['es']}: {bad} valor(es) superan el máximo esperado ({number(hi, m.unit)}). Revisá los datos de origen antes de usar este número.",
+                          f"{m.label['he']}: {bad} ערכים חורגים מהמקסימום הצפוי ({number(hi, m.unit, 'he')}). בדקו את נתוני המקור לפני שמשתמשים במספר הזה.",
                           f"{m.label['en']}: {bad} value(s) exceed the expected maximum ({number(hi, m.unit, 'en')}). Check the source data before using this number."))
         other = m.checks.get("lte_metric")
         if other and other in idx:
             if any(r[idx[mname]] is not None and r[idx[other]] is not None and r[idx[mname]] > r[idx[other]] + 1e-6 for r in result.rows):
-                out.append(_w("lte_metric", "bad", f"{m.label['es']} supera a {sl.metrics[other].label['es']} en alguna fila.", f"{m.label['en']} exceeds {sl.metrics[other].label['en']} in some row."))
+                out.append(_w("lte_metric", "bad", f"{m.label['he']} גבוה מ{sl.metrics[other].label['he']} בחלק מהשורות.", f"{m.label['en']} exceeds {sl.metrics[other].label['en']} in some row."))
 
     out += _reconcile(sl, plan, result, idx)
     out += _freshness(sl, plan)
@@ -66,7 +66,7 @@ def _reconcile(sl, plan, result, idx) -> list[dict]:
         total = tot.rows[0][tot.columns.index(m)] or 0
         if total and abs(parts - total) / abs(total) > tol:
             lab = sl.metrics[m].label
-            out.append(_w("reconciliation", "bad", f"{lab['es']}: la suma por {plan.dimensions[0]} ({parts:,.1f}) no coincide con el total ({total:,.1f}).",
+            out.append(_w("reconciliation", "bad", f"{lab['he']}: הסכום לפי {plan.dimensions[0]} ({parts:,.1f}) לא תואם לסך הכול ({total:,.1f}).",
                           f"{lab['en']}: the sum by {plan.dimensions[0]} ({parts:,.1f}) does not match the total ({total:,.1f})."))
     return out
 
@@ -93,6 +93,6 @@ def _freshness(sl, plan) -> list[dict]:
             age = (datetime.combine(settings.as_of, datetime.min.time()) - latest_dt).days
             if age > cadence:
                 out.append(_w("freshness", "warn",
-                              f"Los datos de {ent} tienen {age} días de antigüedad (última carga {latest_dt.date()}, cadencia esperada {cadence} días).",
+                              f"הנתונים של {ent} בני {age} ימים (טעינה אחרונה {latest_dt.date()}, תדירות צפויה: כל {cadence} ימים).",
                               f"{ent} data is {age} days old (last load {latest_dt.date()}, expected every {cadence} days)."))
     return out

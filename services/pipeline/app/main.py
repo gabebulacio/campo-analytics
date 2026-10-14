@@ -32,7 +32,7 @@ class PreviousTurn(BaseModel):
 class AskIn(BaseModel):
     question: str = Field(min_length=1, max_length=500)
     clarification: str | None = Field(default=None, max_length=200)
-    lang: str | None = Field(default=None, pattern="^(es|en)$")
+    lang: str | None = Field(default=None, pattern="^(en|he)$")
     pending_plan: dict | None = None
     dimension: str | None = None
     previous: PreviousTurn | None = None
@@ -72,7 +72,7 @@ def ask(body: AskIn, request: Request):
     if settings.demo_mode and ip not in ("127.0.0.1", "::1", "localhost"):
         k = (ip, date.today())
         if _hits[k] >= settings.rate_limit_per_ip_per_day:
-            raise HTTPException(429, detail={"es": "Llegaste al límite diario de preguntas de la demo.", "en": "Daily demo question limit reached."})
+            raise HTTPException(429, detail={"he": "הגעת למגבלת השאלות היומית של הדמו.", "en": "Daily demo question limit reached."})
         _hits[k] += 1
     prev = body.previous.model_dump() if body.previous else None
     return pipeline.answer(body.question, body.clarification, body.lang, body.pending_plan, body.dimension, previous=prev)
@@ -95,7 +95,7 @@ def catalog():
 
 
 @app.get("/suggestions")
-def suggestions(lang: str = "es"):
+def suggestions(lang: str = "en"):
     return pipeline.suggestions(lang)
 
 

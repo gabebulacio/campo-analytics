@@ -35,7 +35,7 @@ def test_dimension_exprs_reference_declared_columns(sl):
 def test_every_metric_has_description_label_workspace(sl):
     for m in sl.metrics.values():
         assert m.workspace in sl.workspaces, m.name
-        assert m.label.get("es") and m.label.get("en"), m.name
+        assert m.label.get("en") and m.label.get("he"), m.name
         assert m.unit, m.name
 
 

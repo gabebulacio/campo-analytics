@@ -18,7 +18,8 @@ from .semantic import SemanticLayer, get
 
 
 def norm(s: str) -> str:
-    s = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode()
+    # strip accents and punctuation outside ASCII, but keep Hebrew letters (U+05D0-U+05EA)
+    s = "".join(c for c in unicodedata.normalize("NFKD", str(s)) if c.isascii() or "א" <= c <= "ת")
     return " ".join(s.lower().replace("_", " ").replace("-", " ").split())
 
 

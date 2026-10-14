@@ -4,22 +4,22 @@ Offer the demo; don't impose it. The five questions below are the numbered start
 
 ## Before the call (10 minutes)
 
-- Open https://demo.gabrielbulacio.com/health. Check `llm_configured: true` and that `llm_spend_today_usd` is well under `daily_budget_usd`.
-- Open these tabs: home (Spanish, light theme), `/case`, `/evals`, `/plan`.
+- Open https://gabrielbulacio.com/api/pipeline/health. Check `llm_configured: true` and that `llm_spend_today_usd` is well under `daily_budget_usd`.
+- Open these tabs: home (English, light theme), `/case`, `/evals`, `/plan`.
 - Click the five starters once to warm the cache and the serverless functions. Then reload the home page so the answer list is empty.
-- Backup: `python tasks.py dev` locally, http://localhost:3000. Local requests skip the rate limit.
+- Backup: `python tasks.py dev` locally, http://localhost:3000/projects/campo-analytics. Local requests skip the rate limit.
 
 ## Run of show
 
 | Time | Step | Click | Say |
 |---|---|---|---|
 | 0:00 | Frame | Home page | "Every number comes from a defined metric. The AI chooses and combines; a deterministic compiler writes the SQL." |
-| 0:30 | 1 · Verified | Starter 1, then **¿Cómo se calculó?** | "Trusted query, no LLM, under a second. Definition, filters, compiled SQL, source tables, sample rows. This is what lets an auditor follow a number." |
+| 0:30 | 1 · Verified | Starter 1, then **How was this calculated?** | "Trusted query, no LLM, under a second. Definition, filters, compiled SQL, source tables, sample rows. This is what lets an auditor follow a number." |
 | 1:30 | 2 · Governed | Starter 2 | "A breakdown nobody pre-built. The planner picked the metric and the dimension; the joins are declared in the semantic layer, never chosen by the model." |
 | 2:15 | 3 · Clarification | Starter 3, then pick **EUDR** | "Same field-season, several standards. Rather than guess, it asks once, and one click re-runs the question with the chosen standard." |
 | 3:00 | 4 · Refusal | Starter 4 | "There's no sequestration metric, so it says so and offers the closest ones. A made-up number is worse than no answer, especially in an EUDR statement." |
 | 3:30 | 5 · Guardrail | Starter 5 | "Blocked before any LLM call, and the database role is read-only anyway." |
-| 3:50 | Close | `/evals` | "45 golden cases, scored per stage: routing, plan, SQL, result, clarifications, refusals, injection. CI blocks a change that lowers accuracy. About two tenths of a cent per question." |
+| 3:50 | Close | `/evals` | "45 golden cases, scored per stage: routing, plan, SQL, result, clarifications, refusals, injection. CI blocks a change that lowers accuracy. About three tenths of a cent per question." |
 | 4:30 | Bridge | `/plan` | "Applied to a QuickSight migration: agree the metrics first, build the layer with evals, then migrate in parallel until the numbers match." |
 
 If there's time or they ask, also show:

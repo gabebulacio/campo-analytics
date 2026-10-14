@@ -40,26 +40,26 @@ as_of_policy: "Relative dates resolve against request as_of; campaigns resolve t
 # -----------------------------------------------------------------------------
 workspaces:
   compliance:
-    label: { es: "Cumplimiento y deforestación", en: "Compliance & deforestation" }
+    label: { en: "Compliance & deforestation", he: "ציות ובירוא יערות" }
     description: >
       EUDR and other standards: land-use-change assessments, compliance status
       by standard, non-compliant fields, evidence coverage.
   climate:
-    label: { es: "Clima y prácticas", en: "Climate & practices" }
+    label: { en: "Climate & practices", he: "אקלים ושיטות עיבוד" }
     description: >
       Emissions, emissions intensity, nutrient use efficiency, regenerative
       practice adoption, Scope 3 and carbon program KPIs.
   traceability:
-    label: { es: "Trazabilidad de producto", en: "Product traceability" }
+    label: { en: "Product traceability", he: "עקיבות מוצר" }
     description: >
       Lots, volumes, segregation, origin coverage, compliant volume, QR scans.
   monitoring:
-    label: { es: "Monitoreo satelital", en: "Satellite monitoring" }
+    label: { en: "Satellite monitoring", he: "ניטור לווייני" }
     description: >
       Monitored area, alerts (deforestation, fire, flood, drought, NDVI anomaly,
       silo bags), resolution times, remote vs on-site inspections.
   engagement:
-    label: { es: "Productores y datos", en: "Producers & data" }
+    label: { en: "Producers & data", he: "יצרנים ונתונים" }
     description: >
       Active producers, Crop Story completion, form response rates and channels,
       data completeness.
@@ -295,32 +295,32 @@ relationships:
 # Dimensions exposed to the planner (entity.column + labels + synonyms).
 # -----------------------------------------------------------------------------
 dimensions:
-  client:          { expr: client.client_name,        label: { es: Cliente, en: Client },                 synonyms: [empresa, company, customer] }
-  client_segment:  { expr: client.client_segment,     label: { es: Segmento, en: Segment } }
-  program:         { expr: program.program_name,      label: { es: Programa, en: Program },               synonyms: [iniciativa, sourcing program] }
-  commodity:       { expr: program.commodity,         label: { es: Commodity, en: Commodity },            synonyms: [materia prima, producto] }
-  standard:        { expr: standard.standard_id,      label: { es: Estándar, en: Standard },              synonyms: [norma, certificación, regulación, framework] }
-  standard_family: { expr: standard.standard_family,  label: { es: Familia de estándar, en: Standard family } }
-  country:         { expr: field.country,             label: { es: País, en: Country } }
-  admin1:          { expr: field.admin1,              label: { es: Provincia/Estado, en: State/Province }, synonyms: [provincia, estado, region] }
-  admin2:          { expr: field.admin2,              label: { es: Departamento/Municipio, en: County/Municipality } }
-  biome:           { expr: field.biome,               label: { es: Bioma, en: Biome } }
-  producer_country: { expr: producer.country,         label: { es: País del productor, en: Producer country } }
-  producer_size:   { expr: producer.producer_size_band, label: { es: Tamaño de productor, en: Producer size }, synonyms: [pequeño productor, smallholder] }
-  campaign:        { expr: campaign.campaign_id,      label: { es: Campaña, en: Season },                 synonyms: [temporada, ciclo, season, cosecha] , type: time, order_by: campaign.start_date }
-  crop:            { expr: field_season.crop,         label: { es: Cultivo, en: Crop },                   synonyms: [cultivo, especie] }
-  crop_story_status: { expr: field_season.crop_story_status, label: { es: Estado Crop Story, en: Crop Story status } }
-  compliance_status: { expr: compliance_evaluation.compliance_status, label: { es: Estado de cumplimiento, en: Compliance status } }
-  luc_result:      { expr: luc_assessment.luc_result, label: { es: Resultado de cambio de uso, en: Land-use-change result } }
-  alert_type:      { expr: satellite_alert.alert_type, label: { es: Tipo de alerta, en: Alert type } }
-  alert_severity:  { expr: satellite_alert.severity,  label: { es: Severidad, en: Severity } }
-  inspection_mode: { expr: inspection.inspection_mode, label: { es: Tipo de inspección, en: Inspection mode } }
-  channel:         { expr: form_dispatch.channel,     label: { es: Canal, en: Channel },                  synonyms: [whatsapp, sms, web] }
-  form_type:       { expr: form_dispatch.form_type,   label: { es: Tipo de formulario, en: Form type } }
-  site_type:       { expr: lot.site_type,             label: { es: Tipo de sitio, en: Site type } }
-  alert_month:     { expr: "date_trunc('month', satellite_alert.detected_at)", label: { es: Mes de alerta, en: Alert month }, type: time }
-  lot_month:       { expr: "date_trunc('month', lot.registered_at)", label: { es: Mes de registro, en: Registration month }, type: time }
-  dispatch_month:  { expr: "date_trunc('month', form_dispatch.sent_at)", label: { es: Mes de envío, en: Send month }, type: time }
+  client:          { expr: client.client_name,        label: { en: Client, he: "לקוח" },                 synonyms: [empresa, company, customer] }
+  client_segment:  { expr: client.client_segment,     label: { en: Segment, he: "פלח" } }
+  program:         { expr: program.program_name,      label: { en: Program, he: "תוכנית" },               synonyms: [iniciativa, sourcing program] }
+  commodity:       { expr: program.commodity,         label: { en: Commodity, he: "סחורה" },            synonyms: [materia prima, producto] }
+  standard:        { expr: standard.standard_id,      label: { en: Standard, he: "תקן" },              synonyms: [norma, certificación, regulación, framework] }
+  standard_family: { expr: standard.standard_family,  label: { en: Standard family, he: "משפחת תקנים" } }
+  country:         { expr: field.country,             label: { en: Country, he: "מדינה" } }
+  admin1:          { expr: field.admin1,              label: { en: State/Province, he: "מחוז/מדינה" }, synonyms: [provincia, estado, region] }
+  admin2:          { expr: field.admin2,              label: { en: County/Municipality, he: "נפה/רשות" } }
+  biome:           { expr: field.biome,               label: { en: Biome, he: "ביומה" } }
+  producer_country: { expr: producer.country,         label: { en: Producer country, he: "מדינת היצרן" } }
+  producer_size:   { expr: producer.producer_size_band, label: { en: Producer size, he: "גודל היצרן" }, synonyms: [pequeño productor, smallholder] }
+  campaign:        { expr: campaign.campaign_id,      label: { en: Season, he: "עונה" },                 synonyms: [temporada, ciclo, season, cosecha] , type: time, order_by: campaign.start_date }
+  crop:            { expr: field_season.crop,         label: { en: Crop, he: "גידול" },                   synonyms: [cultivo, especie] }
+  crop_story_status: { expr: field_season.crop_story_status, label: { en: Crop Story status, he: "סטטוס Crop Story" } }
+  compliance_status: { expr: compliance_evaluation.compliance_status, label: { en: Compliance status, he: "סטטוס ציות" } }
+  luc_result:      { expr: luc_assessment.luc_result, label: { en: Land-use-change result, he: "תוצאת שינוי שימוש בקרקע" } }
+  alert_type:      { expr: satellite_alert.alert_type, label: { en: Alert type, he: "סוג התראה" } }
+  alert_severity:  { expr: satellite_alert.severity,  label: { en: Severity, he: "חומרה" } }
+  inspection_mode: { expr: inspection.inspection_mode, label: { en: Inspection mode, he: "אופן בדיקה" } }
+  channel:         { expr: form_dispatch.channel,     label: { en: Channel, he: "ערוץ" },                  synonyms: [whatsapp, sms, web] }
+  form_type:       { expr: form_dispatch.form_type,   label: { en: Form type, he: "סוג טופס" } }
+  site_type:       { expr: lot.site_type,             label: { en: Site type, he: "סוג אתר" } }
+  alert_month:     { expr: "date_trunc('month', satellite_alert.detected_at)", label: { en: Alert month, he: "חודש התראה" }, type: time }
+  lot_month:       { expr: "date_trunc('month', lot.registered_at)", label: { en: Registration month, he: "חודש רישום" }, type: time }
+  dispatch_month:  { expr: "date_trunc('month', form_dispatch.sent_at)", label: { en: Send month, he: "חודש שליחה" }, type: time }
 
 # Reusable dimension sets for allowed_dimensions.
 dimension_sets:
@@ -335,7 +335,7 @@ metrics:
   # ---------------------------- compliance ----------------------------------
   assessed_hectares:
     workspace: compliance
-    label: { es: Hectáreas evaluadas, en: Assessed hectares }
+    label: { en: Assessed hectares, he: "הקטארים שנבדקו" }
     description: >
       Area of distinct fields with a latest land-use-change assessment for the
       selected standard. Counts each field once.
@@ -352,7 +352,7 @@ metrics:
 
   deforestation_free_hectares:
     workspace: compliance
-    label: { es: Hectáreas libres de deforestación, en: Deforestation-free hectares }
+    label: { en: Deforestation-free hectares, he: "הקטארים ללא בירוא יערות" }
     description: Assessed hectares whose latest assessment found no conversion after the standard's cutoff date.
     synonyms: [libre de deforestación, deforestation free, sin conversión]
     type: sum_distinct
@@ -367,7 +367,7 @@ metrics:
 
   deforestation_free_share:
     workspace: compliance
-    label: { es: "% libre de deforestación", en: "Deforestation-free share" }
+    label: { en: "Deforestation-free share", he: "% ללא בירוא יערות" }
     description: Deforestation-free hectares divided by assessed hectares.
     synonyms: [porcentaje libre de deforestación, share deforestation free]
     type: ratio
@@ -380,7 +380,7 @@ metrics:
 
   converted_hectares_after_cutoff:
     workspace: compliance
-    label: { es: Hectáreas convertidas post fecha de corte, en: Hectares converted after cutoff }
+    label: { en: Hectares converted after cutoff, he: "הקטארים שהוסבו אחרי תאריך החיתוך" }
     description: Sum of area converted after the cutoff date, from latest assessments.
     synonyms: [hectáreas deforestadas, deforested hectares, conversión]
     type: sum
@@ -394,7 +394,7 @@ metrics:
 
   fields_with_conversion:
     workspace: compliance
-    label: { es: Lotes con conversión detectada, en: Fields with conversion detected }
+    label: { en: Fields with conversion detected, he: "חלקות עם הסבה שזוהתה" }
     description: Count of fields whose latest assessment detected conversion after cutoff.
     synonyms: [lotes no conformes, campos con deforestación, flagged fields]
     type: count_distinct
@@ -408,7 +408,7 @@ metrics:
 
   compliant_field_seasons:
     workspace: compliance
-    label: { es: Lotes-campaña conformes, en: Compliant field-seasons }
+    label: { en: Compliant field-seasons, he: "חלקות-עונה תואמות" }
     description: Field-seasons with compliance_status = compliant for the selected standard.
     synonyms: [conformes, compliant fields, cumplen]
     type: count_distinct
@@ -421,7 +421,7 @@ metrics:
 
   evaluated_field_seasons:
     workspace: compliance
-    label: { es: Lotes-campaña evaluados, en: Evaluated field-seasons }
+    label: { en: Evaluated field-seasons, he: "חלקות-עונה שנבדקו" }
     description: Field-seasons with an applicable evaluation (excludes not_applicable).
     type: count_distinct
     entity: compliance_evaluation
@@ -433,7 +433,7 @@ metrics:
 
   compliance_rate:
     workspace: compliance
-    label: { es: Tasa de cumplimiento, en: Compliance rate }
+    label: { en: Compliance rate, he: "שיעור ציות" }
     description: Compliant field-seasons over evaluated field-seasons for the selected standard.
     synonyms: ["% cumplimiento", "% conformes", compliance share]
     type: ratio
@@ -446,7 +446,7 @@ metrics:
 
   pending_evidence_field_seasons:
     workspace: compliance
-    label: { es: Lotes-campaña con evidencia pendiente, en: Field-seasons pending evidence }
+    label: { en: Field-seasons pending evidence, he: "חלקות-עונה הממתינות לראיות" }
     description: Field-seasons that cannot be evaluated yet because required evidence is missing.
     synonyms: [faltan datos, missing evidence, pendientes]
     type: count_distinct
@@ -460,7 +460,7 @@ metrics:
   # ------------------------------ climate -----------------------------------
   total_emissions_tco2e:
     workspace: climate
-    label: { es: Emisiones totales, en: Total emissions }
+    label: { en: Total emissions, he: "סך הפליטות" }
     description: Sum of field-season emissions (cradle-to-farm-gate), in tonnes CO2e.
     synonyms: [huella de carbono, carbon footprint, emisiones, GEI, GHG]
     type: sum
@@ -472,7 +472,7 @@ metrics:
 
   production_t:
     workspace: climate
-    label: { es: Producción, en: Production }
+    label: { en: Production, he: "תפוקה" }
     description: Harvested production in tonnes.
     synonyms: [toneladas producidas, cosecha, output]
     type: sum
@@ -484,7 +484,7 @@ metrics:
 
   emissions_intensity:
     workspace: climate
-    label: { es: Intensidad de emisiones, en: Emissions intensity }
+    label: { en: Emissions intensity, he: "עצימות פליטות" }
     description: >
       kgCO2e per tonne produced. Ratio of sums over field-seasons that have
       BOTH emissions and production recorded (avoids biased denominators).
@@ -498,7 +498,7 @@ metrics:
 
   nue:
     workspace: climate
-    label: { es: Eficiencia de uso de nitrógeno, en: Nitrogen use efficiency }
+    label: { en: Nitrogen use efficiency, he: "יעילות שימוש בחנקן" }
     description: Nitrogen removed in harvest over nitrogen applied (ratio of sums).
     synonyms: [NUE, eficiencia de nitrógeno, nutrient use efficiency]
     type: ratio
@@ -510,7 +510,7 @@ metrics:
 
   regenerative_adoption_share:
     workspace: climate
-    label: { es: "% superficie con prácticas regenerativas", en: Regenerative practice adoption }
+    label: { en: Regenerative practice adoption, he: "% שטח בחקלאות מתחדשת" }
     description: >
       Planted hectares with at least two of: no-till, cover crop, crop rotation,
       over total planted hectares.
@@ -524,7 +524,7 @@ metrics:
 
   cover_crop_share:
     workspace: climate
-    label: { es: "% con cultivo de cobertura", en: Cover crop share }
+    label: { en: Cover crop share, he: "% עם גידולי כיסוי" }
     description: Planted hectares with cover crop over planted hectares.
     synonyms: [cultivos de servicio, cover crops]
     type: ratio
@@ -538,7 +538,7 @@ metrics:
   planted_hectares:
     workspace: engagement
     also_in: [climate, monitoring]
-    label: { es: Hectáreas sembradas, en: Planted hectares }
+    label: { en: Planted hectares, he: "הקטארים שנזרעו" }
     description: Sum of planted area across field-seasons.
     synonyms: [superficie, área sembrada, hectáreas]
     type: sum
@@ -550,7 +550,7 @@ metrics:
 
   active_producers:
     workspace: engagement
-    label: { es: Productores activos, en: Active producers }
+    label: { en: Active producers, he: "יצרנים פעילים" }
     description: Distinct producers with at least one field-season in the period.
     synonyms: [productores, farmers, growers]
     type: count_distinct
@@ -562,7 +562,7 @@ metrics:
 
   crop_story_completion_rate:
     workspace: engagement
-    label: { es: Tasa de Crop Story completas, en: Crop Story completion rate }
+    label: { en: Crop Story completion rate, he: "שיעור השלמת Crop Story" }
     description: Field-seasons with Crop Story complete or signed over all field-seasons.
     synonyms: [crop stories completas, registros completos]
     type: ratio
@@ -575,7 +575,7 @@ metrics:
   signed_crop_story_share:
     workspace: engagement
     also_in: [compliance]
-    label: { es: "% Crop Story firmadas", en: Signed Crop Story share }
+    label: { en: Signed Crop Story share, he: "% Crop Story חתומים" }
     description: Field-seasons with a digitally signed (anchored) Crop Story over all field-seasons.
     synonyms: [firmadas, blockchain, ancladas]
     type: ratio
@@ -587,7 +587,7 @@ metrics:
 
   data_completeness:
     workspace: engagement
-    label: { es: Completitud de datos, en: Data completeness }
+    label: { en: Data completeness, he: "שלמות נתונים" }
     description: Required fields filled over required fields total (ratio of sums).
     synonyms: [calidad de datos, completitud, data quality]
     type: ratio
@@ -599,7 +599,7 @@ metrics:
 
   forms_sent:
     workspace: engagement
-    label: { es: Formularios enviados, en: Forms sent }
+    label: { en: Forms sent, he: "טפסים שנשלחו" }
     type: count
     entity: form_dispatch
     expr: form_dispatch.dispatch_id
@@ -608,7 +608,7 @@ metrics:
 
   form_response_rate:
     workspace: engagement
-    label: { es: Tasa de respuesta de formularios, en: Form response rate }
+    label: { en: Form response rate, he: "שיעור מענה לטפסים" }
     description: Forms answered within 14 days over forms sent.
     synonyms: [tasa de respuesta, response rate, respuestas whatsapp]
     type: ratio
@@ -620,7 +620,7 @@ metrics:
 
   median_response_hours:
     workspace: engagement
-    label: { es: Mediana de horas de respuesta, en: Median response time (hours) }
+    label: { en: Median response time (hours), he: "זמן מענה חציוני (שעות)" }
     type: median
     entity: form_dispatch
     expr: "extract(epoch from (form_dispatch.responded_at - form_dispatch.sent_at)) / 3600.0"
@@ -632,7 +632,7 @@ metrics:
   # ---------------------------- monitoring ----------------------------------
   monitored_hectares:
     workspace: monitoring
-    label: { es: Hectáreas monitoreadas, en: Monitored hectares }
+    label: { en: Monitored hectares, he: "הקטארים מנוטרים" }
     description: Area of distinct fields with valid geometry linked to at least one field-season in the period.
     synonyms: [superficie monitoreada, monitored area]
     type: sum_distinct
@@ -646,7 +646,7 @@ metrics:
 
   alerts:
     workspace: monitoring
-    label: { es: Alertas, en: Alerts }
+    label: { en: Alerts, he: "התראות" }
     synonyms: [alertas satelitales, eventos, satellite alerts]
     type: count
     entity: satellite_alert
@@ -656,7 +656,7 @@ metrics:
 
   open_alerts:
     workspace: monitoring
-    label: { es: Alertas abiertas, en: Open alerts }
+    label: { en: Open alerts, he: "התראות פתוחות" }
     type: count
     entity: satellite_alert
     expr: satellite_alert.alert_id
@@ -666,7 +666,7 @@ metrics:
 
   median_alert_resolution_days:
     workspace: monitoring
-    label: { es: Mediana de días de resolución, en: Median alert resolution (days) }
+    label: { en: Median alert resolution (days), he: "זמן טיפול חציוני בהתראה (ימים)" }
     type: median
     entity: satellite_alert
     expr: "extract(epoch from (satellite_alert.resolved_at - satellite_alert.detected_at)) / 86400.0"
@@ -677,7 +677,7 @@ metrics:
 
   false_positive_rate:
     workspace: monitoring
-    label: { es: Tasa de falsos positivos, en: False positive rate }
+    label: { en: False positive rate, he: "שיעור התראות שווא" }
     description: Resolved alerts marked false_positive over resolved alerts.
     type: ratio
     numerator: { type: count, entity: satellite_alert, expr: satellite_alert.alert_id, filters: ["satellite_alert.resolution = 'false_positive'"] }
@@ -688,7 +688,7 @@ metrics:
 
   remote_inspection_share:
     workspace: monitoring
-    label: { es: "% inspecciones remotas", en: Remote inspection share }
+    label: { en: Remote inspection share, he: "% בדיקות מרחוק" }
     description: Remote inspections over all inspections.
     synonyms: [inspecciones remotas, ahorro de inspecciones]
     type: ratio
@@ -700,7 +700,7 @@ metrics:
 
   inspection_cost_usd:
     workspace: monitoring
-    label: { es: Costo de inspecciones, en: Inspection cost }
+    label: { en: Inspection cost, he: "עלות בדיקות" }
     type: sum
     entity: inspection
     expr: inspection.cost_usd
@@ -711,7 +711,7 @@ metrics:
   # --------------------------- traceability ---------------------------------
   traced_volume_t:
     workspace: traceability
-    label: { es: Volumen trazado, en: Traced volume }
+    label: { en: Traced volume, he: "נפח עם עקיבות" }
     description: Total registered lot volume.
     synonyms: [toneladas trazadas, volumen, lotes]
     type: sum
@@ -723,7 +723,7 @@ metrics:
 
   segregated_volume_share:
     workspace: traceability
-    label: { es: "% volumen segregado", en: Segregated volume share }
+    label: { en: Segregated volume share, he: "% נפח מופרד" }
     type: ratio
     numerator: { type: sum, entity: lot, expr: lot.volume_t, filters: ["lot.segregated = true"] }
     denominator: traced_volume_t
@@ -733,7 +733,7 @@ metrics:
 
   origin_coverage:
     workspace: traceability
-    label: { es: Cobertura de origen, en: Origin coverage }
+    label: { en: Origin coverage, he: "כיסוי מקור" }
     description: >
       Share of lot volume attributed to identified field-seasons
       (sum of lot_origin.volume_t over lot.volume_t).
@@ -748,7 +748,7 @@ metrics:
   compliant_volume_share:
     workspace: traceability
     also_in: [compliance]
-    label: { es: "% volumen conforme", en: Compliant volume share }
+    label: { en: Compliant volume share, he: "% נפח תואם" }
     description: >
       Lot volume whose origin field-seasons are compliant for the selected
       standard, over total lot volume. Unattributed volume counts as not compliant.
@@ -763,7 +763,7 @@ metrics:
 
   qr_scans:
     workspace: traceability
-    label: { es: Escaneos de QR, en: QR scans }
+    label: { en: QR scans, he: "סריקות QR" }
     type: sum
     entity: lot
     expr: lot.qr_scans
@@ -778,23 +778,23 @@ value_dictionaries:
   dimensions: [client, client_segment, program, commodity, standard, country, admin1, biome, crop, campaign, alert_type, channel, form_type, site_type]
   aliases:
     standard:
-      EUDR: [eudr, deforestación ue, reglamento europeo, eu deforestation]
-      EPA_45Z: [45z, biocombustibles, clean fuel credit]
+      EUDR: [eudr, deforestación ue, reglamento europeo, eu deforestation, תקנת בירוא היערות]
+      EPA_45Z: [45z, biocombustibles, clean fuel credit, דלק ביולוגי]
       SBTI_FLAG: [sbti, flag]
-      REGEN_KPI: [regenerativa, regenerative]
+      REGEN_KPI: [regenerativa, regenerative, חקלאות מתחדשת]
     crop:
-      soy: [soja, soya]
-      maize: [maíz, maiz, corn]
-      wheat: [trigo]
-      barley: [cebada, malting barley]
-      sunflower: [girasol]
-      coffee: [café, cafe]
+      soy: [soja, soya, סויה]
+      maize: [maíz, maiz, corn, תירס]
+      wheat: [trigo, חיטה]
+      barley: [cebada, malting barley, שעורה]
+      sunflower: [girasol, חמנייה]
+      coffee: [café, cafe, קפה]
     country:
-      AR: [argentina]
-      BR: [brasil, brazil]
-      PY: [paraguay]
-      UY: [uruguay]
-      MX: [méxico, mexico]
+      AR: [argentina, ארגנטינה]
+      BR: [brasil, brazil, ברזיל]
+      PY: [paraguay, פרגוואי]
+      UY: [uruguay, אורוגוואי]
+      MX: [méxico, mexico, מקסיקו]
 
 # -----------------------------------------------------------------------------
 # Result checks shared across metrics (in addition to per-metric checks).
@@ -809,8 +809,8 @@ result_checks:
     satellite_alert: { column: detected_at, expected_cadence_days: 7 }
     lot: { column: registered_at, expected_cadence_days: 7 }
   required_filters_message:
-    es: "Esta métrica depende del estándar. ¿Para cuál? (EUDR, ISCC, 45Z, …)"
     en: "This metric depends on the standard. Which one? (EUDR, ISCC, 45Z, …)"
+    he: "המדד הזה תלוי בתקן. איזה תקן? (EUDR, ISCC, 45Z, …)"
 
 # -----------------------------------------------------------------------------
 # Verified queries (trusted assets). Matching one yields the VERIFIED tier.
@@ -820,8 +820,8 @@ verified_queries:
     owner: analytics
     verified_at: 2026-10-11
     questions:
-      es: ["¿Qué porcentaje de la superficie es libre de deforestación según EUDR por país?"]
       en: ["What share of area is EUDR deforestation-free by country?"]
+      he: ["איזה אחוז מהשטח נקי מבירוא יערות לפי EUDR, לפי מדינה?"]
     plan: { metrics: [deforestation_free_share, assessed_hectares], dimensions: [country], filters: { standard: EUDR } }
 
   - id: vq_compliance_rate_by_standard_campaign
@@ -829,48 +829,48 @@ verified_queries:
     verified_at: 2026-10-11
     parameters: { campaign: { type: campaign, default: latest } }
     questions:
-      es: ["¿Cuál es la tasa de cumplimiento por estándar en la campaña {campaign}?"]
       en: ["What is the compliance rate by standard for season {campaign}?"]
+      he: ["מה שיעור הציות לפי תקן בעונה {campaign}?"]
     plan: { metrics: [compliance_rate, evaluated_field_seasons], dimensions: [standard], filters: { campaign: "{campaign}" } }
 
   - id: vq_flagged_fields_eudr_by_admin1
     owner: analytics
     verified_at: 2026-10-11
     questions:
-      es: ["¿Cuántos lotes tienen conversión detectada para EUDR por provincia?"]
       en: ["How many fields have conversion detected under EUDR by province?"]
+      he: ["כמה חלקות עם הסבה שזוהתה לפי EUDR יש בכל מחוז?"]
     plan: { metrics: [fields_with_conversion, converted_hectares_after_cutoff], dimensions: [admin1], filters: { standard: EUDR } }
 
   - id: vq_emissions_intensity_by_crop_campaign
     owner: analytics
     verified_at: 2026-10-11
     questions:
-      es: ["¿Cómo evolucionó la intensidad de emisiones por cultivo?"]
       en: ["How has emissions intensity evolved by crop?"]
+      he: ["איך השתנתה עצימות הפליטות לפי גידול?"]
     plan: { metrics: [emissions_intensity], dimensions: [campaign, crop] }
 
   - id: vq_regen_adoption_by_program
     owner: analytics
     verified_at: 2026-10-11
     questions:
-      es: ["¿Qué porcentaje de la superficie aplica prácticas regenerativas por programa?"]
       en: ["What share of area uses regenerative practices by program?"]
+      he: ["איזה אחוז מהשטח מיישם חקלאות מתחדשת לפי תוכנית?"]
     plan: { metrics: [regenerative_adoption_share, planted_hectares], dimensions: [program] }
 
   - id: vq_response_rate_by_channel
     owner: analytics
     verified_at: 2026-10-11
     questions:
-      es: ["¿Cuál es la tasa de respuesta de formularios por canal?"]
       en: ["What is the form response rate by channel?"]
+      he: ["מה שיעור המענה לטפסים לפי ערוץ?"]
     plan: { metrics: [form_response_rate, forms_sent, median_response_hours], dimensions: [channel] }
 
   - id: vq_open_alerts_by_type_severity
     owner: analytics
     verified_at: 2026-10-11
     questions:
-      es: ["¿Cuántas alertas abiertas hay por tipo y severidad?"]
       en: ["How many open alerts are there by type and severity?"]
+      he: ["כמה התראות פתוחות יש לפי סוג וחומרה?"]
     plan: { metrics: [open_alerts], dimensions: [alert_type, alert_severity] }
 
   - id: vq_compliant_volume_by_program
@@ -878,8 +878,8 @@ verified_queries:
     verified_at: 2026-10-11
     parameters: { standard: { type: standard, default: EUDR } }
     questions:
-      es: ["¿Qué porcentaje del volumen es conforme a {standard} por programa?"]
       en: ["What share of volume is {standard}-compliant by program?"]
+      he: ["איזה אחוז מהנפח תואם ל-{standard} לפי תוכנית?"]
     plan: { metrics: [compliant_volume_share], dimensions: [program], filters: { standard: "{standard}" } }
     note: "Pair with vq-free origin_coverage/traced_volume_t tiles; they don't depend on the standard."
 
@@ -887,14 +887,14 @@ verified_queries:
 # Few-shot examples for the planner. MUST be disjoint from evals/golden.
 # -----------------------------------------------------------------------------
 examples:
-  - question: "Hectáreas sembradas de soja por provincia en 2024/25"
+  - question: "הקטארים של סויה שנזרעו לפי מחוז ב-2024/25"
     plan: { metrics: [planted_hectares], dimensions: [admin1], filters: { crop: soy, campaign: "2024/25" } }
-  - question: "NUE promedio por tamaño de productor"
+  - question: "NUE ממוצע לפי גודל יצרן"
     plan: { metrics: [nue], dimensions: [producer_size] }
-    note: "NUE is a ratio of sums; 'promedio' does not mean average of field ratios."
+    note: "NUE is a ratio of sums; 'ממוצע' (average) does not mean average of field ratios."
   - question: "Which programs have the lowest origin coverage?"
     plan: { metrics: [origin_coverage], dimensions: [program], sort: { origin_coverage: asc }, limit: 10 }
-  - question: "¿Cuánto bajó el costo de inspección con las inspecciones remotas?"
+  - question: "בכמה ירדה עלות הבדיקות בזכות בדיקות מרחוק?"
     plan: { metrics: [inspection_cost_usd], dimensions: [inspection_mode] }
 
 # -----------------------------------------------------------------------------

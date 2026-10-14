@@ -2,23 +2,23 @@
 
 import type { Answer, Lang } from "@/lib/types";
 
-const LABEL: Record<string, { es: string; en: string }> = {
-  normalize: { es: "Normalizar", en: "Normalize" },
-  cache: { es: "Caché", en: "Cache" },
-  match_verified: { es: "Match verificado", en: "Verified match" },
-  follow_up: { es: "Ajuste", en: "Follow-up" },
-  route: { es: "Router (IA)", en: "Router (AI)" },
-  plan: { es: "Planner (IA)", en: "Planner (AI)" },
-  apply_clarification: { es: "Aclaración", en: "Clarification" },
-  validate: { es: "Validar", en: "Validate" },
-  compile: { es: "Compilar SQL", en: "Compile SQL" },
-  execute: { es: "Ejecutar (RO)", en: "Execute (RO)" },
-  check_result: { es: "Chequeos", en: "Checks" },
-  visualize: { es: "Gráfico", en: "Chart" },
-  explain: { es: "Resumen", en: "Summary" },
-  sample_rows: { es: "Linaje", en: "Lineage" },
-  spend_guard: { es: "Presupuesto", en: "Budget" },
-  llm_error: { es: "Error IA", en: "AI error" },
+const LABEL: Record<string, { he: string; en: string }> = {
+  normalize: { he: "נרמול", en: "Normalize" },
+  cache: { he: "מטמון", en: "Cache" },
+  match_verified: { he: "התאמה מאומתת", en: "Verified match" },
+  follow_up: { he: "כוונון", en: "Follow-up" },
+  route: { he: "Router (AI)", en: "Router (AI)" },
+  plan: { he: "Planner (AI)", en: "Planner (AI)" },
+  apply_clarification: { he: "הבהרה", en: "Clarification" },
+  validate: { he: "אימות", en: "Validate" },
+  compile: { he: "הידור SQL", en: "Compile SQL" },
+  execute: { he: "הרצה (RO)", en: "Execute (RO)" },
+  check_result: { he: "בדיקות", en: "Checks" },
+  visualize: { he: "גרף", en: "Chart" },
+  explain: { he: "סיכום", en: "Summary" },
+  sample_rows: { he: "שושלת", en: "Lineage" },
+  spend_guard: { he: "תקציב", en: "Budget" },
+  llm_error: { he: "שגיאת AI", en: "AI error" },
 };
 const AI = new Set(["route", "plan"]);
 
@@ -27,7 +27,7 @@ export function PipelineStrip({ answer, lang }: { answer: Answer; lang: Lang }) 
   if (!stages.length) return null;
   const vm = stages.find((s) => s.stage === "match_verified") as any;
   return (
-    <div className="pipe" aria-label={lang === "es" ? "Etapas del pipeline" : "Pipeline stages"}>
+    <div className="pipe" aria-label={lang === "he" ? "שלבי ה-pipeline" : "Pipeline stages"}>
       {stages.map((s, i) => {
         const ai = AI.has(s.stage);
         const hit = s.stage === "match_verified" && vm?.matched;
@@ -39,7 +39,7 @@ export function PipelineStrip({ answer, lang }: { answer: Answer; lang: Lang }) 
         );
       })}
       {!stages.some((s) => AI.has(s.stage)) && answer.status === "answered" && (
-        <span className="pipe-note">{lang === "es" ? "Sin llamadas a IA: respuesta 100 % determinística" : "No AI calls: fully deterministic answer"}</span>
+        <span className="pipe-note">{lang === "he" ? "בלי קריאות ל-AI: תשובה דטרמיניסטית ב-100%" : "No AI calls: fully deterministic answer"}</span>
       )}
     </div>
   );

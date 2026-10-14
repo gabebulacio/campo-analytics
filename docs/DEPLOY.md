@@ -4,7 +4,7 @@
 
 | Piece | Where |
 |---|---|
-| Web (`apps/web`) | Vercel project `campo-analytics` → https://campo-analytics.vercel.app, `gabrielbulacio.com`, `demo.` and `www.` |
+| Web (`apps/web`) | Vercel project `campo-analytics` → `gabrielbulacio.com` (personal page at `/`, this demo at `/projects/campo-analytics`), `www.`, and `demo.` (redirects only) |
 | API (pipeline) | Vercel project `campo-analytics-api` (FastAPI zero-config, Python 3.12) → https://campo-analytics-api-bulacio.vercel.app |
 
 Redeploy:
@@ -21,7 +21,7 @@ The Cloud Run path below remains the target for the Postgres/Mongo architecture.
 
 ---
 
-Target: **https://demo.gabrielbulacio.com**
+Target: **https://gabrielbulacio.com/projects/campo-analytics**
 
 ```
 Browser ──> Vercel (apps/web, Next.js) ──/api/pipeline/*──> Cloud Run (pipeline, FastAPI) ──> DuckDB marts inside the image
@@ -59,7 +59,7 @@ gcloud secrets add-iam-policy-binding anthropic-api-key \
 gcloud run deploy pipeline --source . --region southamerica-east1 \
   --allow-unauthenticated --min-instances 0 --max-instances 2 --memory 1Gi --cpu 1 --timeout 60 \
   --set-secrets ANTHROPIC_API_KEY=anthropic-api-key:latest \
-  --set-env-vars "DEMO_MODE=true,RATE_LIMIT_PER_IP_PER_DAY=30,CORS_ORIGINS=https://demo.gabrielbulacio.com"
+  --set-env-vars "DEMO_MODE=true,RATE_LIMIT_PER_IP_PER_DAY=30,CORS_ORIGINS=https://gabrielbulacio.com"
 ```
 `--source .` builds the root `Dockerfile` with Cloud Build. `.gcloudignore` keeps the upload small and excludes `.env*` and personal files.
 The command prints a URL like `https://pipeline-xxxxx-rj.a.run.app`. Check it:
@@ -74,10 +74,13 @@ Set a **budget alert at US$ 5**: Billing → Budgets & alerts.
 3. Add the environment variable `PIPELINE_URL` = the Cloud Run URL from step 2, without a trailing slash.
 4. Deploy. You get `https://campo-analytics-xxx.vercel.app`. Open it and ask a verified question.
 
-## 4. Domain: demo.gabrielbulacio.com
-1. In Vercel, go to Project → Settings → Domains and add `demo.gabrielbulacio.com`.
-2. In Cloudflare, go to DNS for `gabrielbulacio.com` and add a `CNAME` record with name `demo`, target `cname.vercel-dns.com`, and proxy status **DNS only** (grey cloud).
-3. Wait a few minutes for Vercel to issue the certificate.
+## 4. Domain: gabrielbulacio.com/projects/campo-analytics
+The demo is a path on the personal site, not a subdomain. Demos live under `/projects/<name>`.
+1. In Vercel, go to Project → Settings → Domains and add `gabrielbulacio.com` and `www.gabrielbulacio.com`.
+2. Keep `demo.gabrielbulacio.com` on the project too. `next.config.mjs` permanently redirects every old demo link (including `?q=` questions) to the same page under `/projects/campo-analytics`.
+3. In Cloudflare, the records point to Vercel with proxy status **DNS only** (grey cloud).
+
+A future demo that lives in its own repo and Vercel project can join the same structure: give that app `basePath: "/projects/<name>"` and add a rewrite here from `/projects/<name>/:path*` to its deployment URL.
 
 ## 5. Guardrails before you share the link
 - Anthropic Console → Limits: set a monthly spend limit (e.g. US$ 20). This is the hard cap.

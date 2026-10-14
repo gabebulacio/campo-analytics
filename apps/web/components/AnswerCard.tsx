@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, BarChart3, CircleSlash, FlaskConical, HelpCircle, Info, Layers, Pin, ShieldCheck, Table2, ThumbsDown, ThumbsUp, XOctagon } from "lucide-react";
 import type { Answer, Tier } from "@/lib/types";
 import { useI18n } from "@/lib/i18n";
+import { demoPath } from "@/lib/paths";
 import { api } from "@/lib/api";
 import { isPinned, pin } from "@/lib/pins";
 import { label } from "@/lib/format";
@@ -63,8 +64,8 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
             {answer.cached_from && <span className="badge b-neutral">cache</span>}
           </div>
           <h2>{answer.question}</h2>
-          {answer.clarification && <span className="small muted">→ {answer.clarification}</span>}
-          {answer.refines && <span className="small muted">{lang === "es" ? "Ajuste de:" : "Adjusting:"} {answer.refines}</span>}
+          {answer.clarification && <span className="small muted">{lang === "he" ? "←" : "→"} {answer.clarification}</span>}
+          {answer.refines && <span className="small muted">{lang === "he" ? "כוונון של:" : "Adjusting:"} {answer.refines}</span>}
         </div>
         {answer.status === "answered" && !compact && (
           <div className="answer-actions">
@@ -172,10 +173,10 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
             value={followUp}
             maxLength={300}
             onChange={(e) => setFollowUp(e.target.value)}
-            placeholder={lang === "es" ? "Ajustar: «por provincia», «solo Argentina», «como tabla»…" : "Adjust: “by province”, “only Argentina”, “as a table”…"}
-            aria-label={lang === "es" ? "Ajustar esta respuesta" : "Adjust this answer"}
+            placeholder={lang === "he" ? "כוונון: ״לפי מחוז״, ״רק ארגנטינה״, ״כטבלה״…" : "Adjust: “by province”, “only Argentina”, “as a table”…"}
+            aria-label={lang === "he" ? "כוונון התשובה הזו" : "Adjust this answer"}
           />
-          <button className="btn sm" type="submit" disabled={!followUp.trim()}>{lang === "es" ? "Ajustar" : "Adjust"}</button>
+          <button className="btn sm" type="submit" disabled={!followUp.trim()}>{lang === "he" ? "כוונון" : "Adjust"}</button>
         </form>
       )}
 
@@ -184,7 +185,7 @@ export function AnswerCard({ answer, onAsk, compact = false }: { answer: Answer;
         <span>{answer.latency_ms} ms</span>
         <span>US$ {(answer.cost?.usd ?? 0).toFixed(4)}</span>
         <span>as_of {answer.as_of}</span>
-        <a href={`/trace/${answer.trace_id}`}>trace {answer.trace_id}</a>
+        <a href={demoPath(`/trace/${answer.trace_id}`)}>trace {answer.trace_id}</a>
         <span className="spacer" />
         <span className="fb">
           <button aria-label="Helpful" aria-pressed={vote === "up"} onClick={() => { setVote("up"); api.feedback(answer.trace_id, "up").catch(() => {}); }}><ThumbsUp size={14} /></button>

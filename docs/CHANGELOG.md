@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 — 2026-10-14 · English and Hebrew
+
+- The UI languages are English (default) and Hebrew; Spanish is gone. Hebrew switches the page to right-to-left. Layout CSS now uses logical properties, so the same rules mirror. Code blocks, charts and the map stay left-to-right.
+- The pipeline answers in Hebrew when the question is in Hebrew: summaries, result-check warnings, refusals, clarifications and suggestions. The router's `language` is `en` or `he`; the API's `lang` accepts the same values.
+- Text normalisation keeps Hebrew letters (it used to drop everything outside ASCII), so Hebrew questions match verified queries lexically, without an LLM call.
+- Semantic layer: every label and verified-query phrasing is `{ en, he }`; Hebrew value aliases for crops, countries and standards; the planner examples and the golden set's Spanish questions are now Hebrew.
+- **New address:** the demo moved from `demo.gabrielbulacio.com` to `gabrielbulacio.com/projects/campo-analytics`. The personal page is the app's root (`app/page.tsx`) and the demo's routes live in `app/projects/campo-analytics/`. The host middleware is replaced by permanent redirects in `next.config.mjs`, so old subdomain and root links keep working. Internal demo links go through `demoPath()` (`lib/paths.ts`).
+- Shared links can force a language with `?lang=he` or `?lang=en`.
+- Injection guardrail: Hebrew patterns ("ignore the instructions", "delete the table", "show the prompt"), anchored on word boundaries so "מחקר" (research) doesn't trip "מחק" (delete).
+
 ## 0.4.0 — 2026-10-12 · MongoDB Atlas as the document source
 
 - The ELT can extract the document collections from MongoDB Atlas (`--source mongo`) instead of the generated files; `python tasks.py migrate` loads Atlas, extracts from it and rebuilds the marts. Verified: all 15 marts are identical (row counts and content hashes) to the file-based build.

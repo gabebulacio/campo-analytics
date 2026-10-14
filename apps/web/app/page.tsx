@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-// gabrielbulacio.com (the middleware rewrites "/" here). The demo lives on demo.gabrielbulacio.com.
-const DEMO = "https://demo.gabrielbulacio.com";
+// gabrielbulacio.com. Demos live under /projects/<name>.
+const DEMO = "/projects/campo-analytics";
 
 export default function Home() {
   return (

@@ -10,12 +10,12 @@ import { Overview } from "@/components/Overview";
 import { saveTrace } from "@/lib/traces";
 import { Starters } from "@/components/Starters";
 
-const WS_LABEL: Record<string, { es: string; en: string }> = {
-  compliance: { es: "Cumplimiento", en: "Compliance" },
-  climate: { es: "Clima", en: "Climate" },
-  traceability: { es: "Trazabilidad", en: "Traceability" },
-  monitoring: { es: "Monitoreo", en: "Monitoring" },
-  engagement: { es: "Productores", en: "Producers" },
+const WS_LABEL: Record<string, { he: string; en: string }> = {
+  compliance: { he: "ציות", en: "Compliance" },
+  climate: { he: "אקלים", en: "Climate" },
+  traceability: { he: "עקיבות", en: "Traceability" },
+  monitoring: { he: "ניטור", en: "Monitoring" },
+  engagement: { he: "יצרנים", en: "Producers" },
 };
 
 export default function AskPage() {
@@ -124,10 +124,10 @@ export default function AskPage() {
           </button>
         </form>
         <div className="suggest">
-          <span className="small muted">{lang === "es" ? "Para empezar, probá estas:" : "To start, try these:"}</span>
+          <span className="small muted">{lang === "he" ? "כדי להתחיל, נסו את אלה:" : "To start, try these:"}</span>
           <Starters lang={lang} busy={!!loading} asked={asked} onAsk={(q) => ask(q)} />
           <button className="more-toggle small" aria-expanded={moreOpen} onClick={() => setMoreOpen(!moreOpen)}>
-            {moreOpen ? (lang === "es" ? "Ocultar ejemplos" : "Hide examples") : (lang === "es" ? `Más ejemplos (${sugg.length})` : `More examples (${sugg.length})`)}
+            {moreOpen ? (lang === "he" ? "הסתר דוגמאות" : "Hide examples") : (lang === "he" ? `עוד דוגמאות (${sugg.length})` : `More examples (${sugg.length})`)}
           </button>
           {moreOpen && (
             <>

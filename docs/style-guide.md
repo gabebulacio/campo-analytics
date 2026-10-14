@@ -147,7 +147,7 @@ The Measure Map used three families (Archivo condensed display, Source Sans body
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
-│ ■ Campo Analytics   [workspace ▾]      ⌘K Search   ES|EN  ◐  │  top bar 56px, --surface, bottom hairline
+│ ■ Campo Analytics   [workspace ▾]      ⌘K Search   EN|עב  ◐  │  top bar 56px, --surface, bottom hairline
 ├──────────┬────────────────────────────────────────────────────┤
 │ Preguntar│  Eyebrow · WORKSPACE                                │
 │ Tableros │  H1 Page title                       [secondary][Primary]
@@ -257,23 +257,23 @@ Validated with the six-check palette validator: lightness band, chroma, adjacent
 
 ## 10. Content and voice
 
-- **Spanish (es-AR) is the default; English is a toggle.** Strings live in message files, never inline.
+- **English (en-US) is the default; Hebrew (he-IL) is a toggle.** Hebrew sets `dir="rtl"` on `<html>`, so layout CSS uses logical properties (`margin-inline-start`, `inset-inline-end`, `text-align: start`), never left/right. Code blocks, charts and the map stay LTR. In Hebrew prose, flow arrows point left (←). Strings live in message files, never inline.
 - Plain, short, active sentences. Say what the number *is* before what it *means*.
-- Refusal pattern: "No tengo una métrica para *X*. Lo más cercano es *Y*." + clickable alternatives.
+- Refusal pattern: "I don't have a metric for *X*. The closest is *Y*." + clickable alternatives.
 - Clarification pattern: one question, 2–4 options as chips, never free text.
 - Never write a number the data did not produce (pipeline step 10).
 
 **Formatting**
 
-| Kind | es-AR | en |
+| Kind | en | he |
 |---|---|---|
-| Number | `1.234,5` | `1,234.5` |
-| Compact (KPI tiles; from the Measure Map formatter) | `1,23 M` · `456 mil` · `789` | `1.23M` · `456K` · `789` |
-| Area | `12.340 ha` | `12,340 ha` |
-| Mass / emissions | `3,2 t` · `1.250 kgCO₂e` | `3.2 t` · `1,250 kgCO₂e` |
-| Ratio | `64 %` | `64%` |
-| Delta | `+3,1 pp` / `−12 %` (true minus sign) | `+3.1 pp` / `−12%` |
-| Date | `11 mar 2026` | `Mar 11, 2026` |
+| Number | `1,234.5` | `1,234.5` |
+| Compact (KPI tiles; from the Measure Map formatter) | `1.23M` · `456K` · `789` | from `Intl` `he-IL` compact |
+| Area | `12,340 ha` | `12,340 ha` |
+| Mass / emissions | `3.2 t` · `1,250 kgCO₂e` | `3.2 t` · `1,250 kgCO₂e` |
+| Ratio | `64%` | `64%` |
+| Delta | `+3.1 pp` / `−12%` (true minus sign) | `+3.1 pp` / `−12%` |
+| Date | `Mar 11, 2026` | `11 במרץ 2026` |
 | Campaign | `2025/26` | `2025/26` |
 | Blank / unknown | `–` (en dash), never `0` | `–` |
 
@@ -291,7 +291,7 @@ Use `Intl.NumberFormat` / `Intl.DateTimeFormat` with the active locale. Units al
 | Syntax-highlight token set | Card panels with heavier borders → hairlines, no shadows by default |
 | Dependency tree, rule ladder, lineage table, coverage heatmap | Sticky left index → app sidebar + ⌘K palette |
 | Copy / wrap controls on code blocks | Square-root white→blue heatmap → validated sequential ramp |
-| Compact currency formatter ($1.23M / $456K) | Localised to es-AR / en with units |
+| Compact currency formatter ($1.23M / $456K) | Localised to en / he with units |
 
 ---
 

@@ -1,5 +1,5 @@
 // Mirrors packages/schemas/answer.schema.json (generated from the Python models).
-export type Lang = "es" | "en";
+export type Lang = "en" | "he";
 export type I18n = Record<Lang, string>;
 export type Tier = "VERIFIED" | "GOVERNED" | "EXPLORATORY" | "NOT_ANSWERED" | null;
 

@@ -128,7 +128,7 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
         try:
             p = QueryPlan.model_validate(pending_plan)
         except Exception as e:
-            return _finish(trace, {**base, **_not_answered("validation_failed", {"es": f"Plan inválido: {e}", "en": f"Invalid plan: {e}"}, [], sl)})
+            return _finish(trace, {**base, **_not_answered("validation_failed", {"he": f"תוכנית לא תקינה: {e}", "en": f"Invalid plan: {e}"}, [], sl)})
         from .plan import Filter
         p.filters = [f for f in p.filters if f.dimension != dimension] + [Filter(dimension=dimension, values=[clarification])]
         trace.stage("apply_clarification", t0, dimension=dimension, value=clarification)
@@ -139,7 +139,7 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
     # 1. normalize
     t0 = time.perf_counter()
     language = lang or verified.detect_lang(question)
-    effective_q = question if not clarification else f"{question}\n(Aclaración del usuario / user clarification: {clarification})"
+    effective_q = question if not clarification else f"{question}\n(user clarification: {clarification})"
     unsafe = verified.looks_unsafe(question) or (clarification and verified.looks_unsafe(clarification))
     trace.stage("normalize", t0, language=language, as_of=str(settings.as_of), unsafe_pattern=bool(unsafe))
 
@@ -155,7 +155,7 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
         base["refines"] = previous["question"][:500]
 
     if not question:
-        return _finish(trace, {**base, **_not_answered("empty", {"es": "Escribí una pregunta.", "en": "Type a question."}, [], sl)})
+        return _finish(trace, {**base, **_not_answered("empty", {"he": "כתבו שאלה.", "en": "Type a question."}, [], sl)})
 
     key = _cache_key(question, (clarification or "") + (f"|prev:{prev_plan.model_dump_json()}" if previous else ""), sl.version)
     if key in CACHE:
@@ -169,7 +169,7 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
 
     if unsafe:
         return _finish(trace, {**base, **_not_answered("unsafe", {
-            "es": "No puedo hacer eso. Solo respondo preguntas de análisis con métricas definidas, y el acceso a los datos es de solo lectura.",
+            "he": "אני לא יכול לעשות את זה. אני עונה רק על שאלות אנליטיות עם מדדים מוגדרים, והגישה לנתונים היא לקריאה בלבד.",
             "en": "I can't do that. I only answer analytics questions with defined metrics, and data access is read-only."}, [], sl)})
 
     # 2. verified query match (deterministic, before any LLM call)
@@ -183,7 +183,7 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
     if vmatch and not clarification:
         notes = []
         for pname, val in vmatch.params.items():
-            notes.append({"code": "verified_param", "level": "info", "message": {"es": f"Parámetro {pname}: {val}", "en": f"Parameter {pname}: {val}"}})
+            notes.append({"code": "verified_param", "level": "info", "message": {"he": f"פרמטר {pname}: {val}", "en": f"Parameter {pname}: {val}"}})
         return _execute_plan(sl, trace, base, vmatch.plan, tier="VERIFIED", language=language, verified_info={
             "id": vmatch.id, "owner": vmatch.owner, "verified_at": vmatch.verified_at, "canonical_question": vmatch.question, "params": vmatch.params, "score": round(vmatch.score, 1)}, extra_warnings=notes, cache_key=key)
 
@@ -192,13 +192,13 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
         sugg = [{"metric": None, "question": n.question, "verified_query_id": n.id} for n in near]
         trace.stage("spend_guard", time.perf_counter(), spent_usd=round(spent_today(), 4), budget_usd=settings.daily_budget_usd)
         return _finish(trace, {**base, **_not_answered("budget", {
-            "es": "La demo alcanzó su presupuesto diario de IA. Las preguntas verificadas siguen funcionando; probá una de las sugeridas o volvé mañana.",
+            "he": "הדמו הגיע לתקציב ה-AI היומי שלו. שאלות מאומתות ממשיכות לעבוד; נסו אחת מהשאלות המוצעות או חזרו מחר.",
             "en": "The demo reached its daily AI budget. Verified questions still work; try a suggested one or come back tomorrow."}, [], sl, suggestions=sugg)})
 
     if not settings.anthropic_api_key:
         sugg = [{"metric": None, "question": n.question, "verified_query_id": n.id} for n in near]
         return _finish(trace, {**base, **_not_answered("llm_unavailable", {
-            "es": "El planificador con IA no está configurado (falta ANTHROPIC_API_KEY). Solo puedo responder las preguntas verificadas; probá una de las sugeridas.",
+            "he": "מתכנן ה-AI לא מוגדר (חסר ANTHROPIC_API_KEY). אני יכול לענות רק על שאלות מאומתות; נסו אחת מהשאלות המוצעות.",
             "en": "The AI planner is not configured (ANTHROPIC_API_KEY missing). I can only answer verified questions; try a suggested one."}, [], sl, suggestions=sugg)})
 
     try:
@@ -214,14 +214,14 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
         base["language"] = language
         if r["intent"] == "unsafe":
             return _finish(trace, {**base, **_not_answered("unsafe", {
-                "es": "No puedo hacer eso. Solo respondo preguntas de análisis con métricas definidas, y el acceso a los datos es de solo lectura.",
+                "he": "אני לא יכול לעשות את זה. אני עונה רק על שאלות אנליטיות עם מדדים מוגדרים, והגישה לנתונים היא לקריאה בלבד.",
                 "en": "I can't do that. I only answer analytics questions with defined metrics, and data access is read-only."}, [], sl)})
         if r["intent"] == "out_of_scope":
             gap = next((g for g in sl.known_gaps if g["topic"] == r.get("gap_topic")), None)
             closest = gap["closest"] if gap else []
             reason = gap["reason"] if gap else "No metric in the semantic layer covers this question."
             return _finish(trace, {**base, **_not_answered("out_of_scope", {
-                "es": f"No tengo una métrica para eso. {_es_reason(reason)}", "en": f"I don't have a metric for that. {reason}"}, closest, sl)})
+                "he": f"אין לי מדד לזה. {_he_reason(reason)}", "en": f"I don't have a metric for that. {reason}"}, closest, sl)})
 
         t0 = time.perf_counter()
         outcome = llm.plan(sl, effective_q, r["workspace"], trace.usage, allow_clarification=clarification is None, language=language,
@@ -229,12 +229,12 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
         trace.stage("plan", t0, kind=outcome.kind, plan=outcome.plan.model_dump() if outcome.plan else None, repairs=outcome.repairs,
                     tool_calls=outcome.tool_calls, reason=outcome.reason or None)
     except llm.LLMUnavailable as e:
-        return _finish(trace, {**base, **_not_answered("llm_unavailable", {"es": str(e), "en": str(e)}, [], sl)})
+        return _finish(trace, {**base, **_not_answered("llm_unavailable", {"he": str(e), "en": str(e)}, [], sl)})
     except Exception as e:  # API/network failure: fail loudly, never guess
         log.exception("llm failure")
         trace.stage("llm_error", time.perf_counter(), error=f"{type(e).__name__}: {e}")
         return _finish(trace, {**base, **_not_answered("llm_error", {
-            "es": "El servicio de IA no respondió. Probá de nuevo en unos segundos.", "en": "The AI service did not respond. Try again in a few seconds."}, [], sl)})
+            "he": "שירות ה-AI לא הגיב. נסו שוב בעוד כמה שניות.", "en": "The AI service did not respond. Try again in a few seconds."}, [], sl)})
 
     if outcome.kind == "clarification":
         return _finish(trace, {**base, "status": "clarification", "tier": None, "summary": outcome.question,
@@ -244,22 +244,22 @@ def answer(question: str, clarification: str | None = None, lang: str | None = N
         # with the router choosing the workspace.
         return answer(question, clarification, lang)
     if outcome.kind == "refusal":
-        return _finish(trace, {**base, **_not_answered("refused", {"es": outcome.reason, "en": outcome.reason}, outcome.closest, sl)})
+        return _finish(trace, {**base, **_not_answered("refused", {"he": outcome.reason, "en": outcome.reason}, outcome.closest, sl)})
     if outcome.kind != "plan":
         return _finish(trace, {**base, **_not_answered("validation_failed", {
-            "es": f"No pude armar una consulta válida con las métricas definidas ({outcome.reason}).",
+            "he": f"לא הצלחתי לבנות שאילתה תקינה מהמדדים המוגדרים ({outcome.reason}).",
             "en": f"I couldn't build a valid query from the defined metrics ({outcome.reason})."}, [], sl)})
 
-    notes = [{"code": n["code"], "level": "info", "message": {"es": n["message"], "en": n["message"]}} for n in outcome.validation_notes]
+    notes = [{"code": n["code"], "level": "info", "message": {"he": n["message"], "en": n["message"]}} for n in outcome.validation_notes]
     return _execute_plan(sl, trace, base, outcome.plan, tier="GOVERNED", language=language, extra_warnings=notes, cache_key=key)
 
 
-def _es_reason(reason: str) -> str:
+def _he_reason(reason: str) -> str:
     return {
-        "No credit issuance or registry entity modeled.": "No hay datos de emisión ni registro de créditos de carbono.",
-        "No financial entities modeled.": "No hay datos financieros (precios, primas, pagos).",
-        "Not captured in Crop Story fields.": "Ese dato no se registra en el Crop Story.",
-        "Model is descriptive; no forecast entity.": "El modelo es descriptivo; no incluye pronósticos.",
+        "No credit issuance or registry entity modeled.": "אין נתונים על הנפקה או רישום של קרדיטים פחמניים.",
+        "No financial entities modeled.": "אין נתונים פיננסיים (מחירים, פרמיות, תשלומים).",
+        "Not captured in Crop Story fields.": "הנתון הזה לא נאסף בשדות ה-Crop Story.",
+        "Model is descriptive; no forecast entity.": "המודל תיאורי; הוא לא כולל תחזיות.",
     }.get(reason, reason)
 
 
@@ -275,7 +275,7 @@ def _execute_plan(sl, trace, base, plan: QueryPlan, tier: str, language: str, ve
                                "pending_plan": plan.model_dump()})
     if v.errors:
         return _finish(trace, {**base, **_not_answered("validation_failed", {
-            "es": "La consulta no pasó la validación: " + "; ".join(e.message for e in v.errors),
+            "he": "השאילתה לא עברה אימות: " + "; ".join(e.message for e in v.errors),
             "en": "The query failed validation: " + "; ".join(e.message for e in v.errors)}, [], sl)})
     plan = v.plan
 
@@ -285,7 +285,7 @@ def _execute_plan(sl, trace, base, plan: QueryPlan, tier: str, language: str, ve
         q = compile_plan(sl, plan)
     except CompileError as e:
         trace.stage("compile", t0, error=str(e))
-        return _finish(trace, {**base, **_not_answered("compile_failed", {"es": f"No se pudo compilar la consulta: {e}", "en": f"Could not compile the query: {e}"}, [], sl)})
+        return _finish(trace, {**base, **_not_answered("compile_failed", {"he": f"לא ניתן היה לקמפל את השאילתה: {e}", "en": f"Could not compile the query: {e}"}, [], sl)})
     trace.stage("compile", t0, sql=q.display_sql, params=q.params, tables=q.tables)
 
     # 7. execute
@@ -294,7 +294,7 @@ def _execute_plan(sl, trace, base, plan: QueryPlan, tier: str, language: str, ve
         res = execute(q.sql, q.params, q.display_sql)
     except ExecutionError as e:
         trace.stage("execute", t0, error=str(e))
-        return _finish(trace, {**base, **_not_answered("execution_failed", {"es": f"La consulta falló al ejecutarse: {e}", "en": f"The query failed: {e}"}, [], sl)})
+        return _finish(trace, {**base, **_not_answered("execution_failed", {"he": f"הרצת השאילתה נכשלה: {e}", "en": f"The query failed: {e}"}, [], sl)})
     trace.stage("execute", t0, rows=len(res.rows), db_ms=res.elapsed_ms, truncated=res.truncated, engine=settings.engine)
 
     # 8. checks
@@ -325,7 +325,7 @@ def _execute_plan(sl, trace, base, plan: QueryPlan, tier: str, language: str, ve
 
     # 10. explain
     t0 = time.perf_counter()
-    summary = {lng: explain.summarize(sl, plan, res, lng) for lng in ("es", "en")}
+    summary = {lng: explain.summarize(sl, plan, res, lng) for lng in ("en", "he")}
     trace.stage("explain", t0, summary=summary[language])
 
     # lineage sample rows
@@ -379,7 +379,7 @@ def _not_answered(code: str, message: dict, closest: list[str], sl: SemanticLaye
         m = sl.metrics.get(name)
         if m:
             close.append({"metric": name, "label": m.label, "description": m.description,
-                          "question": {"es": f"Mostrame {m.label['es'].lower()}", "en": f"Show me {m.label['en'].lower()}"}})
+                          "question": {"he": f"הצג את {m.label['he']}", "en": f"Show me {m.label['en'].lower()}"}})
     return {"status": "not_answered", "tier": "NOT_ANSWERED", "summary": message, "refusal": {"code": code, "message": message, "closest": close, "suggestions": suggestions or []}, "warnings": []}
 
 
@@ -391,12 +391,12 @@ def _finish(trace: Trace, ans: dict) -> dict:
     ans["cost"] = trace.usage.as_dict()
     ans["stages"] = trace.stages
     if isinstance(ans.get("summary"), dict):
-        ans["summary"] = ans["summary"].get(ans.get("language", "es"), next(iter(ans["summary"].values())))
+        ans["summary"] = ans["summary"].get(ans.get("language", "en"), next(iter(ans["summary"].values())))
     _store(trace, ans)
     return ans
 
 
-def suggestions(lang: str = "es") -> list[dict]:
+def suggestions(lang: str = "en") -> list[dict]:
     sl = semantic.get()
     out = []
     for vq in sl.verified_queries:
@@ -405,10 +405,10 @@ def suggestions(lang: str = "es") -> list[dict]:
         ws = sl.metrics[vq["plan"]["metrics"][0]].workspace
         out.append({"question": q, "workspace": ws, "verified": True})
     extra = {
-        "es": [("¿Cuántas hectáreas sembradas de soja hay por provincia en 2024/25?", "engagement"), ("¿Cuánto carbono capturamos?", "climate"),
-               ("¿Cuántos créditos de carbono vendimos?", "climate"), ("Evolución de la tasa de respuesta por WhatsApp por mes", "engagement")],
+        "he": [("כמה הקטאר סויה נזרעו לפי מחוז ב-2024/25?", "engagement"), ("כמה פחמן אנחנו לוכדים?", "climate"),
+               ("כמה קרדיטים פחמניים מכרנו?", "climate"), ("שיעור המענה לטפסים ב-WhatsApp לפי חודש", "engagement")],
         "en": [("Planted soy hectares by province in 2024/25", "engagement"), ("How much carbon do we capture?", "climate"),
                ("How many carbon credits did we sell?", "climate"), ("WhatsApp form response rate by month", "engagement")],
-    }[lang if lang in ("es", "en") else "es"]
+    }[lang if lang in ("en", "he") else "en"]
     out += [{"question": q, "workspace": w, "verified": False} for q, w in extra]
     return out

@@ -107,7 +107,7 @@ export default function MapView({ points, unit, sizeUnit, lang, height = 380, le
         <span className="num">{fmt(lo, unit, lang, true)}</span>
         <span className="ramp">{ramp.map((c, i) => <i key={i} style={{ background: c }} />)}</span>
         <span className="num">{fmt(hi, unit, lang, true)}</span>
-        <span className="faint">· {lang === "es" ? "tamaño = magnitud" : "size = magnitude"}</span>
+        <span className="faint">· {lang === "he" ? "גודל = עוצמה" : "size = magnitude"}</span>
       </div>
     </div>
   );

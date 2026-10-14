@@ -133,5 +133,5 @@
   ],
   "title": "QueryPlan",
   "type": "object",
-  "$id": "https://demo.gabrielbulacio.com/schemas/queryplan.schema.json"
+  "$id": "https://gabrielbulacio.com/projects/campo-analytics/schemas/queryplan.schema.json"
 }

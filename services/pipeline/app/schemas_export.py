@@ -16,7 +16,7 @@ def main() -> None:
     out = settings.root / "packages" / "schemas"
     out.mkdir(parents=True, exist_ok=True)
     schema = QueryPlan.model_json_schema()
-    schema["$id"] = "https://demo.gabrielbulacio.com/schemas/queryplan.schema.json"
+    schema["$id"] = "https://gabrielbulacio.com/projects/campo-analytics/schemas/queryplan.schema.json"
     (out / "queryplan.schema.json").write_text(json.dumps(schema, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {out / 'queryplan.schema.json'}")
 

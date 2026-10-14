@@ -65,7 +65,7 @@ def _metric_choices(sl: SemanticLayer) -> dict[str, str]:
     out = {}
     for m in sl.metrics.values():
         out[norm(m.name)] = m.name
-        for s in [m.label.get("es", ""), m.label.get("en", ""), *m.synonyms]:
+        for s in [m.label.get("he", ""), m.label.get("en", ""), *m.synonyms]:
             if s:
                 out[norm(s)] = m.name
     return out
@@ -144,7 +144,7 @@ def validate(sl: SemanticLayer, plan: QueryPlan) -> Validation:
                 options = get_values().get(req, [])
                 if req == "standard":
                     options = _standards_with_data(sl, name) or options
-                v.clarification = Clarification(req, {"es": msg.get("es", f"¿Para qué {req}?"), "en": msg.get("en", f"Which {req}?")}, options)
+                v.clarification = Clarification(req, {"he": msg.get("he", f"איזה {req}?"), "en": msg.get("en", f"Which {req}?")}, options)
                 return v
     return v
 

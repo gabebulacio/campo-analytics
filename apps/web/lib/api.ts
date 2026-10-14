@@ -9,7 +9,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
     let detail = `${r.status}`;
     try {
       const j = await r.json();
-      detail = typeof j.detail === "string" ? j.detail : j.detail?.es || j.detail?.en || JSON.stringify(j.detail);
+      detail = typeof j.detail === "string" ? j.detail : j.detail?.en || j.detail?.he || JSON.stringify(j.detail);
     } catch {}
     throw new Error(detail);
   }

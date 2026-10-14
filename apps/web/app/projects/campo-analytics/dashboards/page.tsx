@@ -62,13 +62,13 @@ export default function Dashboards() {
         <div>
           <div className="eyebrow">{t("dashboards")}</div>
           <h1>{spec.name}</h1>
-          <p className="lede">{lang === "es" ? "Cada tarjeta guarda la pregunta y su plan, no los datos: al abrir el tablero se vuelve a ejecutar contra la capa semántica." : "Each tile stores the question and its plan, not the data: opening the dashboard re-runs it against the semantic layer."}</p>
+          <p className="lede">{lang === "he" ? "כל כרטיס שומר את השאלה ואת התוכנית שלה, לא את הנתונים: כשפותחים את הדשבורד, הוא רץ מחדש מול השכבה הסמנטית." : "Each tile stores the question and its plan, not the data: opening the dashboard re-runs it against the semantic layer."}</p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button className="btn" onClick={() => runAll(spec)} disabled={busy}><RefreshCw size={14} /> {t("rerun")}</button>
           <button className="btn" onClick={exportSpec}><Download size={14} /> JSON</button>
           <label className="btn" style={{ cursor: "pointer" }}>
-            <Upload size={14} /> {lang === "es" ? "Importar" : "Import"}
+            <Upload size={14} /> {lang === "he" ? "ייבוא" : "Import"}
             <input type="file" accept="application/json" hidden onChange={(e) => e.target.files?.[0] && importSpec(e.target.files[0])} />
           </label>
         </div>

@@ -24,17 +24,14 @@ UNSAFE_PATTERNS = [
     r"ignor(a|á|e|ar)\b.*instruc", r"ignore (all |the |your |previous )*instructions", r"\b(drop|delete|truncate|insert|update|alter)\s+(table|from|into)\b",
     r"\bborr(a|á|ar)\b.*\b(tabla|datos|base)\b", r"(mostra|mostrá|revela|revelá|show|reveal|print).{0,20}(prompt|instrucciones|system)",
     r"system prompt", r"jailbreak", r"\bact as\b.*\b(admin|root)\b",
+    r"\b(התעלם|תתעלם|התעלמי)\b.*(הוראות|הנחיות)", r"\b(ו?מחק|ו?תמחק|ו?מחקי|ו?תמחקי|למחוק)\b.*(טבל|נתונ|מסד)",
+    r"\b(הצג|תציג|הראה|תראה|חשוף|תחשוף|הדפס|תדפיס)\b.{0,20}(פרומפט|הוראות|הנחיות)",
 ]
-EN_HINTS = {"what", "how", "which", "show", "many", "share", "by", "the", "is", "are", "per", "of", "rate"}
-ES_HINTS = {"qué", "que", "cuál", "cual", "cuántos", "cuantos", "cuántas", "por", "el", "la", "los", "las", "de", "es", "tasa", "cómo", "como", "hay"}
+HEBREW_RE = re.compile(r"[א-ת]")
 
 
 def detect_lang(q: str) -> str:
-    words = set(re.findall(r"[a-záéíóúñ]+", q.lower()))
-    es, en = len(words & ES_HINTS), len(words & EN_HINTS)
-    if "¿" in q or re.search(r"[áéíóúñ]", q.lower()):
-        es += 2
-    return "en" if en > es else "es"
+    return "he" if HEBREW_RE.search(q) else "en"
 
 
 def looks_unsafe(q: str) -> bool:
