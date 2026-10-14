@@ -13,7 +13,7 @@ export const T = {
     he: "Medallion ב-Microsoft Fabric, ב-PySpark וב-Python, שהופך שתי מערכות דיווח שעות, ספריית משתמשים ו-CRM ל-star schema אחד ומנוהל: מי דיווח מה, על איזה לקוח, ובהשוואה למה שנמכר. שני המנועים מריצים את אותה לוגיקה, שער השוואה מוכיח שהם מפיקים טבלאות זהות, והכול נפרס ל-Fabric עם fabric-cicd.",
   },
   kpis: [
-    { v: "16", l: { en: "Fabric items: lakehouse, variable library, 11 notebooks (Python and Spark), 3 pipelines", he: "פריטי Fabric: lakehouse, variable library, 11 notebooks (Python ו-Spark), 3 pipelines" } },
+    { v: "19", l: { en: "Fabric items: lakehouse, 12 notebooks (Python and Spark), 3 pipelines, semantic model, report, settings", he: "פריטי Fabric: lakehouse, 12 notebooks (Python ו-Spark), 3 pipelines, מודל סמנטי, דוח, הגדרות" } },
     { v: "0", l: { en: "rows differ between the PySpark and Python paths (parity gate)", he: "שורות שונות בין מסלול ה-PySpark למסלול ה-Python (שער השוואה)" } },
     { v: "18", l: { en: "quality checks on every run", he: "בדיקות איכות בכל ריצה" } },
     { v: "Live", l: { en: "in production on Microsoft Fabric", he: "בייצור ב-Microsoft Fabric" } },
@@ -216,8 +216,8 @@ export const T = {
   decisions: {
     h: { en: "Design decisions", he: "החלטות תכנון" },
     intro: {
-      en: "The four choices that shape the project, written as architecture decision records: what forced the decision, what was decided, and what it costs.",
-      he: "ארבע הבחירות שמעצבות את הפרויקט, כתובות כרשומות החלטה ארכיטקטוניות: מה חייב את ההחלטה, מה הוחלט, ומה המחיר.",
+      en: "The five choices that shape the project, written as architecture decision records: what forced the decision, what was decided, and what it costs.",
+      he: "חמש הבחירות שמעצבות את הפרויקט, כתובות כרשומות החלטה ארכיטקטוניות: מה חייב את ההחלטה, מה הוחלט, ומה המחיר.",
     },
     labels: {
       context: { en: "Context", he: "רקע" },
@@ -241,7 +241,7 @@ export const T = {
           { en: "Sessions start in seconds and use a fraction of the capacity units a Spark pool would. That matters on an F2/F4 capacity shared with reports.", he: "סשנים עולים תוך שניות וצורכים חלק קטן מיחידות הקיבולת ש-Spark pool היה צורך. זה משמעותי על קיבולת F2/F4 שמשותפת עם דוחות." },
           { en: "The Python path runs on the laptop, in CI and in Fabric; the Spark path runs in CI and Fabric.", he: "מסלול ה-Python רץ על הלפטופ, ב-CI וב-Fabric; מסלול ה-Spark רץ ב-CI וב-Fabric." },
           { en: "The SQL is close to Spark SQL, and ADR 0004 carries the core logic over to PySpark, proven identical in CI.", he: "ה-SQL קרוב ל-Spark SQL, ו-ADR 0004 מעביר את לוגיקת הליבה ל-PySpark, עם הוכחה ב-CI שהתוצאה זהה." },
-          { en: "Next, for a genuinely big source: Spark tuning (partitioning, OPTIMIZE and VACUUM schedules, V-Order).", he: "השלב הבא, למקור גדול באמת: כוונון Spark (partitioning, תזמוני OPTIMIZE ו-VACUUM, V-Order)." },
+          { en: "Spark tuning for the Spark path (month partitioning, OPTIMIZE with Z-ORDER and V-Order, VACUUM) lives in nb_spark_maintenance and is checked in CI.", he: "כוונון Spark למסלול ה-Spark (partitioning לפי חודש, OPTIMIZE עם Z-ORDER ו-V-Order, VACUUM) נמצא ב-nb_spark_maintenance ונבדק ב-CI." },
         ],
       },
       {
@@ -296,6 +296,23 @@ export const T = {
           { en: "Day-to-day development stays on the fast Python path; the parity job runs the Spark notebooks on every push and pull request.", he: "הפיתוח השוטף נשאר במסלול ה-Python המהיר; job ההשוואה מריץ את ה-Spark notebooks בכל push ו-pull request." },
         ],
       },
+      {
+        n: "0005",
+        title: { en: "The semantic model as code, every measure checked against the lakehouse", he: "המודל הסמנטי כקוד, וכל מדד נבדק מול ה-lakehouse" },
+        context: {
+          en: "A medallion ends where people read it: a Power BI model. Models built by hand drift from the tables under them, and a subtly wrong DAX measure looks just as convincing in a report as a right one. Direct Lake only runs against a Fabric capacity, so the model can't be queried on a laptop as-is.",
+          he: "Medallion נגמר במקום שבו אנשים קוראים אותו: מודל Power BI. מודלים שנבנים ידנית מתרחקים מהטבלאות שמתחתם, ומדד DAX שגוי בעדינות נראה בדוח משכנע בדיוק כמו מדד נכון. Direct Lake רץ רק מול קיבולת Fabric, כך שאי אפשר לשאול את המודל על לפטופ כמו שהוא.",
+        },
+        decision: {
+          en: "Define the model once: friendly tables over the gold tables, relationships, and every measure with a description, format string and display folder. Generate it as Direct Lake TMDL (the deployable item) and as an Import copy over Parquet exports of the same tables. Load the Import copy into Power BI Desktop with pbi-cli, run every measure as a DAX query, and compare each result with the same number computed independently in DuckDB. In CI, every field a report visual uses must exist in the model.",
+          he: "להגדיר את המודל פעם אחת: טבלאות עם שמות ברורים מעל טבלאות ה-gold, קשרים, וכל מדד עם תיאור, פורמט ותיקיית תצוגה. לייצר אותו כ-TMDL ב-Direct Lake (הפריט שנפרס) וכעותק Import מעל ייצוא Parquet של אותן טבלאות. לטעון את עותק ה-Import ל-Power BI Desktop עם pbi-cli, להריץ כל מדד כשאילתת DAX, ולהשוות כל תוצאה לאותו מספר שחושב בנפרד ב-DuckDB. ב-CI, כל שדה שוויזואל בדוח משתמש בו חייב להתקיים במודל.",
+        },
+        consequences: [
+          { en: "The deployed model and the tested model can only differ in storage mode; a test fails if the committed TMDL drifts from its definition.", he: "המודל שנפרס והמודל שנבדק יכולים להיבדל רק במצב האחסון; בדיקה נכשלת אם ה-TMDL השמור מתרחק מההגדרה." },
+          { en: "190 values across all 26 measures match DuckDB, by month, by account and in total, including time intelligence and coverage.", he: "190 ערכים בכל 26 המדדים תואמים ל-DuckDB, לפי חודש, לפי לקוח ובסה\"כ, כולל time intelligence וכיסוי." },
+          { en: "Utilization and sold-vs-logged are plain aggregations because the gold layer has a capacity table (person × working day) and a conformed account dimension.", he: "ניצולת ונמכר-מול-דווח הם צבירות פשוטות, כי בשכבת ה-gold יש טבלת קיבולת (אדם × יום עבודה) ו-dimension לקוחות אחיד." },
+        ],
+      },
     ],
   },
 
@@ -308,7 +325,8 @@ export const T = {
       [{ en: "Spark version of silver and the fact table (PySpark, Spark SQL, Delta MERGE)", he: "גרסת Spark של silver ושל טבלת ה-fact (PySpark, Spark SQL, Delta MERGE)" }, { en: "Real, identical to the Python path (checked in CI)", he: "אמיתי, זהה למסלול ה-Python (נבדק ב-CI)" }],
       [{ en: "Source systems (timesheets, issue tracker, directory, CRM)", he: "מערכות המקור (דיווח שעות, מערכת משימות, ספרייה, CRM)" }, { en: "Synthetic, deterministic, with real-world quirks", he: "סינתטי, דטרמיניסטי, עם חריגות מהעולם האמיתי" }],
       [{ en: "Running on Microsoft Fabric", he: "רץ ב-Microsoft Fabric" }, { en: "Yes, in production (a work tenant, so it isn't linked here); this public rebuild uses the same items and the same fabric-cicd deploy", he: "כן, בייצור (tenant של העבודה, ולכן אין כאן קישור); השחזור הציבורי משתמש באותם פריטים ובאותה פריסה עם fabric-cicd" }],
-      [{ en: "Power BI Direct Lake model and report", he: "מודל ודוח Power BI ב-Direct Lake" }, { en: "Next", he: "השלב הבא" }],
+      [{ en: "Power BI: Direct Lake semantic model and report", he: "Power BI: מודל סמנטי ב-Direct Lake ודוח" }, { en: "Real: 26 DAX measures, each checked against the lakehouse (190 values); a 4-page report", he: "אמיתי: 26 מדדי DAX, כל אחד נבדק מול ה-lakehouse (190 ערכים); דוח בן 4 עמודים" }],
+      [{ en: "Spark tuning: partitioning, OPTIMIZE / Z-ORDER / V-Order, VACUUM", he: "כוונון Spark: partitioning, OPTIMIZE / Z-ORDER / V-Order, VACUUM" }, { en: "Real, checked in the Delta history in CI", he: "אמיתי, נבדק בהיסטוריית ה-Delta ב-CI" }],
     ] as [L, L][],
   },
 
@@ -332,6 +350,7 @@ export const UI = {
     identity: { en: "Identity resolution", he: "זיהוי אנשים" },
     quality: { en: "Quality gate", he: "שער איכות" },
     outputs: { en: "Outputs", he: "תוצרים" },
+    model: { en: "Semantic model", he: "מודל סמנטי" },
     decisions: { en: "Design decisions", he: "החלטות תכנון" },
   },
   footer: [
@@ -361,10 +380,35 @@ export const UI = {
       eyebrow: { en: "Outputs", he: "תוצרים" },
       h1: { en: "What the gold layer answers", he: "על מה שכבת ה-gold עונה" },
     },
+    model: {
+      eyebrow: { en: "Semantic model", he: "מודל סמנטי" },
+      h1: { en: "Power BI on Direct Lake, every measure verified", he: "Power BI ב-Direct Lake, וכל מדד מאומת" },
+      lead: {
+        en: "wl_model is a Direct Lake semantic model on the gold tables, defined as code and deployed with the rest of the platform. Each of its 26 DAX measures was run in Power BI and compared with the same number computed independently from the lakehouse: 190 values, all equal. wl_report reads it on four pages.",
+        he: "wl_model הוא מודל סמנטי ב-Direct Lake מעל טבלאות ה-gold, מוגדר כקוד ונפרס יחד עם שאר הפלטפורמה. כל אחד מ-26 מדדי ה-DAX שלו הורץ ב-Power BI והושווה לאותו מספר שחושב בנפרד מה-lakehouse: 190 ערכים, כולם שווים. wl_report קורא אותו בארבעה עמודים.",
+      },
+    },
     decisions: {
       eyebrow: { en: "Design decisions", he: "החלטות תכנון" },
       h1: { en: "Why it's built this way", he: "למה זה בנוי ככה" },
     },
+  },
+  modelPage: {
+    tables: { en: "Tables", he: "טבלאות" },
+    relationships: { en: "Relationships (all single direction, many-to-one)", he: "קשרים (כולם בכיוון אחד, רבים-לאחד)" },
+    measures: { en: "Measures", he: "מדדים" },
+    verified: {
+      en: "Verified: each measure ran as a DAX query in Power BI Desktop (through pbi-cli, on an Import copy of the same model) and matched DuckDB by month, by account and in total.",
+      he: "מאומת: כל מדד הורץ כשאילתת DAX ב-Power BI Desktop (דרך pbi-cli, על עותק Import של אותו מודל) ותאם ל-DuckDB לפי חודש, לפי לקוח ובסה\"כ.",
+    },
+    report: { en: "Report pages", he: "עמודי הדוח" },
+    pages: [
+      { en: "Overview: utilization, coverage, hours, unattributed share; trends by month; billable hours by account; a department matrix", he: "סקירה: ניצולת, כיסוי, שעות, חלק לא משויך; מגמות לפי חודש; שעות לחיוב לפי לקוח; מטריצה לפי מחלקה" },
+      { en: "Time & coverage: utilization and coverage trend, capacity vs billable hours, logging timeliness by department", he: "זמן וכיסוי: מגמת ניצולת וכיסוי, קיבולת מול שעות לחיוב, עמידה בזמני דיווח לפי מחלקה" },
+      { en: "Sold vs utilized: sold value, assigned vs billable hours by account, an account scorecard", he: "נמכר מול נוצל: ערך מכירה, שעות משובצות מול שעות לחיוב לפי לקוח, כרטיס ציונים ללקוח" },
+      { en: "Review worklist: identities waiting on the mapping file, expected people not logging", he: "רשימת בדיקה: זהויות שממתינות לקובץ המיפוי, אנשים צפויים שלא מדווחים" },
+    ],
+    columns: { en: "Measure", he: "מדד" },
   },
   swipe: { en: "Swipe the diagram sideways to see all of it.", he: "גללו את התרשים הצידה כדי לראות את כולו." },
   legend: [
@@ -398,7 +442,7 @@ export const UI = {
       { cls: "det", t: { en: "Silver · worklogs", he: "Silver · דיווחים" }, s: { en: "nb_silver_worklogs\nperson-day rule\nreplayable", he: "nb_silver_worklogs\nכלל יום-האדם\nניתן לשחזור" } },
       { cls: "det", t: { en: "Gold", he: "Gold" }, s: { en: "nb_gold\nstar schema · marts\nstable project keys", he: "nb_gold\nstar schema · marts\nמפתחות פרויקט קבועים" } },
       { cls: "ok", t: { en: "Quality gate", he: "שער איכות" }, s: { en: "nb_quality\n18 checks\nan error fails the run", he: "nb_quality\n18 בדיקות\nשגיאה מכשילה ריצה" } },
-      { cls: "ai", t: { en: "Power BI", he: "Power BI" }, s: { en: "Direct Lake\nreports and tiles\non gold_ tables", he: "Direct Lake\nדוחות ואריחים\nעל טבלאות gold_" } },
+      { cls: "ai", t: { en: "Power BI", he: "Power BI" }, s: { en: "wl_model · Direct Lake\n26 DAX measures\nwl_report · 4 pages", he: "wl_model · Direct Lake\n26 מדדי DAX\nwl_report · 4 עמודים" } },
     ],
     orchestrator: {
       t: { en: "Orchestration", he: "תזמור" },
@@ -418,3 +462,365 @@ export const UI = {
     secrets: { en: "settings in wl_settings · secrets in Key Vault", he: "הגדרות ב-wl_settings · סודות ב-Key Vault" },
   },
 };
+
+// ---- semantic model (generated from local/build_model.py in the worklog-lakehouse repo) -------------
+export const MODEL_MEASURES: { name: string; table: string; folder: string; desc: L; dax: string }[] = [
+  {
+    "name": "Hours Logged",
+    "table": "Worklog",
+    "folder": "Time",
+    "desc": {
+      "en": "All hours in worklogs from both systems.",
+      "he": "כל השעות בדיווחים משתי המערכות."
+    },
+    "dax": "SUM ( Worklog[Hours] )"
+  },
+  {
+    "name": "Billable Hours",
+    "table": "Worklog",
+    "folder": "Time",
+    "desc": {
+      "en": "Hours logged against a CRM account (internal and pending projects excluded).",
+      "he": "שעות שדווחו מול לקוח מה-CRM (בלי פרויקטים פנימיים וממתינים)."
+    },
+    "dax": "SUM ( Worklog[Billable] )"
+  },
+  {
+    "name": "Billable Share %",
+    "table": "Worklog",
+    "folder": "Time",
+    "desc": {
+      "en": "Billable hours as a share of all hours logged.",
+      "he": "חלק השעות לחיוב מכלל השעות שדווחו."
+    },
+    "dax": "DIVIDE ( [Billable Hours], [Hours Logged] )"
+  },
+  {
+    "name": "Capacity Hours",
+    "table": "Capacity",
+    "folder": "Capacity",
+    "desc": {
+      "en": "Hours expected people could work: working days employed x hours per day.",
+      "he": "השעות שאנשים צפויים יכלו לעבוד: ימי עבודה בהעסקה × שעות ביום."
+    },
+    "dax": "SUM ( Capacity[Hours] )"
+  },
+  {
+    "name": "Utilization %",
+    "table": "Capacity",
+    "folder": "Capacity",
+    "desc": {
+      "en": "Billable hours over capacity hours.",
+      "he": "שעות לחיוב חלקי שעות הקיבולת."
+    },
+    "dax": "DIVIDE ( [Billable Hours], [Capacity Hours] )"
+  },
+  {
+    "name": "Expected People",
+    "table": "Capacity",
+    "folder": "Coverage",
+    "desc": {
+      "en": "People with capacity in the period: enabled, not exempt, employed.",
+      "he": "אנשים עם קיבולת בתקופה: פעילים, לא פטורים, מועסקים."
+    },
+    "dax": "CALCULATE ( DISTINCTCOUNT ( 'User'[User Key] ), Capacity )"
+  },
+  {
+    "name": "Logging People",
+    "table": "Capacity",
+    "folder": "Coverage",
+    "desc": {
+      "en": "Expected people who logged at least one entry in the period.",
+      "he": "אנשים צפויים שדיווחו לפחות רשומה אחת בתקופה."
+    },
+    "dax": "VAR expected = CALCULATETABLE ( VALUES ( 'User'[User Key] ), Capacity )\nRETURN\n    COUNTROWS ( FILTER ( expected, CALCULATE ( NOT ISEMPTY ( Worklog ) ) ) )"
+  },
+  {
+    "name": "Coverage %",
+    "table": "Capacity",
+    "folder": "Coverage",
+    "desc": {
+      "en": "Logging people over expected people.",
+      "he": "אנשים שדיווחו חלקי אנשים צפויים."
+    },
+    "dax": "DIVIDE ( [Logging People], [Expected People] )"
+  },
+  {
+    "name": "People Not Logging",
+    "table": "Capacity",
+    "folder": "Coverage",
+    "desc": {
+      "en": "Expected people with no worklog in the period.",
+      "he": "אנשים צפויים בלי אף דיווח בתקופה."
+    },
+    "dax": "[Expected People] - [Logging People]"
+  },
+  {
+    "name": "Unattributed Hours",
+    "table": "Worklog",
+    "folder": "Identity",
+    "desc": {
+      "en": "Hours no person could be matched to (kept in the fact as Unknown).",
+      "he": "שעות שלא נמצא להן אדם (נשארות ב-fact כ\"לא ידוע\")."
+    },
+    "dax": "CALCULATE ( [Hours Logged], Worklog[Matched] = FALSE () )"
+  },
+  {
+    "name": "Unattributed Share %",
+    "table": "Worklog",
+    "folder": "Identity",
+    "desc": {
+      "en": "Share of hours waiting on the mapping-file worklist.",
+      "he": "חלק השעות שממתינות ברשימת העבודה של קובץ המיפוי."
+    },
+    "dax": "DIVIDE ( [Unattributed Hours], [Hours Logged] )"
+  },
+  {
+    "name": "Median Logging Delay (days)",
+    "table": "Worklog",
+    "folder": "Timeliness",
+    "desc": {
+      "en": "Median days between the work date and when the entry was created.",
+      "he": "חציון הימים בין יום העבודה ליצירת הרשומה."
+    },
+    "dax": "MEDIAN ( Worklog[Delay Days] )"
+  },
+  {
+    "name": "Logged Within 7 Days %",
+    "table": "Worklog",
+    "folder": "Timeliness",
+    "desc": {
+      "en": "Share of entries created within a week of the work date.",
+      "he": "חלק הרשומות שנוצרו בתוך שבוע מיום העבודה."
+    },
+    "dax": "DIVIDE (\n    CALCULATE ( COUNTROWS ( Worklog ), Worklog[Delay Days] <= 7 ),\n    COUNTROWS ( Worklog )\n)"
+  },
+  {
+    "name": "Assigned Hours",
+    "table": "Assignment",
+    "folder": "Sold vs utilized",
+    "desc": {
+      "en": "Hours sold through CRM assignments, prorated by month and allocation.",
+      "he": "שעות שנמכרו דרך שיבוצים ב-CRM, מחולקות לפי חודש והיקף משרה."
+    },
+    "dax": "SUM ( Assignment[Hours] )"
+  },
+  {
+    "name": "Sold Value",
+    "table": "Assignment",
+    "folder": "Sold vs utilized",
+    "desc": {
+      "en": "Assigned hours priced at each deliverable's rate.",
+      "he": "שעות משובצות בתעריף של כל תוצר."
+    },
+    "dax": "SUMX ( Assignment, Assignment[Hours] * RELATED ( Deliverable[Rate] ) )"
+  },
+  {
+    "name": "Average Sold Rate",
+    "table": "Assignment",
+    "folder": "Sold vs utilized",
+    "desc": {
+      "en": "Sold value per assigned hour.",
+      "he": "ערך המכירה לכל שעה משובצת."
+    },
+    "dax": "DIVIDE ( [Sold Value], [Assigned Hours] )"
+  },
+  {
+    "name": "Sold Utilization %",
+    "table": "Assignment",
+    "folder": "Sold vs utilized",
+    "desc": {
+      "en": "Billable hours delivered over hours sold.",
+      "he": "שעות לחיוב שבוצעו חלקי שעות שנמכרו."
+    },
+    "dax": "DIVIDE ( [Billable Hours], [Assigned Hours] )"
+  },
+  {
+    "name": "Unused Sold Hours",
+    "table": "Assignment",
+    "folder": "Sold vs utilized",
+    "desc": {
+      "en": "Sold hours not covered by billable work (never negative).",
+      "he": "שעות שנמכרו ולא כוסו בעבודה לחיוב (לעולם לא שלילי)."
+    },
+    "dax": "MAX ( 0, [Assigned Hours] - [Billable Hours] )"
+  },
+  {
+    "name": "Hours Logged PM",
+    "table": "Worklog",
+    "folder": "Time intelligence",
+    "desc": {
+      "en": "Hours logged in the previous month (Date is the marked date table).",
+      "he": "שעות שדווחו בחודש הקודם (Date היא טבלת התאריכים המסומנת)."
+    },
+    "dax": "CALCULATE ( [Hours Logged], DATEADD ( 'Date'[Date], -1, MONTH ) )"
+  },
+  {
+    "name": "Hours Logged MoM %",
+    "table": "Worklog",
+    "folder": "Time intelligence",
+    "desc": {
+      "en": "Change in hours logged against the previous month.",
+      "he": "השינוי בשעות שדווחו לעומת החודש הקודם."
+    },
+    "dax": "VAR prior = [Hours Logged PM]\nRETURN\n    DIVIDE ( [Hours Logged] - prior, prior )"
+  },
+  {
+    "name": "Hours Logged YTD",
+    "table": "Worklog",
+    "folder": "Time intelligence",
+    "desc": {
+      "en": "Hours logged from 1 January to the end of the current filter.",
+      "he": "שעות שדווחו מ-1 בינואר ועד סוף הסינון הנוכחי."
+    },
+    "dax": "TOTALYTD ( [Hours Logged], 'Date'[Date] )"
+  },
+  {
+    "name": "Utilization % PM",
+    "table": "Capacity",
+    "folder": "Time intelligence",
+    "desc": {
+      "en": "Utilization in the previous month.",
+      "he": "הניצולת בחודש הקודם."
+    },
+    "dax": "CALCULATE ( [Utilization %], DATEADD ( 'Date'[Date], -1, MONTH ) )"
+  },
+  {
+    "name": "Utilization Change (pts)",
+    "table": "Capacity",
+    "folder": "Time intelligence",
+    "desc": {
+      "en": "Percentage-point change in utilization against the previous month.",
+      "he": "השינוי בנקודות אחוז בניצולת לעומת החודש הקודם."
+    },
+    "dax": "VAR prior = [Utilization % PM]\nRETURN\n    IF ( NOT ISBLANK ( prior ), [Utilization %] - prior )"
+  },
+  {
+    "name": "Worklist Hours",
+    "table": "Unmatched Workers",
+    "folder": "Review",
+    "desc": {
+      "en": "Hours waiting on a mapping-file entry.",
+      "he": "שעות שממתינות לרשומה בקובץ המיפוי."
+    },
+    "dax": "SUM ( 'Unmatched Workers'[Hours] )"
+  },
+  {
+    "name": "Worklist Entries",
+    "table": "Unmatched Workers",
+    "folder": "Review",
+    "desc": {
+      "en": "Worklog entries waiting on a mapping-file entry.",
+      "he": "רשומות דיווח שממתינות לרשומה בקובץ המיפוי."
+    },
+    "dax": "SUM ( 'Unmatched Workers'[Entries] )"
+  },
+  {
+    "name": "Days Without Logging",
+    "table": "Non-loggers",
+    "folder": "Review",
+    "desc": {
+      "en": "Days since the person last logged (blank: never logged).",
+      "he": "ימים מאז הדיווח האחרון (ריק: מעולם לא דיווח)."
+    },
+    "dax": "MAX ( 'Non-loggers'[Days Since Last Log] )"
+  }
+];
+export const MODEL_FOLDERS: Record<string, L> = {
+  "Time": {
+    "en": "Time",
+    "he": "זמן"
+  },
+  "Capacity": {
+    "en": "Capacity",
+    "he": "קיבולת"
+  },
+  "Coverage": {
+    "en": "Coverage",
+    "he": "כיסוי"
+  },
+  "Identity": {
+    "en": "Identity",
+    "he": "זיהוי"
+  },
+  "Timeliness": {
+    "en": "Timeliness",
+    "he": "עמידה בזמנים"
+  },
+  "Sold vs utilized": {
+    "en": "Sold vs utilized",
+    "he": "נמכר מול נוצל"
+  },
+  "Time intelligence": {
+    "en": "Time intelligence",
+    "he": "Time intelligence"
+  },
+  "Review": {
+    "en": "Review",
+    "he": "בדיקה"
+  }
+};
+export const MODEL_TABLES: { name: string; source: string; desc: string }[] = [
+  {
+    "name": "Date",
+    "source": "gold_dim_date",
+    "desc": "Calendar from the first worklog to the run date. Marked as the date table."
+  },
+  {
+    "name": "User",
+    "source": "gold_dim_user",
+    "desc": "One row per person, current version of the SCD2 history, plus an Unknown member."
+  },
+  {
+    "name": "Account",
+    "source": "gold_dim_account",
+    "desc": "CRM accounts, conformed: projects and sold assignments both point here. Internal projects have no account."
+  },
+  {
+    "name": "Project",
+    "source": "gold_dim_project",
+    "desc": "One row per source project code, with the stable key from the append-only registry."
+  },
+  {
+    "name": "Deliverable",
+    "source": "gold_dim_deliverable",
+    "desc": "Sold positions from the CRM: role, period, monthly hours and rate."
+  },
+  {
+    "name": "Worklog",
+    "source": "gold_fact_worklog",
+    "desc": "One row per worklog from both time systems, attributed to a person and a project."
+  },
+  {
+    "name": "Capacity",
+    "source": "gold_fact_capacity",
+    "desc": "One row per expected person per working day: the denominator of utilization."
+  },
+  {
+    "name": "Assignment",
+    "source": "gold_fact_assignment_month",
+    "desc": "CRM assignments prorated to person x month: hours sold."
+  },
+  {
+    "name": "Non-loggers",
+    "source": "gold_mart_nonloggers",
+    "desc": "People expected to log with no worklog in the trailing window. A follow-up list."
+  },
+  {
+    "name": "Unmatched Workers",
+    "source": "gold_audit_unmatched_workers",
+    "desc": "Worklog identities no person matched: the mapping-file worklist."
+  }
+];
+export const MODEL_RELATIONSHIPS: string[] = [
+  "Worklog[Date] → Date[Date]",
+  "Worklog[User Key] → User[User Key]",
+  "Worklog[Project Key] → Project[Project Key]",
+  "Project[Account ID] → Account[Account ID]",
+  "Capacity[Date] → Date[Date]",
+  "Capacity[User Key] → User[User Key]",
+  "Assignment[Month] → Date[Date]",
+  "Assignment[User Key] → User[User Key]",
+  "Assignment[Deliverable ID] → Deliverable[Deliverable ID]",
+  "Assignment[Account ID] → Account[Account ID]"
+];

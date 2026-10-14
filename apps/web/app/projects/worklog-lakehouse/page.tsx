@@ -13,6 +13,7 @@ export default function Overview() {
     { href: "/identity", label: UI.nav.identity },
     { href: "/quality", label: UI.nav.quality },
     { href: "/outputs", label: UI.nav.outputs },
+    { href: "/model", label: UI.nav.model },
     { href: "/decisions", label: UI.nav.decisions },
   ];
   return (
