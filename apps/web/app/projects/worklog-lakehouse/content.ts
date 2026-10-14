@@ -16,19 +16,19 @@ export const T = {
     { v: "16", l: { en: "Fabric items: lakehouse, variable library, 11 notebooks (Python and Spark), 3 pipelines", he: "פריטי Fabric: lakehouse, variable library, 11 notebooks (Python ו-Spark), 3 pipelines" } },
     { v: "0", l: { en: "rows differ between the PySpark and Python paths (parity gate)", he: "שורות שונות בין מסלול ה-PySpark למסלול ה-Python (שער השוואה)" } },
     { v: "18", l: { en: "quality checks on every run", he: "בדיקות איכות בכל ריצה" } },
-    { v: "< 20 s", l: { en: "per daily run, on a laptop", he: "לריצה יומית, על לפטופ" } },
+    { v: "Live", l: { en: "in production on Microsoft Fabric", he: "בייצור ב-Microsoft Fabric" } },
   ],
 
   problem: {
     h: { en: "The problem", he: "הבעיה" },
     p: [
       {
-        en: "At work I owned the load that moved logged hours from two time-tracking systems into the database behind finance's reports. The hard part wasn't the APIs, it was the people. The same person showed up under different emails, legacy domains and swapped \"last.first\" logins. Deactivated accounts came back with blank emails, entries were edited or deleted weeks later, and project keys had to stay stable because finance referenced them.",
-        he: "בעבודה הייתי אחראי על הטעינה שהעבירה שעות מדווחות משתי מערכות דיווח שעות אל מסד הנתונים שמאחורי הדוחות של הכספים. החלק הקשה לא היה ה-APIs, אלא האנשים. אותו אדם הופיע עם כתובות מייל שונות, דומיינים ישנים ושמות משתמש הפוכים (\"last.first\"). חשבונות שהושבתו חזרו עם מייל ריק, רשומות נערכו או נמחקו שבועות אחר כך, ומפתחות הפרויקטים היו חייבים להישאר קבועים כי הכספים הסתמכו עליהם.",
+        en: "At work I built and run this kind of platform on Microsoft Fabric, in production: it brings logged hours from two time-tracking systems into the lakehouse behind finance's reports. The hard part wasn't the APIs, it was the people. The same person showed up under different emails, legacy domains and swapped \"last.first\" logins. Deactivated accounts came back with blank emails, entries were edited or deleted weeks later, and project keys had to stay stable because finance referenced them.",
+        he: "בעבודה בניתי ואני מפעיל פלטפורמה כזאת ב-Microsoft Fabric, בייצור: היא מביאה שעות מדווחות משתי מערכות דיווח שעות אל ה-lakehouse שמאחורי הדוחות של הכספים. החלק הקשה לא היה ה-APIs, אלא האנשים. אותו אדם הופיע עם כתובות מייל שונות, דומיינים ישנים ושמות משתמש הפוכים (\"last.first\"). חשבונות שהושבתו חזרו עם מייל ריק, רשומות נערכו או נמחקו שבועות אחר כך, ומפתחות הפרויקטים היו חייבים להישאר קבועים כי הכספים הסתמכו עליהם.",
       },
       {
-        en: "This project rebuilds that kind of pipeline from scratch, the way I'd build it on Fabric, on a fictional company with synthetic data, so it can be public and anyone can run it. None of the original code, data or names are here.",
-        he: "הפרויקט הזה בונה pipeline מהסוג הזה מאפס, כמו שהייתי בונה אותו ב-Fabric, על חברה בדיונית עם נתונים סינתטיים, כדי שיוכל להיות ציבורי וכל אחד יוכל להריץ אותו. אין כאן שום קוד, נתונים או שמות מהמקור.",
+        en: "This project rebuilds that platform from scratch, the way I build it on Fabric, on a fictional company with synthetic data, so it can be public and anyone can run it. None of the original code, data or names are here.",
+        he: "הפרויקט הזה בונה את הפלטפורמה הזאת מאפס, כמו שאני בונה אותה ב-Fabric, על חברה בדיונית עם נתונים סינתטיים, כדי שיוכל להיות ציבורי וכל אחד יוכל להריץ אותו. אין כאן שום קוד, נתונים או שמות מהמקור.",
       },
     ],
   },
@@ -265,8 +265,8 @@ export const T = {
         n: "0003",
         title: { en: "Clean-room rebuild on synthetic sources", he: "בנייה מחדש נקייה על מקורות סינתטיים" },
         context: {
-          en: "The problems this project solves come from real work: consolidating worklogs from two systems, resolving identities across domains and logins, keeping finance-facing keys stable, and comparing sold with logged hours. That work, its code and its data belong to an employer, and this project is public.",
-          he: "הבעיות שהפרויקט פותר באות מעבודה אמיתית: איחוד דיווחי שעות משתי מערכות, זיהוי אנשים על פני דומיינים ושמות משתמש, שמירה על מפתחות יציבים לכספים, והשוואה בין שעות שנמכרו לשעות שדווחו. העבודה הזאת, הקוד שלה והנתונים שלה שייכים למעסיק, והפרויקט הזה ציבורי.",
+          en: "The problems this project solves come from a platform I run in production on Microsoft Fabric: consolidating worklogs from two systems, resolving identities across domains and logins, keeping finance-facing keys stable, and comparing sold with logged hours. That work, its code and its data belong to an employer, and this project is public.",
+          he: "הבעיות שהפרויקט פותר באות מפלטפורמה שאני מפעיל בייצור ב-Microsoft Fabric: איחוד דיווחי שעות משתי מערכות, זיהוי אנשים על פני דומיינים ושמות משתמש, שמירה על מפתחות יציבים לכספים, והשוואה בין שעות שנמכרו לשעות שדווחו. העבודה הזאת, הקוד שלה והנתונים שלה שייכים למעסיק, והפרויקט הזה ציבורי.",
         },
         decision: {
           en: "Rebuild from scratch on a fictional company with synthetic, deterministic sources. The generator reproduces the kinds of source behaviour that make the problem hard: blank emails for deactivated users, mixed timestamp formats, legacy and external domains, swapped logins, namesakes, overlapping API pages, late logging, edits and deletions. No code, schema, name, identifier, client or number is copied.",
@@ -307,7 +307,7 @@ export const T = {
       [{ en: "CI: lint, item checks, end-to-end runs on a temporary lakehouse", he: "CI: lint, בדיקות פריטים, ריצות מקצה לקצה על lakehouse זמני" }, { en: "Real", he: "אמיתי" }],
       [{ en: "Spark version of silver and the fact table (PySpark, Spark SQL, Delta MERGE)", he: "גרסת Spark של silver ושל טבלת ה-fact (PySpark, Spark SQL, Delta MERGE)" }, { en: "Real, identical to the Python path (checked in CI)", he: "אמיתי, זהה למסלול ה-Python (נבדק ב-CI)" }],
       [{ en: "Source systems (timesheets, issue tracker, directory, CRM)", he: "מערכות המקור (דיווח שעות, מערכת משימות, ספרייה, CRM)" }, { en: "Synthetic, deterministic, with real-world quirks", he: "סינתטי, דטרמיניסטי, עם חריגות מהעולם האמיתי" }],
-      [{ en: "Deployed to a live Fabric capacity", he: "פריסה לקיבולת Fabric חיה" }, { en: "Not yet: runs locally and in CI", he: "עדיין לא: רץ מקומית וב-CI" }],
+      [{ en: "Running on Microsoft Fabric", he: "רץ ב-Microsoft Fabric" }, { en: "Yes, in production (a work tenant, so it isn't linked here); this public rebuild uses the same items and the same fabric-cicd deploy", he: "כן, בייצור (tenant של העבודה, ולכן אין כאן קישור); השחזור הציבורי משתמש באותם פריטים ובאותה פריסה עם fabric-cicd" }],
       [{ en: "Power BI Direct Lake model and report", he: "מודל ודוח Power BI ב-Direct Lake" }, { en: "Next", he: "השלב הבא" }],
     ] as [L, L][],
   },
