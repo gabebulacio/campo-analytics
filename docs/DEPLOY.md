@@ -15,7 +15,7 @@ cd ~/campo-api-bundle && vercel deploy --prod
 cd apps/web && vercel deploy --prod
 ```
 API env vars (Vercel → campo-analytics-api → Settings → Environment Variables): `ANTHROPIC_API_KEY`, `ANTHROPIC_WORKSPACE_ID`, `WRITE_DIR=/tmp`, `DAILY_BUDGET_USD`, `RATE_LIMIT_PER_IP_PER_DAY`, `DEMO_MODE`.
-Web env var: `PIPELINE_URL` = the API URL. DNS: records added in Cloudflare via Domain Connect (DNS only).
+Web env var: `PIPELINE_URL` = the API URL. DNS: records added in Cloudflare via Domain Connect, then switched to **Proxied** (see step 4).
 
 The Cloud Run path below remains the target for the Postgres/Mongo architecture.
 
@@ -78,7 +78,7 @@ Set a **budget alert at US$ 5**: Billing → Budgets & alerts.
 The demo is a path on the personal site, not a subdomain. Demos live under `/projects/<name>`.
 1. In Vercel, go to Project → Settings → Domains and add `gabrielbulacio.com` and `www.gabrielbulacio.com`.
 2. Keep `demo.gabrielbulacio.com` on the project too. `next.config.mjs` permanently redirects every old demo link (including `?q=` questions) to the same page under `/projects/campo-analytics`.
-3. In Cloudflare, the records point to Vercel with proxy status **DNS only** (grey cloud).
+3. In Cloudflare, set SSL/TLS to **Full (strict)** first, then switch the `@`, `www` and `demo` records to **Proxied** (orange cloud). A Response Header Transform Rule (Rules → Overview → Create rule) removes `x-vercel-id`, `x-vercel-cache` and `x-matched-path` on all requests; Cloudflare replaces `Server` itself. Vercel's Domains page may warn about the proxy; the site works regardless. Check with `curl -sI https://gabrielbulacio.com/`: `Server: cloudflare` and no `x-vercel-*`.
 
 A future demo that lives in its own repo and Vercel project can join the same structure: give that app `basePath: "/projects/<name>"` and add a rewrite here from `/projects/<name>/:path*` to its deployment URL.
 
@@ -112,5 +112,5 @@ This moves the marts to the architecture's real database and the raw documents t
    `/health` then reports `"engine": "postgres"`.
 
 ## Redeploying
-- Web: every push to `main` redeploys on Vercel automatically.
+- Web: pushing to `main` does not deploy. Run `cd apps/web && vercel deploy --prod` from a clean, pushed `main`.
 - Pipeline: rerun the `gcloud run deploy pipeline --source . ...` command, or `gcloud run services update` for config-only changes.

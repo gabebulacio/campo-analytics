@@ -28,7 +28,7 @@ cd ~/campo-api-bundle && vercel deploy --prod
 Smoke test: `curl https://campo-analytics-api-bulacio.vercel.app/health` → `status ok`, `llm_configured: true`, expected `semantic_version` and metric count.
 
 ## 3. Web
-Pushing to `main` redeploys automatically. Manual: `cd apps/web && vercel deploy --prod`.
+Pushing to `main` does not deploy. Deploy by hand: `cd apps/web && vercel deploy --prod`.
 Smoke test:
 - `https://gabrielbulacio.com/` (personal page) and `/projects/campo-analytics` load.
 - A verified question works: `/projects/campo-analytics?q=What%20share%20of%20area%20is%20EUDR%20deforestation-free%20by%20country%3F`

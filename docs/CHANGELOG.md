@@ -6,6 +6,7 @@
 - Link previews: OpenGraph title and description for the personal page and both projects.
 - README: a "How this was built" section; the trust-tier badges are named as the UI shows them (English, not the old Spanish); the real-data section is labelled as the plan it is, since land-use flags are still simulated; each borrowed pattern links to its source.
 - Worklog Lakehouse: the personal-page card and the case study describe the project as adapted from the production platform with Claude Code and then scrubbed, not as a clean-room rebuild.
+- Hosting: gabrielbulacio.com now goes through Cloudflare's proxy, which strips the origin's response headers (`docs/DEPLOY.md`, step 4). The deploy docs no longer claim that pushing to `main` deploys.
 - Architecture page: the diagram's first box says English / Hebrew (it still said ES / EN), and the stack names the hosting model instead of a vendor.
 
 ## 0.6.0 — 2026-10-14 · Worklog Lakehouse page, favicon, Claude Code setup
