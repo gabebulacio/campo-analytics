@@ -12,7 +12,7 @@ export default function Home() {
         <p>
           I&apos;m an analytics engineer who builds data platforms, semantic layers and AI that answers questions on governed data. I like
           working with messy systems: helping organizations understand their current data foundation, then building a roadmap for what
-          comes next, whether that&apos;s a programmatic or an agentic approach. For nearly four years I&apos;ve worked across finance, growth
+          comes next, whether that&apos;s a programmatic or an agentic approach. For the last few years I&apos;ve worked across finance, growth
           and data (engineering, strategy and BI), turning disorganized data into insights teams can trust.
         </p>
         <p>
