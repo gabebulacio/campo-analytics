@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 — 2026-10-17 · New intro
+
+- Site: a longer intro on the personal page, with links to book an intro call (Calendly) and to LinkedIn.
+
 ## 0.6.0 — 2026-10-14 · Worklog Lakehouse page, favicon, Claude Code setup
 
 - Site: a card on the personal page and a case study at `/projects/worklog-lakehouse` for the second project, a Microsoft Fabric medallion that also runs locally. Its code is its own repo, [gabebulacio/worklog-lakehouse](https://github.com/gabebulacio/worklog-lakehouse).

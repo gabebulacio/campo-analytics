@@ -9,7 +9,21 @@ export default function Home() {
     <main className="site">
       <header>
         <h1>Gabriel Bulacio</h1>
-        <p className="muted">Analytics engineer. I build semantic layers, data platforms, and AI that answers questions on top of governed data.</p>
+        <p>
+          I&apos;m an analytics engineer who builds data platforms, semantic layers and AI that answers questions on governed data. I like
+          working with messy systems: helping organizations understand their current data foundation, then building a roadmap for what
+          comes next, whether that&apos;s a programmatic or an agentic approach. For nearly four years I&apos;ve worked across finance, growth
+          and data (engineering, strategy and BI), turning disorganized data into insights teams can trust.
+        </p>
+        <p>
+          My background is in physics, which shaped how I think about systems. I&apos;m completing a dual licenciatura (a
+          six-year degree, master&apos;s equivalent) in Physics and Data Science, focused on complex and stochastic systems. I&apos;m based in
+          Buenos Aires and work remotely in English and Spanish, with working Portuguese and Hebrew.
+        </p>
+        <div className="site-links">
+          <a href="https://calendly.com/gabrielbulacio/intro-meeting">Book an intro call</a>
+          <a href="https://www.linkedin.com/in/gabulacio/">LinkedIn</a>
+        </div>
       </header>
 
       <section>

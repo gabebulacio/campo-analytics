@@ -307,7 +307,8 @@ table.simple td.r, table.simple th.r { text-align: end; }
 /* ---------- personal page */
 .site { max-width: 680px; margin: 0 auto; padding: 72px 20px 64px; display: flex; flex-direction: column; gap: 40px; }
 .site h1 { font-size: 30px; line-height: 36px; }
-.site header p { margin-top: 8px; font-size: 16px; line-height: 26px; max-width: 56ch; }
+.site header p { margin-top: 12px; font-size: 16px; line-height: 26px; max-width: 64ch; }
+.site header .site-links { margin-top: 16px; }
 .site-h { font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: 12px; }
 .site-project { border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 8px; }
 .site-project p { line-height: 24px; }
