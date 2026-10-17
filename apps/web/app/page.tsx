@@ -37,7 +37,7 @@ export default function Home() {
             A Microsoft Fabric medallion in PySpark and Python that turns two time-tracking systems, a user directory and a CRM into one
             governed star schema, served by a Direct Lake semantic model with 26 DAX measures, each checked against the lakehouse. Both
             engines run the same logic and a parity gate proves they produce identical tables; it all deploys to Fabric with fabric-cicd. Identity resolution through ranked matching rules, with ambiguous cases sent for review;
-            project keys that never change; and a quality gate on every run. A synthetic-data rebuild of a platform I run in production on Fabric.
+            project keys that never change; and a quality gate on every run. Adapted, on synthetic data, from a platform I run in production on Fabric.
           </p>
           <p className="small muted">PySpark · Spark SQL · Delta Lake · Microsoft Fabric · Power BI (Direct Lake, DAX) · fabric-cicd · Python · DuckDB · GitHub Actions</p>
           <div className="site-links">

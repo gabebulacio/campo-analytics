@@ -39,7 +39,7 @@ Web: `cd apps/web && npm run typecheck && npm run build`.
 - **Golden set ≠ prompt examples.** Never copy a golden question into `examples:` or a prompt; `test_semantic_lint.py` enforces disjointness.
 - **Ratios are ratios of sums**, never averages of row ratios. Joins are declared in `relationships:`, never inferred.
 - **Campo: every user-facing string exists in `en` and `he`** (UI `lib/i18n.tsx`, semantic-layer labels and verified-query phrasings). Hebrew is RTL: use logical CSS properties. Other project pages are English unless they add a language toggle.
-- **Employer work stays out.** Projects and case studies inspired by past jobs are clean-room rebuilds on synthetic data: no copied code, names, emails, tenant/app IDs, client names or real figures.
+- **Employer work stays out.** Projects and case studies drawn from employer work run on synthetic data and are scrubbed: no names, emails, tenant/app IDs, client names, real figures or anything else that identifies the employer, its people or its clients.
 - **No raw hex colours** outside `app/globals.css` (CI greps for them). Use style-guide tokens ([docs/style-guide.md](docs/style-guide.md)).
 - **Producer-level data is synthetic.** Never add real company names, logos or client data. `docs/semantic-layer/portfolio/`, `docs/company-research.md` and `Prep entrevista*.md` are private: never commit or quote them.
 - Never read or print `.env.local`; secrets live there and in Vercel env vars.

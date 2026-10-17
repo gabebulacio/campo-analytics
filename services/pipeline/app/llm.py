@@ -88,7 +88,7 @@ def _create(model: str, **kw):
     return c.messages.create(model=model, **kw)
 
 
-# ------------------------------------------------------------------- router
+# Router
 ROUTER_SCHEMA = {
     "type": "object",
     "properties": {
@@ -149,7 +149,7 @@ def route(sl: SemanticLayer, question: str, usage: Usage) -> dict:
     return out
 
 
-# ------------------------------------------------------------------- planner
+# Planner
 TERMINAL = {"submit_plan", "ask_clarification", "refuse"}
 
 

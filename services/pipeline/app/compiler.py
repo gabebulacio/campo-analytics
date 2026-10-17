@@ -60,7 +60,7 @@ class _Ctx:
         return p, lit
 
 
-# --------------------------------------------------------------------- joins
+# Joins
 def _edges(sl: SemanticLayer, via: tuple[str, ...]):
     """Adjacency list in declaration order: (neighbor, relationship, forward?)."""
     adj: dict[str, list[tuple[str, Relationship, bool]]] = {}
@@ -117,7 +117,7 @@ def reachable(sl: SemanticLayer, base: str, via: tuple[str, ...] = ()) -> set[st
     return seen
 
 
-# --------------------------------------------------------------------- pieces
+# Pieces
 def _agg(c: Component) -> str:
     if c.type == "sum":
         return f"sum({c.expr})"

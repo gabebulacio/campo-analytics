@@ -40,7 +40,7 @@ const PHASES: { when: T; title: T; goal: T; items: T[]; gate: T }[] = [
     items: [
       { he: "לבנות מחדש את 5 הדשבורדים המרכזיים כ-specs (שאלות + תוכניות), עם QuickSight במקביל.", en: "Rebuild the 5 key dashboards as specs (questions + plans), with QuickSight in parallel." },
       { he: "פיילוט עם 1–2 לקוחות על דשבורדים של ציות ל-EUDR.", en: "Pilot with 1–2 clients on EUDR compliance dashboards." },
-      { he: "לולאת משוב: כל 👎 נבדק ויכול להיכנס לסט הזהב.", en: "Feedback loop: every 👎 is reviewed and can be promoted to the golden set." },
+      { he: "לולאת משוב: כל דירוג שלילי נבדק ויכול להיכנס לסט הזהב.", en: "Feedback loop: every thumbs-down is reviewed and can be promoted to the golden set." },
       { he: "ניטור עלות, זמני תגובה ושאלות ללא תשובה (שמכוונות את המידול הבא).", en: "Monitoring of cost, latency and unanswered questions (which drive the next modeling)." },
     ],
     gate: { he: "אישור הפיילוט ודוח התאמה. רק אז מכבים את הדשבורד הישן המקביל.", en: "Pilot sign-off and a parity report. Only then is the matching old dashboard switched off." },

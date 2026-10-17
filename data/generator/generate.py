@@ -130,7 +130,7 @@ class Gen:
     def hexhash(self, *parts) -> str:
         return "0x" + hashlib.sha256("|".join(map(str, parts)).encode()).hexdigest()
 
-    # ------------------------------------------------------------------ geometry
+    # Geometry
     def polygon(self, lat: float, lon: float, area_ha: float, invalid: bool):
         """A rotated rectangle of roughly area_ha around (lat, lon)."""
         side_m = math.sqrt(area_ha * 10_000)
@@ -150,7 +150,7 @@ class Gen:
         geodesic_ha = (w * h) / 10_000
         return {"type": "MultiPolygon", "coordinates": [[ring]]}, round(geodesic_ha, 2)
 
-    # ------------------------------------------------------------------ build
+    # Build
     def build(self) -> None:
         r = self.r
         for sid, name, fam, cutoff in STANDARDS:
@@ -502,7 +502,7 @@ class Gen:
                     if extra["_id"] not in {c["_id"] for c in chunk}:
                         self.add("pg/lot_origins", {"lot_id": lot_id, "field_season_id": extra["_id"], "volume_t": round(volume * 0.6, 1)})
 
-    # ------------------------------------------------------------------ output
+    # Output
     def write(self) -> dict[str, int]:
         counts = {}
         for name, rows in sorted(self.rows.items()):

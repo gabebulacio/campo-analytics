@@ -62,7 +62,7 @@ def _store(trace: Trace, answer: dict) -> None:
         settings.traces_path.parent.mkdir(parents=True, exist_ok=True)
         with settings.traces_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(rec, default=str, ensure_ascii=False) + "\n")
-    except OSError:
+    except OSError:  # the file copy is best-effort; TRACES above still serves this instance
         pass
 
 
@@ -81,7 +81,7 @@ def _cache_key(q: str, clar: str | None, version: str) -> str:
     return hashlib.sha256(f"{' '.join(q.lower().split())}|{clar or ''}|{version}".encode()).hexdigest()
 
 
-# ------------------------------------------------------------------ lineage
+# Lineage
 def _metric_def(sl: SemanticLayer, name: str) -> dict:
     m = sl.metrics[name]
 
@@ -114,7 +114,7 @@ def _column_meta(sl: SemanticLayer, plan: QueryPlan) -> list[dict]:
     return meta
 
 
-# ------------------------------------------------------------------ main
+# Main
 def answer(question: str, clarification: str | None = None, lang: str | None = None, pending_plan: dict | None = None, dimension: str | None = None,
            previous: dict | None = None) -> dict:
     sl = semantic.get()

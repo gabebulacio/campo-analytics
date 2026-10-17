@@ -27,8 +27,8 @@ export const T = {
         he: "בעבודה בניתי ואני מפעיל פלטפורמה כזאת ב-Microsoft Fabric, בייצור: היא מביאה שעות מדווחות משתי מערכות דיווח שעות אל ה-lakehouse שמאחורי הדוחות של הכספים. החלק הקשה לא היה ה-APIs, אלא האנשים. אותו אדם הופיע עם כתובות מייל שונות, דומיינים ישנים ושמות משתמש הפוכים (\"last.first\"). חשבונות שהושבתו חזרו עם מייל ריק, רשומות נערכו או נמחקו שבועות אחר כך, ומפתחות הפרויקטים היו חייבים להישאר קבועים כי הכספים הסתמכו עליהם.",
       },
       {
-        en: "This project rebuilds that platform from scratch, the way I build it on Fabric, on a fictional company with synthetic data, so it can be public and anyone can run it. None of the original code, data or names are here.",
-        he: "הפרויקט הזה בונה את הפלטפורמה הזאת מאפס, כמו שאני בונה אותה ב-Fabric, על חברה בדיונית עם נתונים סינתטיים, כדי שיוכל להיות ציבורי וכל אחד יוכל להריץ אותו. אין כאן שום קוד, נתונים או שמות מהמקור.",
+        en: "This project adapts that platform, with Claude Code, for a fictional company on synthetic data, so it can be public and anyone can run it. Everything that identified the employer, its people or its clients was removed.",
+        he: "הפרויקט הזה מעבד את הפלטפורמה הזאת, בעזרת Claude Code, לחברה בדיונית עם נתונים סינתטיים, כדי שיוכל להיות ציבורי וכל אחד יוכל להריץ אותו. כל מה שזיהה את המעסיק, את האנשים שלו או את הלקוחות שלו הוסר.",
       },
     ],
   },
@@ -263,14 +263,14 @@ export const T = {
       },
       {
         n: "0003",
-        title: { en: "Clean-room rebuild on synthetic sources", he: "בנייה מחדש נקייה על מקורות סינתטיים" },
+        title: { en: "A public adaptation on synthetic sources", he: "עיבוד ציבורי על מקורות סינתטיים" },
         context: {
           en: "The problems this project solves come from a platform I run in production on Microsoft Fabric: consolidating worklogs from two systems, resolving identities across domains and logins, keeping finance-facing keys stable, and comparing sold with logged hours. That work, its code and its data belong to an employer, and this project is public.",
           he: "הבעיות שהפרויקט פותר באות מפלטפורמה שאני מפעיל בייצור ב-Microsoft Fabric: איחוד דיווחי שעות משתי מערכות, זיהוי אנשים על פני דומיינים ושמות משתמש, שמירה על מפתחות יציבים לכספים, והשוואה בין שעות שנמכרו לשעות שדווחו. העבודה הזאת, הקוד שלה והנתונים שלה שייכים למעסיק, והפרויקט הזה ציבורי.",
         },
         decision: {
-          en: "Rebuild from scratch on a fictional company with synthetic, deterministic sources. The generator reproduces the kinds of source behaviour that make the problem hard: blank emails for deactivated users, mixed timestamp formats, legacy and external domains, swapped logins, namesakes, overlapping API pages, late logging, edits and deletions. No code, schema, name, identifier, client or number is copied.",
-          he: "לבנות מאפס על חברה בדיונית עם מקורות סינתטיים ודטרמיניסטיים. המחולל משחזר את סוגי ההתנהגות שהופכים את הבעיה לקשה: מייל ריק למשתמשים שהושבתו, פורמטים מעורבים של חותמות זמן, דומיינים ישנים וחיצוניים, שמות משתמש הפוכים, שמות זהים, עמודי API חופפים, דיווח באיחור, עריכות ומחיקות. שום קוד, סכמה, שם, מזהה, לקוח או מספר לא הועתקו.",
+          en: "Adapt the platform for a fictional company with synthetic, deterministic sources. The generator reproduces the kinds of source behaviour that make the problem hard: blank emails for deactivated users, mixed timestamp formats, legacy and external domains, swapped logins, namesakes, overlapping API pages, late logging, edits and deletions. No name, identifier, client or number from the original is kept.",
+          he: "לעבד את הפלטפורמה לחברה בדיונית עם מקורות סינתטיים ודטרמיניסטיים. המחולל משחזר את סוגי ההתנהגות שהופכים את הבעיה לקשה: מייל ריק למשתמשים שהושבתו, פורמטים מעורבים של חותמות זמן, דומיינים ישנים וחיצוניים, שמות משתמש הפוכים, שמות זהים, עמודי API חופפים, דיווח באיחור, עריכות ומחיקות. שום שם, מזהה, לקוח או מספר מהמקור לא נשמרו.",
         },
         consequences: [
           { en: "The project can be public, and anyone can run it end to end.", he: "הפרויקט יכול להיות ציבורי, וכל אחד יכול להריץ אותו מקצה לקצה." },
@@ -324,7 +324,7 @@ export const T = {
       [{ en: "CI: lint, item checks, end-to-end runs on a temporary lakehouse", he: "CI: lint, בדיקות פריטים, ריצות מקצה לקצה על lakehouse זמני" }, { en: "Real", he: "אמיתי" }],
       [{ en: "Spark version of silver and the fact table (PySpark, Spark SQL, Delta MERGE)", he: "גרסת Spark של silver ושל טבלת ה-fact (PySpark, Spark SQL, Delta MERGE)" }, { en: "Real, identical to the Python path (checked in CI)", he: "אמיתי, זהה למסלול ה-Python (נבדק ב-CI)" }],
       [{ en: "Source systems (timesheets, issue tracker, directory, CRM)", he: "מערכות המקור (דיווח שעות, מערכת משימות, ספרייה, CRM)" }, { en: "Synthetic, deterministic, with real-world quirks", he: "סינתטי, דטרמיניסטי, עם חריגות מהעולם האמיתי" }],
-      [{ en: "Running on Microsoft Fabric", he: "רץ ב-Microsoft Fabric" }, { en: "Yes, in production (a work tenant, so it isn't linked here); this public rebuild uses the same items and the same fabric-cicd deploy", he: "כן, בייצור (tenant של העבודה, ולכן אין כאן קישור); השחזור הציבורי משתמש באותם פריטים ובאותה פריסה עם fabric-cicd" }],
+      [{ en: "Running on Microsoft Fabric", he: "רץ ב-Microsoft Fabric" }, { en: "Yes, in production (a work tenant, so it isn't linked here); this public version uses the same items and the same fabric-cicd deploy", he: "כן, בייצור (tenant של העבודה, ולכן אין כאן קישור); הגרסה הציבורית משתמשת באותם פריטים ובאותה פריסה עם fabric-cicd" }],
       [{ en: "Power BI: Direct Lake semantic model and report", he: "Power BI: מודל סמנטי ב-Direct Lake ודוח" }, { en: "Real: 26 DAX measures, each checked against the lakehouse (190 values); a 4-page report", he: "אמיתי: 26 מדדי DAX, כל אחד נבדק מול ה-lakehouse (190 ערכים); דוח בן 4 עמודים" }],
       [{ en: "Spark tuning: partitioning, OPTIMIZE / Z-ORDER / V-Order, VACUUM", he: "כוונון Spark: partitioning, OPTIMIZE / Z-ORDER / V-Order, VACUUM" }, { en: "Real, checked in the Delta history in CI", he: "אמיתי, נבדק בהיסטוריית ה-Delta ב-CI" }],
     ] as [L, L][],
@@ -342,7 +342,7 @@ export const T = {
   back: { en: "← All projects", he: "→ כל הפרויקטים" },
 };
 
-// ---- navigation, page headers, flow chart -----------------------------------------------
+// Navigation, page headers, flow chart
 export const UI = {
   nav: {
     overview: { en: "Overview", he: "סקירה" },
@@ -463,7 +463,7 @@ export const UI = {
   },
 };
 
-// ---- semantic model (generated from local/build_model.py in the worklog-lakehouse repo) -------------
+// Semantic model (generated from local/build_model.py in the worklog-lakehouse repo)
 export const MODEL_MEASURES: { name: string; table: string; folder: string; desc: L; dax: string }[] = [
   {
     "name": "Hours Logged",

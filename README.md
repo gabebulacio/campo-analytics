@@ -80,6 +80,12 @@ Open http://localhost:3000/projects/campo-analytics (the root is the personal pa
 
 Shareable links: `/projects/campo-analytics?q=<question>` asks on load; add `&lang=he` for Hebrew. Deployment: [docs/DEPLOY.md](docs/DEPLOY.md).
 
+## How this was built
+
+This repo is a public adaptation of a private project of mine. Claude Code did the adapting: it reworked the existing code and spec documents into this version, on synthetic data and without client names, and I reviewed each change and added my own before committing. That is why the early commits are large: each one is a reviewed batch, not a day of typing.
+
+[CLAUDE.md](CLAUDE.md) and the [project skills](.claude/skills/) are the working agreement: the rules the agent follows (the LLM never writes business logic, the golden set never becomes prompt examples, every string in English and Hebrew) and the checks it runs before anything counts as done. Nothing merges unless CI passes: tests, compiler snapshots, schema drift and the eval gates above.
+
 ## Repo map
 
 ```
@@ -103,10 +109,10 @@ docs/decisions/            architecture decision records
 
 ## How it works
 
-Target architecture below. Today the live demo runs both the web app and the pipeline on Vercel, with the marts built into DuckDB from the same SQL that runs on Postgres ([docs/DEPLOY.md](docs/DEPLOY.md)).
+Target architecture below. Today the live demo runs both the web app and the pipeline as serverless functions, with the marts built into DuckDB from the same SQL that runs on Postgres ([docs/DEPLOY.md](docs/DEPLOY.md)).
 
 ```
-Browser (Next.js on Vercel)
+Browser (Next.js)
   │  question
   ▼
 Next.js API route  ── rate limit + answer cache (Postgres) ──┐
@@ -138,44 +144,46 @@ MongoDB Atlas (raw field events / documents → ELT into Postgres)
 
 | Pattern | Source | How it shows up here |
 |---|---|---|
-| The LLM decomposes the question into metrics + dimensions; an engine generates SQL deterministically. A semantic layer turns *wrong answers* into *explicit errors* | dbt Labs semantic layer benchmarks (2023, 2026) | QueryPlan + deterministic compiler. Unanswerable → refusal with closest alternative, never a guess |
-| Accuracy depends on the semantic layer more than on the model; with it, frontier models perform about the same | Cube paired benchmark (2026) | Cheap model for routing, mid-tier for planning; model choice is a config value, compared in evals |
-| Workspaces + intent agent + table/column pruning keep context small | Uber QueryGPT | Workspaces by business area; the planner only sees that workspace's catalog |
-| Golden set built from real questions with verified intent, tables and SQL; evaluated on intent, datasets and SQL separately | Uber QueryGPT | Evals score routing, plan, SQL and result as separate stages |
-| Trusted assets: verified, parameterized queries; answers using them are badged Trusted | Databricks Genie | `verified_queries/` + VERIFIED badge |
-| Benchmarks evaluate but never feed the context | Databricks Genie | Golden set is never used as few-shot examples; few-shots live in a separate file |
-| Multi-hop joins are the main failure; fix with modeling, not prompting | dbt Labs (2023 → 2026) | Wide marts per business process; planner never chooses join paths |
+| The LLM decomposes the question into metrics + dimensions; an engine generates SQL deterministically. A semantic layer turns *wrong answers* into *explicit errors* | [dbt Labs semantic layer benchmark](https://docs.getdbt.com/blog/semantic-layer-vs-text-to-sql-2026) (2023, rerun 2026) | QueryPlan + deterministic compiler. Unanswerable → refusal with closest alternative, never a guess |
+| Accuracy depends on the semantic layer more than on the model; with it, frontier models perform about the same | [Cube paired benchmark](https://arxiv.org/abs/2604.25149) (2026, vendor-authored) | Cheap model for routing, mid-tier for planning; model choice is a config value, compared in evals |
+| Workspaces + intent agent + table/column pruning keep context small | [Uber QueryGPT](https://www.uber.com/blog/query-gpt/) | Workspaces by business area; the planner only sees that workspace's catalog |
+| Golden set built from real questions with verified intent, tables and SQL; evaluated on intent, datasets and SQL separately | [Uber QueryGPT](https://www.uber.com/blog/query-gpt/) | Evals score routing, plan, SQL and result as separate stages |
+| Trusted assets: verified, parameterized queries; answers using them are badged Trusted | [Databricks Genie trusted assets](https://docs.databricks.com/aws/en/genie/trusted-assets) | `verified_queries/` + VERIFIED badge |
+| Benchmarks evaluate but never feed the context | [Databricks Genie benchmarks](https://docs.databricks.com/aws/en/genie/benchmarks) | Golden set is never used as few-shot examples; few-shots live in a separate file |
+| Multi-hop joins are the main failure; fix with modeling, not prompting | [dbt Labs](https://docs.getdbt.com/blog/semantic-layer-vs-text-to-sql-2026) (2023 → 2026) | Wide marts per business process; planner never chooses join paths |
 
 ### Answer trust tiers (shown to the user)
 
 | Tier | When | UI |
 |---|---|---|
-| **VERIFIED** | A verified query matched; only parameters were filled | Green "Verificado" badge |
-| **GOVERNED** | QueryPlan over semantic-layer metrics, passed all validators | Neutral "Basado en métricas definidas" badge |
-| **EXPLORATORY** | Free SQL fallback (feature-flagged, off by default in public demo) | Amber "Exploratorio — revisar" badge, SQL shown expanded |
-| **NOT ANSWERED** | Out of scope, ambiguous after one clarification, or validation failed | Plain explanation + closest metrics + suggested rephrasing |
+| **VERIFIED** | A verified query matched; only parameters were filled | Green "Verified" badge |
+| **GOVERNED** | QueryPlan over semantic-layer metrics, passed all validators | Neutral "Governed metrics" badge |
+| **EXPLORATORY** | Free SQL fallback (feature-flagged, off by default in public demo) | Amber "Exploratory: review" badge, SQL shown expanded |
+| **NOT ANSWERED** | Out of scope, ambiguous after one clarification, or validation failed | "Not answered", with a plain explanation, the closest metrics and a suggested rephrasing |
 
-### Data: real public reference layers + synthetic producer data
+### Data plan: real public reference layers + synthetic producer data
 
-**Real where it's public, synthetic where it's private.** The landscape layer uses real open data. Producer-level records stay synthetic, because they are private everywhere.
+This is the design for the next data phase, not what runs today: the live demo's land-use flags are simulated from a seeded history (see [What's real and what's simulated](#whats-real-and-whats-simulated) and [ADR 0004](docs/decisions/0004-interview-cut.md)).
+
+**Real where it's public, synthetic where it's private.** The landscape layer would use real open data. Producer-level records stay synthetic, because they are private everywhere.
 
 | Layer | Source | Real or synthetic | Feeds |
 |---|---|---|---|
 | Forest cover at the EUDR cutoff (2020) | [EC JRC global map of forest cover 2020](https://developers.google.com/earth-engine/datasets/catalog/JRC_GFC2020_V4) ([JRC repository](https://publications.jrc.ec.europa.eu/repository/handle/JRC136960)) | Real | `luc_assessment`: forest area at cutoff per field |
 | Land cover / native vegetation loss by year (Argentina) | [MapBiomas Argentina collection maps](https://argentina.mapbiomas.org/en/mapas-de-la-coleccion) and [statistics](https://argentina.mapbiomas.org/en/estadisticas/) | Real | `luc_assessment`: conversion after cutoff; department-level loss context |
 | Official crop area, production and yield by crop | [datos.gob.ar agro estimates](https://datos.gob.ar/dataset/agroindustria-mijo---siembra-cosecha-produccion-rendimiento); [Buenos Aires province estimates by district](https://catalogo.datos.gba.gob.ar/sq/dataset/estimaciones-agro) | Real | `reference_crop_stats`: field placement weights, yield distributions, coverage metrics |
-| Administrative boundaries (province, department) | National official boundaries (IGN) or GADM; confirm license | Real | `field.admin1/admin2`, `reference_admin_area` |
+| Administrative boundaries (province, department) | National official boundaries (IGN) or GADM (license to be confirmed) | Real | `field.admin1/admin2`, `reference_admin_area` |
 | Tree cover loss (optional cross-check) | Global Forest Watch / Hansen, via Earth Engine | Real | Second opinion on conversion; disagreement → `inconclusive` |
 | NDVI time series (optional) | Sentinel-2 via Earth Engine, sampled per field | Real, sampled | `satellite_alert` ndvi_anomaly seeds |
 | Emission factors | IPCC default factors | Real constants | `field_season.emissions_kgco2e` calculation |
 | Producers, fields, Crop Stories, practices, inputs, forms, lots, clients, programs | Generated | **Synthetic** | Everything producer- or client-level |
 
-**Rules**
-- Synthetic field polygons are generated **inside real departments**, placed in real cropland pixels where possible, in proportion to the official crop area per department.
+**Rules for the real-data version**
+- Synthetic field polygons go inside real departments, in real cropland pixels where possible, in proportion to the official crop area per department.
 - Synthetic yields are sampled around the official department yield for that crop and season.
-- The deforestation flag is **computed**, not invented: overlay each synthetic field on the JRC 2020 forest map and MapBiomas post-2020 classes.
+- The deforestation flag is computed by overlaying each synthetic field on the JRC 2020 forest map and the MapBiomas post-2020 classes.
 - Raster work happens offline in Earth Engine. Only per-field and per-department results are exported (CSV/GeoParquet), to stay inside the free-tier database limits.
-- Every real source carries its license and citation in `data/reference/SOURCES.md` and in the app's footer. The UI labels the data as "public reference layers + synthetic producer data".
+- Every real source carries its license and citation in `data/reference/SOURCES.md`, and the UI labels the data as "public reference layers + synthetic producer data".
 
 ---
 

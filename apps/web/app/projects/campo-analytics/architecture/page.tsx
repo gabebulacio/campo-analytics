@@ -27,8 +27,8 @@ function Diagram({ l }: { l: Lang }) {
     <svg viewBox="0 0 1100 520" role="img" aria-label={he ? "תרשים ארכיטקטורה" : "Architecture diagram"}>
       <ArrowDefs />
       {/* row 1: user + web */}
-      <Box x={20} y={20} w={200} h={74} cls="" title={he ? "משתמש עסקי" : "Business user"} sub={he ? "שאלה בעברית / באנגלית" : "question in ES / EN"} />
-      <Box x={260} y={20} w={250} h={74} cls="" title="Web · Next.js (Vercel)" sub={he ? "תשובה + גרף + שושלת\nדשבורדים כ-specs של JSON" : "answer + chart + lineage\ndashboards as JSON specs"} />
+      <Box x={20} y={20} w={200} h={74} cls="" title={he ? "משתמש עסקי" : "Business user"} sub={he ? "שאלה בעברית / באנגלית" : "question in English / Hebrew"} />
+      <Box x={260} y={20} w={250} h={74} cls="" title="Web · Next.js" sub={he ? "תשובה + גרף + שושלת\nדשבורדים כ-specs של JSON" : "answer + chart + lineage\ndashboards as JSON specs"} />
       <Box x={550} y={20} w={250} h={74} cls="" title="API · FastAPI (Cloud Run)" sub={he ? "pipeline בשלבים\ntrace לכל שאלה" : "staged pipeline\none trace per question"} />
       <Box x={840} y={20} w={240} h={74} cls="ai" title="Claude API" sub={he ? "רק בוחר ומשלב\nאף פעם לא כותב SQL או מספרים" : "chooses and combines only\nnever writes SQL or numbers"} />
       <path className="arr" d="M220 57 H258" markerEnd="url(#ah)" />
@@ -162,7 +162,7 @@ export default function Architecture() {
             <thead><tr><th>{he ? "שכבה" : "Layer"}</th><th>{he ? "דמו" : "Demo"}</th><th>{he ? "פרודקשן" : "Production"}</th></tr></thead>
             <tbody>
               {[
-                ["Web", "Next.js 15 · Recharts · Leaflet", "Vercel"],
+                ["Web", "Next.js 15 · Recharts · Leaflet", "Serverless (Node)"],
                 ["API", "FastAPI · Pydantic · sqlglot", "Cloud Run (min 0)"],
                 [he ? "נתונים אנליטיים" : "Analytical data", "DuckDB (read-only)", "Postgres + PostGIS (Neon), app_reader"],
                 [he ? "נתונים גולמיים" : "Raw data", "JSONL (Mongo-shaped)", "MongoDB Atlas"],

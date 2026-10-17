@@ -69,7 +69,7 @@ def _get(doc, *keys):
     return doc
 
 
-# ---------------------------------------------------------------- flatteners
+# Flatteners
 # table -> (source file, columns with SQL types, row function)
 def _crop_story(doc):
     n_applied = next((i["kg"] for i in doc["inputs"] if i["nutrient"] == "N"), None)
@@ -157,7 +157,7 @@ def split_sql(text: str) -> list[str]:
     return [s for s in stmts if s]
 
 
-# ---------------------------------------------------------------- targets
+# Targets
 def run_duckdb(schemas) -> None:
     import duckdb
 
