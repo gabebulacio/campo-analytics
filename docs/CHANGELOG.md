@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0 — 2026-10-18 · Notarial HTR
+
+- Site: a card on the personal page for a third project, handwritten text recognition for 17th and 18th century Spanish notarial and parish records. It links to the 1806 census book the first model was used for. The code is a private repo, so there is no code link and no project page.
+
 ## 0.6.1 — 2026-10-17 · New intro
 
 - Site: a longer intro on the personal page, with links to book an intro call (Calendly) and to LinkedIn.
