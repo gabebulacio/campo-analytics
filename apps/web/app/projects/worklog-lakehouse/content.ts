@@ -23,8 +23,8 @@ export const T = {
     h: { en: "The problem", he: "הבעיה" },
     p: [
       {
-        en: "At work I built and run this kind of platform on Microsoft Fabric, in production: it brings logged hours from two time-tracking systems into the lakehouse behind finance's reports. The hard part wasn't the APIs, it was the people. The same person showed up under different emails, legacy domains and swapped \"last.first\" logins. Deactivated accounts came back with blank emails, entries were edited or deleted weeks later, and project keys had to stay stable because finance referenced them.",
-        he: "בעבודה בניתי ואני מפעיל פלטפורמה כזאת ב-Microsoft Fabric, בייצור: היא מביאה שעות מדווחות משתי מערכות דיווח שעות אל ה-lakehouse שמאחורי הדוחות של הכספים. החלק הקשה לא היה ה-APIs, אלא האנשים. אותו אדם הופיע עם כתובות מייל שונות, דומיינים ישנים ושמות משתמש הפוכים (\"last.first\"). חשבונות שהושבתו חזרו עם מייל ריק, רשומות נערכו או נמחקו שבועות אחר כך, ומפתחות הפרויקטים היו חייבים להישאר קבועים כי הכספים הסתמכו עליהם.",
+        en: "At work I built this kind of platform on Microsoft Fabric, in production: it brings logged hours from two time-tracking systems into the lakehouse behind finance's reports. The hard part wasn't the APIs, it was the people. The same person showed up under different emails, legacy domains and swapped \"last.first\" logins. Deactivated accounts came back with blank emails, entries were edited or deleted weeks later, and project keys had to stay stable because finance referenced them.",
+        he: "בעבודה בניתי פלטפורמה כזאת ב-Microsoft Fabric, בייצור: היא מביאה שעות מדווחות משתי מערכות דיווח שעות אל ה-lakehouse שמאחורי הדוחות של הכספים. החלק הקשה לא היה ה-APIs, אלא האנשים. אותו אדם הופיע עם כתובות מייל שונות, דומיינים ישנים ושמות משתמש הפוכים (\"last.first\"). חשבונות שהושבתו חזרו עם מייל ריק, רשומות נערכו או נמחקו שבועות אחר כך, ומפתחות הפרויקטים היו חייבים להישאר קבועים כי הכספים הסתמכו עליהם.",
       },
       {
         en: "This project adapts that platform, with Claude Code, for a fictional company on synthetic data, so it can be public and anyone can run it. Everything that identified the employer, its people or its clients was removed.",
@@ -265,8 +265,8 @@ export const T = {
         n: "0003",
         title: { en: "A public adaptation on synthetic sources", he: "עיבוד ציבורי על מקורות סינתטיים" },
         context: {
-          en: "The problems this project solves come from a platform I run in production on Microsoft Fabric: consolidating worklogs from two systems, resolving identities across domains and logins, keeping finance-facing keys stable, and comparing sold with logged hours. That work, its code and its data belong to an employer, and this project is public.",
-          he: "הבעיות שהפרויקט פותר באות מפלטפורמה שאני מפעיל בייצור ב-Microsoft Fabric: איחוד דיווחי שעות משתי מערכות, זיהוי אנשים על פני דומיינים ושמות משתמש, שמירה על מפתחות יציבים לכספים, והשוואה בין שעות שנמכרו לשעות שדווחו. העבודה הזאת, הקוד שלה והנתונים שלה שייכים למעסיק, והפרויקט הזה ציבורי.",
+          en: "The problems this project solves come from a production platform I built on Microsoft Fabric: consolidating worklogs from two systems, resolving identities across domains and logins, keeping finance-facing keys stable, and comparing sold with logged hours. That work, its code and its data belong to an employer, and this project is public.",
+          he: "הבעיות שהפרויקט פותר באות מפלטפורמה שבניתי בייצור ב-Microsoft Fabric: איחוד דיווחי שעות משתי מערכות, זיהוי אנשים על פני דומיינים ושמות משתמש, שמירה על מפתחות יציבים לכספים, והשוואה בין שעות שנמכרו לשעות שדווחו. העבודה הזאת, הקוד שלה והנתונים שלה שייכים למעסיק, והפרויקט הזה ציבורי.",
         },
         decision: {
           en: "Adapt the platform for a fictional company with synthetic, deterministic sources. The generator reproduces the kinds of source behaviour that make the problem hard: blank emails for deactivated users, mixed timestamp formats, legacy and external domains, swapped logins, namesakes, overlapping API pages, late logging, edits and deletions. No name, identifier, client or number from the original is kept.",
