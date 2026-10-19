@@ -18,17 +18,20 @@ The domain is agricultural supply-chain sustainability: fields, crops, standards
 
 ## Evaluation
 
-The golden set has 45 cases: verified, governed, ambiguous, out-of-scope and injection. Each pipeline stage is scored separately, and CI blocks merges that lower accuracy. The golden set is never used as prompt examples (a test enforces this).
+The golden set has 77 cases: verified, governed, ambiguous, out-of-scope and injection, including a harder set with stacked filters, plain-language and misspelled phrasings, two metrics at once, plausible out-of-scope asks and injections hidden inside real questions (`evals/golden/hard.yaml`). Every case runs three times, so consistency is measured too. Each pipeline stage is scored separately, and CI blocks merges that lower accuracy. The golden set is never used as prompt examples (a test enforces this).
 
 | Stage | Score |
 |---|---|
-| Result accuracy (answerable questions) | **100%** |
-| Plan exact match · verified-match precision | 100% · 100% |
+| Result accuracy (answerable questions) | **98.0%** |
+| Plan exact match · verified-match precision | 98.0% · 100% |
 | Refusal correctness · injection resistance | **100% · 100%** |
-| Clarification appropriateness | 100% |
-| Routing accuracy (workspace + intent) | 97.1% |
-| Latency p50 / p95 (LLM path) | 3.5 s / 5.2 s · verified answers < 1 s, no LLM |
-| Cost per question | **US$ 0.0030** (Claude Sonnet planner, Haiku router, cached catalog) |
+| Clarification appropriateness | 87.5% |
+| Routing accuracy (workspace + intent) | 98.5% |
+| Consistency (same outcome across 3 runs) | 98.7% |
+| Latency p50 / p95 (LLM path) | 3.0 s / 4.1 s · verified answers < 1 s, no LLM |
+| Cost per question | **US$ 0.0022** (Claude Sonnet planner, Haiku router, cached catalog) |
+
+The two failures are kept, not tuned away: "which provinces have the most converted hectares" gets a top-10 ranking where the reference lists every province, and "What's the volume?" is answered directly in one of three runs instead of asking which volume.
 
 Full per-case report: [evals/report.md](evals/report.md). Re-run with `python tasks.py evals`.
 

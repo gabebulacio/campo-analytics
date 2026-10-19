@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0 — 2026-10-19 · New personal page, harder evals
+
+- Site: the personal page uses the same top bar, width and reading measure as the project pages. A display face (Cal Sans) for the name and headings, an at-a-glance card with the intro-call button, an experience strip (WPP Enterprise Solutions, VML, PwC), and project cards of equal height with a stats row and a thumbnail of each project, light and dark (`public/home/`).
+- Evals: 32 harder golden cases (`evals/golden/hard.yaml`) and three runs per case. Result accuracy 98.0%, clarification 87.5%, consistency 98.7%; refusals and injections stay at 100%. The two failures are documented in the README rather than tuned away. The README table and demo script quote the new report.
+
 ## 0.7.1 — 2026-10-18 · Notarial HTR in the intro
 
 - Site: Notarial HTR moves from a project card to a sentence in the personal intro, linking to its code (now public, [gabebulacio/notarial-htr](https://github.com/gabebulacio/notarial-htr)) and to the book.

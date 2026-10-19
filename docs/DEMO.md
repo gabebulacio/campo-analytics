@@ -19,7 +19,7 @@ Offer the demo; don't impose it. The five questions below are the numbered start
 | 2:15 | 3 · Clarification | Starter 3, then pick **EUDR** | "Same field-season, several standards. Rather than guess, it asks once, and one click re-runs the question with the chosen standard." |
 | 3:00 | 4 · Refusal | Starter 4 | "There's no sequestration metric, so it says so and offers the closest ones. A made-up number is worse than no answer, especially in an EUDR statement." |
 | 3:30 | 5 · Guardrail | Starter 5 | "Blocked before any LLM call, and the database role is read-only anyway." |
-| 3:50 | Close | `/evals` | "45 golden cases, scored per stage: routing, plan, SQL, result, clarifications, refusals, injection. CI blocks a change that lowers accuracy. About three tenths of a cent per question." |
+| 3:50 | Close | `/evals` | "77 golden cases, each run three times, scored per stage: routing, plan, SQL, result, clarifications, refusals, injection. 98% correct results, and the two misses are shown, not hidden. CI blocks a change that lowers accuracy. About two tenths of a cent per question." |
 | 4:30 | Bridge | `/plan` | "Applied to a QuickSight migration: agree the metrics first, build the layer with evals, then migrate in parallel until the numbers match." |
 
 If there's time or they ask, also show:
