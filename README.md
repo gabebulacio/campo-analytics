@@ -8,7 +8,7 @@ The domain is agricultural supply-chain sustainability: fields, crops, standards
 
 > Independent portfolio project by Gabriel Bulacio. Not affiliated with any company; it uses no company's name, logo or real data.
 >
-> This repo also hosts the site, gabrielbulacio.com. Other projects: **[Worklog Lakehouse](https://github.com/gabebulacio/worklog-lakehouse)**, a Microsoft Fabric medallion (bronze → silver → gold, Git-format items, fabric-cicd) that runs locally too ([case study](https://gabrielbulacio.com/projects/worklog-lakehouse)), and **Notarial HTR**, handwritten text recognition for 17th and 18th century Spanish notarial and parish records (private code).
+> This repo also hosts the site, gabrielbulacio.com. Other projects: **[Worklog Lakehouse](https://github.com/gabebulacio/worklog-lakehouse)**, a Microsoft Fabric medallion (bronze → silver → gold, Git-format items, fabric-cicd) that runs locally too ([case study](https://gabrielbulacio.com/projects/worklog-lakehouse)), and **[Notarial HTR](https://github.com/gabebulacio/notarial-htr)**, handwritten text recognition for 17th and 18th century Spanish notarial and parish records.
 
 ---
 

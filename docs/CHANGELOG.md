@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1 — 2026-10-18 · Notarial HTR in the intro
+
+- Site: Notarial HTR moves from a project card to a sentence in the personal intro, linking to its code (now public, [gabebulacio/notarial-htr](https://github.com/gabebulacio/notarial-htr)) and to the book.
+
 ## 0.7.0 — 2026-10-18 · Notarial HTR
 
 - Site: a card on the personal page for a third project, handwritten text recognition for 17th and 18th century Spanish notarial and parish records. It links to the 1806 census book the first model was used for. The code is a private repo, so there is no code link and no project page.

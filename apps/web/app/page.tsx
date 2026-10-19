@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HTR_BOOK, LAKEHOUSE_BASE, LAKEHOUSE_CODE } from "@/lib/paths";
+import { HTR_BOOK, HTR_CODE, LAKEHOUSE_BASE, LAKEHOUSE_CODE } from "@/lib/paths";
 
 // gabrielbulacio.com. Demos live under /projects/<name>.
 const DEMO = "/projects/campo-analytics";
@@ -19,6 +19,11 @@ export default function Home() {
           My background is in physics, which shaped how I think about systems. I&apos;m completing a dual licenciatura (a
           six-year degree, master&apos;s equivalent) in Physics and Data Science, focused on complex and stochastic systems. I&apos;m based in
           Buenos Aires and work remotely in English and Spanish, with working Portuguese and Hebrew.
+        </p>
+        <p>
+          On the side, I build handwritten text recognition for 17th and 18th century Spanish notarial and parish records (
+          <a href={HTR_CODE}>code</a>). The first model I trained produced the preliminary transcription of an 1806 parish census, published
+          as <a href={HTR_BOOK}>a book</a> in 2025.
         </p>
         <div className="site-links">
           <a href="https://calendly.com/gabrielbulacio/intro-meeting">Book an intro call</a>
@@ -60,22 +65,6 @@ export default function Home() {
             <a href={DEMO}>Open the demo</a>
             <a href={`${DEMO}/case`}>Case study</a>
             <a href="https://github.com/gabebulacio/campo-analytics">Code</a>
-          </div>
-        </article>
-        <article className="site-project">
-          <div className="site-project-head">
-            <h3>Notarial HTR</h3>
-            <span className="faint small">2025–present</span>
-          </div>
-          <p>
-            Handwritten text recognition for 17th and 18th century Spanish notarial and parish records, starting with marriage files from
-            Ancasti, Catamarca. The first model I trained, a CNN + LSTM + CTC network after Harald Scheidl&apos;s work, produced the
-            preliminary transcription of a 55-folio parish census from 1806, published as a book in 2025. Now rebuilding the pipeline on
-            Kraken with a historical base model, a correction editor and a fixed evaluation set.
-          </p>
-          <p className="small muted">Python · PyTorch · Kraken · TensorFlow · OpenCV · PAGE XML · Kaggle GPUs</p>
-          <div className="site-links">
-            <a href={HTR_BOOK}>The book</a>
           </div>
         </article>
       </section>

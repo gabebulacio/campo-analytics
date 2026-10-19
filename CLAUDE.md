@@ -6,7 +6,7 @@ Campo Analytics and Gabriel Bulacio's personal site. `apps/web` serves **gabriel
 |---|---|---|
 | **Campo Analytics**: generative BI over a governed semantic layer | repo root (`services/`, `data/`, `evals/`, `docs/`) | `/projects/campo-analytics` (live demo) |
 | **Worklog Lakehouse**: Microsoft Fabric medallion (Git-format items) that also runs locally | separate repo [gabebulacio/worklog-lakehouse](https://github.com/gabebulacio/worklog-lakehouse), with its own CLAUDE.md and skills | `/projects/worklog-lakehouse` (case study, `app/projects/worklog-lakehouse/`) |
-| **Notarial HTR**: handwritten text recognition for Spanish notarial and parish records | separate **private** repo gabebulacio/notarial-htr (no code link on the site) | none: a card on the personal page only, linking to the book |
+| **Notarial HTR**: handwritten text recognition for Spanish notarial and parish records | separate repo [gabebulacio/notarial-htr](https://github.com/gabebulacio/notarial-htr) | none: a sentence in the personal intro, linking to the code and the book |
 
 ## Layout
 

@@ -9,5 +9,6 @@ export const LAKEHOUSE_BASE = "/projects/worklog-lakehouse";
 export const lakePath = (p = "/") => (p === "/" ? LAKEHOUSE_BASE : LAKEHOUSE_BASE + p);
 export const LAKEHOUSE_CODE = "https://github.com/gabebulacio/worklog-lakehouse";
 
-// Notarial HTR: only a card on the personal page; the code is a private repo, so it links to the book.
+// Notarial HTR: only a card on the personal page, linking to the code and the book.
+export const HTR_CODE = "https://github.com/gabebulacio/notarial-htr";
 export const HTR_BOOK = "https://www.amazon.com.br/Catamarca-Curato-Ancasti-Matricula-1806/dp/6310120964";
