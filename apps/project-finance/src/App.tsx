@@ -64,7 +64,9 @@ export default function App() {
   const client = scopeClient;
   const [product, setProduct] = useState("all");
   const [selected, setSelected] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"auto" | "light" | "dark">("light");
+  // ?theme=dark|light|auto opens the app in that theme (shareable links, and the site's light/dark thumbnails).
+  const [theme, setTheme] = useState<"auto" | "light" | "dark">(
+    (["auto", "light", "dark"] as const).find((t) => t === params.get("theme")) ?? "light");
   const [busy, setBusy] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const [detail, setDetail] = useState<ProjectDetail | null>(null);
