@@ -6,6 +6,7 @@ Campo Analytics and Gabriel Bulacio's personal site. `apps/web` serves **gabriel
 |---|---|---|
 | **Campo Analytics**: generative BI over a governed semantic layer | repo root (`services/`, `data/`, `evals/`, `docs/`) | `/projects/campo-analytics` (live demo) |
 | **Worklog Lakehouse**: Microsoft Fabric medallion (Git-format items) that also runs locally | separate repo [gabebulacio/worklog-lakehouse](https://github.com/gabebulacio/worklog-lakehouse), with its own CLAUDE.md and skills | `/projects/worklog-lakehouse` (case study, `app/projects/worklog-lakehouse/`) |
+| **Project Finance Checks**: the React app built for a shared finance team, anonymised, on synthetic data | `apps/project-finance/` (Vite app, built into `apps/web/public/projects/project-finance/`), data from `projects/project-finance/build.py`; `python tasks.py finance` rebuilds both | `/projects/project-finance` (rewrite in `next.config.mjs`). Employer work: no names, IDs or real figures; `scripts/site_lint.py` rule P01 checks it against a git-ignored list |
 | **Notarial HTR**: handwritten text recognition for Spanish notarial and parish records | separate repo [gabebulacio/notarial-htr](https://github.com/gabebulacio/notarial-htr) | none: a sentence in the personal intro, linking to the code and the book |
 
 ## Layout

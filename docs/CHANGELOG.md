@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.0 — 2026-11-20 · Project Finance Checks, anti-slop validation
+
+- Site: new project, Project Finance Checks (`/projects/project-finance`): the React app built for a shared finance team, recoloured to the site's palette and running on synthetic data (`projects/project-finance/build.py`). Pick a role, work the queue of 11 checks, and raise a request on a mock of the request desk's forms, filled in from the CTA. A card on the personal page links the dashboard and its case study.
+- Validation: `scripts/site_lint.py` checks the rendered pages for filler vocabulary, templated phrasing, numbers without a registered source (`apps/web/content/claims.json`), page basics, decorative CSS and, on the anonymised project, private names. It runs in CI after `next build` (`python tasks.py sitelint` locally). Rules and evidence: `docs/consulting/anti-slop.md`.
+- Consulting: research, positioning options and reviewer agents for turning the site into a consulting portfolio (`docs/consulting/`, `.claude/agents/`, the `consulting-site` skill).
+
 ## 0.8.0 — 2026-10-19 · New personal page, harder evals
 
 - Site: the personal page uses the same top bar, width and reading measure as the project pages. A display face (Cal Sans) for the name and headings, an at-a-glance card with the intro-call button, an experience strip (WPP Enterprise Solutions, VML, PwC), and project cards of equal height with a stats row and a thumbnail of each project, light and dark (`public/home/`).

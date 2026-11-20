@@ -10,7 +10,12 @@ const nextConfig = {
   reactStrictMode: true,
   devIndicators: false,
   async rewrites() {
-    return [{ source: "/api/pipeline/:path*", destination: `${PIPELINE_URL}/:path*` }];
+    return [
+      { source: "/api/pipeline/:path*", destination: `${PIPELINE_URL}/:path*` },
+      // Project Finance Checks is a separate Vite app (apps/project-finance), built into public/projects/project-finance/.
+      // It switches views in-app, so the bare path only needs its index.html.
+      { source: "/projects/project-finance", destination: "/projects/project-finance/index.html" },
+    ];
   },
   async redirects() {
     return [

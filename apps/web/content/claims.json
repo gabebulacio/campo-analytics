@@ -1,0 +1,159 @@
+{
+  "_doc": "Every number on a provenance page must match a claim here (value + a phrase near it on the page). scripts/site_lint.py enforces it. Rules: docs/consulting/anti-slop.md.",
+  "provenance_pages": [
+    "/"
+  ],
+  "claims": [
+    {
+      "id": "worklog.parity_rows",
+      "value": "0",
+      "near": "rows differ",
+      "pages": [
+        "/"
+      ],
+      "source": "worklog-lakehouse CI job spark-parity; nb_parity fails the run if any row differs",
+      "verify": "cd worklog-lakehouse && python run.py test",
+      "as_of": "2026-10"
+    },
+    {
+      "id": "worklog.dax_measures",
+      "value": "26",
+      "near": "DAX measures",
+      "pages": [
+        "/"
+      ],
+      "source": "worklog-lakehouse README 'Semantic model'; count of measure lines across the model's .tmdl tables (5+8+1+2+10)",
+      "verify": "grep -c '^\\s*measure ' across fabric/workspace/*.SemanticModel/definition/tables/*.tmdl",
+      "as_of": "2026-10"
+    },
+    {
+      "id": "worklog.quality_checks",
+      "value": "18",
+      "near": "quality checks",
+      "pages": [
+        "/"
+      ],
+      "source": "worklog-lakehouse nb_quality CHECKS list; README 'Quality' row",
+      "verify": "len(CHECKS) in fabric/workspace/nb_quality.Notebook/notebook-content.py",
+      "as_of": "2026-10"
+    },
+    {
+      "id": "campo.result_accuracy",
+      "value": "98%",
+      "near": "correct results",
+      "pages": [
+        "/"
+      ],
+      "source": "evals/report.md, Result accuracy (answerable) 98.0%, generated 2026-10-19",
+      "verify": "python tasks.py evals --runs 3",
+      "as_of": "2026-10-19"
+    },
+    {
+      "id": "campo.golden_cases",
+      "value": "77",
+      "near": "questions",
+      "pages": [
+        "/"
+      ],
+      "source": "evals/report.md header: 77 cases",
+      "verify": "python tasks.py evals",
+      "as_of": "2026-10-19"
+    },
+    {
+      "id": "campo.runs",
+      "value": "3",
+      "near": "runs",
+      "pages": [
+        "/"
+      ],
+      "source": "evals/report.md header: 3 run(s) each",
+      "verify": "python tasks.py evals --runs 3",
+      "as_of": "2026-10-19"
+    },
+    {
+      "id": "campo.consistency",
+      "value": "98.7%",
+      "near": "same answer",
+      "pages": [
+        "/"
+      ],
+      "source": "evals/report.md, Consistency 98.7%",
+      "verify": "python tasks.py evals --runs 3",
+      "as_of": "2026-10-19"
+    },
+    {
+      "id": "campo.latency_p50",
+      "value": "3 s",
+      "near": "median answer",
+      "pages": [
+        "/"
+      ],
+      "source": "evals/report.md, Latency p50 3011 ms",
+      "verify": "python tasks.py evals",
+      "as_of": "2026-10-19"
+    },
+    {
+      "id": "campo.cost",
+      "value": "$0.002",
+      "near": "median answer",
+      "pages": [
+        "/"
+      ],
+      "source": "evals/report.md, Cost per question US$ 0.0022",
+      "verify": "python tasks.py evals",
+      "as_of": "2026-10-19"
+    },
+    {
+      "id": "finance.rules",
+      "value": "11",
+      "near": "checks on every live project",
+      "pages": [
+        "/"
+      ],
+      "source": "projects/project-finance/snapshot.json, built by projects/project-finance/build.py (seed 2026): len(rules)",
+      "verify": "python tasks.py finance && python -m pytest -q projects/project-finance/tests",
+      "as_of": "2026-11-20"
+    },
+    {
+      "id": "finance.found",
+      "value": "110",
+      "near": "planted errors found",
+      "pages": [
+        "/"
+      ],
+      "source": "projects/project-finance/snapshot.json, built by projects/project-finance/build.py (seed 2026): sum of planted[*].found and planted[*].planted (110 each)",
+      "verify": "python -m pytest -q projects/project-finance/tests (test asserts found == planted per rule)",
+      "as_of": "2026-11-20"
+    },
+    {
+      "id": "finance.roles",
+      "value": "5",
+      "near": "roles: analysts and managers",
+      "pages": [
+        "/"
+      ],
+      "source": "projects/project-finance/snapshot.types.ts Role union; snapshot viewers cover all five",
+      "verify": "python -m pytest -q projects/project-finance/tests (scope tests)",
+      "as_of": "2026-11-20"
+    }
+  ],
+  "allow": [
+    {
+      "phrase": "placeholder",
+      "near": "Thresholds are placeholders",
+      "reason": "a stated limit, not unfinished copy"
+    }
+  ],
+  "private_pages": [
+    "/projects/project-finance*"
+  ],
+  "_private_doc": "P01: names that must never appear on private_pages or in static_apps (employer, its clients, internal systems). They are NOT in the repo: scripts/site_lint.py reads them from scripts/private_terms.local.txt (git-ignored) or the SITE_LINT_PRIVATE_TERMS environment variable (CI secret, one per line). Hashing them was reversible, so don't.",
+  "static_apps": [
+    {
+      "name": "project-finance",
+      "src": "apps/project-finance/src",
+      "data": "apps/project-finance/data",
+      "dist": "apps/web/public/projects/project-finance"
+    }
+  ]
+}

@@ -24,7 +24,7 @@ jobs:
           python data/elt/run.py
           cd services/pipeline && python -c "from app import values; values.build()"
       - name: Tests (semantic linter, compiler snapshots, data quality, API)
-        run: python -m pytest -q services/pipeline/tests data/tests
+        run: python -m pytest -q services/pipeline/tests data/tests scripts/tests projects/project-finance/tests
       - name: Shared schemas are up to date
         run: |
           cd services/pipeline && python -m app.schemas_export && cd ../..
@@ -56,3 +56,5 @@ jobs:
       - name: No raw hex colours outside tokens
         run: "! grep -rnE '#[0-9A-Fa-f]{6}' app components lib --include=*.tsx --include=*.ts | grep -v globals.css"
       - run: npm run build
+      - name: Anti-slop validator (copy, provenance, page basics, design tells)
+        run: python3 ../../scripts/site_lint.py

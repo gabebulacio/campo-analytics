@@ -53,3 +53,8 @@ deploy/api-bundle/
 
 .vercel
 .env*
+
+# Private names the anti-slop validator blocks (rule P01). Never commit.
+scripts/private_terms.local.txt
+# Positioning decisions (employment and client questions): local only
+docs/consulting/positioning.md

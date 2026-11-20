@@ -9,8 +9,10 @@
   python tasks.py api          run only the pipeline
   python tasks.py web          run only the web app
   python tasks.py test         pytest (pipeline + data tests)
+  python tasks.py finance      rebuild the Project Finance Checks synthetic data and its Vite app (into apps/web/public)
   python tasks.py evals        run the golden-set evals -> evals/report.md + report.json
   python tasks.py schemas      export shared JSON Schemas to packages/schemas
+  python tasks.py sitelint     next build, then the anti-slop validator over the rendered pages (--warn lists warnings)
 """
 
 from __future__ import annotations
@@ -101,7 +103,16 @@ def dev() -> None:
 
 
 def test() -> None:
-    run([py(), "-m", "pytest", "-q", "services/pipeline/tests", "data/tests"])
+    run([py(), "-m", "pytest", "-q", "services/pipeline/tests", "data/tests", "scripts/tests", "projects/project-finance/tests"])
+
+
+def finance() -> None:
+    """Synthetic data, then the Vite app built into apps/web/public/projects/project-finance/ (served by the site)."""
+    run([py(), "projects/project-finance/build.py", *sys.argv[2:]])
+    app = ROOT / "apps" / "project-finance"
+    if not (app / "node_modules").exists():
+        run([NPM, "install", "--no-audit", "--no-fund"], cwd=app)
+    run([NPM, "run", "build"], cwd=app)
 
 
 def evals() -> None:
@@ -112,7 +123,13 @@ def schemas() -> None:
     run([py(), "-c", "from app.schemas_export import main; main()"], cwd=PIPE)
 
 
-TASKS = {"setup": setup, "seed": seed, "elt": elt, "elt-neon": elt_neon, "migrate": migrate, "dev": dev, "api": api, "web": web, "test": test, "evals": evals, "schemas": schemas}
+def sitelint() -> None:
+    if "--no-build" not in sys.argv:
+        run([NPM, "run", "build"], cwd=WEB)
+    run([py(), "scripts/site_lint.py", *[a for a in sys.argv[2:] if a != "--no-build"]])
+
+
+TASKS = {"setup": setup, "seed": seed, "elt": elt, "elt-neon": elt_neon, "migrate": migrate, "dev": dev, "api": api, "web": web, "test": test, "finance": finance, "evals": evals, "schemas": schemas, "sitelint": sitelint}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in TASKS:

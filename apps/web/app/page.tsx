@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ThemeButton } from "@/components/SiteControls";
-import { HTR_BOOK, HTR_CODE, LAKEHOUSE_BASE, LAKEHOUSE_CODE } from "@/lib/paths";
+import { FINANCE_BASE, HTR_BOOK, HTR_CODE, LAKEHOUSE_BASE, LAKEHOUSE_CODE } from "@/lib/paths";
 
 // gabrielbulacio.com. Demos live under /projects/<name>.
 const DEMO = "/projects/campo-analytics";
@@ -102,6 +102,33 @@ export default function Home() {
           <section className="site-projects">
             <h2 className="site-h">Projects</h2>
             <div className="site-project-list">
+            <article className="site-project">
+              <div className="site-project-body">
+                <div className="site-project-head">
+                  <h3>Project Finance Checks</h3>
+                  <span className="faint small">2026</span>
+                </div>
+                <p>
+                  A shared finance team ran client projects out of the ERP and a spreadsheet per client. I built the platform that reads both,
+                  checks every live project and gives each role its own view. Rebuilt on synthetic data so you can use it: pick a role and see what
+                  that person sees.
+                </p>
+                <Stats
+                  items={[
+                    ["11", "checks on every live project"],
+                    ["110 of 110", "planted errors found, on the right projects (a regression test, not accuracy on real data)"],
+                    ["5", "roles: analysts and managers see their projects, directors their clients, ops everything"],
+                  ]}
+                />
+                <p className="small muted">Demo: Python · Next.js · Recharts. Original: a Power BI report generated from Python (employer, not public)</p>
+                <div className="site-links">
+                  {/* A separate static app (apps/project-finance), so plain links rather than client-side navigation */}
+                  <a href={FINANCE_BASE}>Open the dashboard</a>
+                  <a href={`${FINANCE_BASE}?viewer=all&view=case`}>Case study</a>
+                </div>
+              </div>
+              <Shot name="finance-account" alt="The dashboard's Account position page: budget tiles and a scatter of fee burn against % complete, with projects ahead of delivery highlighted" width={1536} height={1100} />
+            </article>
             <article className="site-project">
               <div className="site-project-body">
                 <div className="site-project-head">

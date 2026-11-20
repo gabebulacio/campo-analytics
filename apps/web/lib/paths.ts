@@ -12,3 +12,7 @@ export const LAKEHOUSE_CODE = "https://github.com/gabebulacio/worklog-lakehouse"
 // Notarial HTR: only a card on the personal page, linking to the code and the book.
 export const HTR_CODE = "https://github.com/gabebulacio/notarial-htr";
 export const HTR_BOOK = "https://www.amazon.com.br/Catamarca-Curato-Ancasti-Matricula-1806/dp/6310120964";
+
+// Project Finance Checks: an interactive dashboard on synthetic data, served from this app. No public code repo.
+export const FINANCE_BASE = "/projects/project-finance";
+export const financePath = (p = "/") => (p === "/" ? FINANCE_BASE : FINANCE_BASE + p);
