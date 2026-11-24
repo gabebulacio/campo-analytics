@@ -4,7 +4,7 @@
 
 - Site: new project, Project Finance Checks (`/projects/project-finance`): the React app built for a shared finance team, recoloured to the site's palette and running on synthetic data (`projects/project-finance/build.py`). Pick a role, work the queue of 11 checks, and raise a request on a mock of the request desk's forms, filled in from the CTA. A card on the personal page links the dashboard and its case study.
 - Validation: `scripts/site_lint.py` checks the rendered pages for filler vocabulary, templated phrasing, numbers without a registered source (`apps/web/content/claims.json`), page basics, decorative CSS and, on the anonymised project, private names. It runs in CI after `next build` (`python tasks.py sitelint` locally). Rules and evidence: `docs/consulting/anti-slop.md`.
-- Consulting: research, positioning options and reviewer agents for turning the site into a consulting portfolio (`docs/consulting/`, `.claude/agents/`, the `consulting-site` skill).
+- Consulting: research and positioning options for turning the site into a consulting portfolio (`docs/consulting/`).
 
 ## 0.8.0 — 2026-10-19 · New personal page, harder evals
 
@@ -24,15 +24,14 @@
 - Site: a longer intro on the personal page, with links to book an intro call (Calendly) and to LinkedIn.
 - Link previews: OpenGraph title and description for the personal page and both projects.
 - README: a "How this was built" section; the trust-tier badges are named as the UI shows them (English, not the old Spanish); the real-data section is labelled as the plan it is, since land-use flags are still simulated; each borrowed pattern links to its source.
-- Worklog Lakehouse: the personal-page card and the case study describe the project as adapted from the production platform with Claude Code and then scrubbed, not as a clean-room rebuild.
+- Worklog Lakehouse: the personal-page card and the case study describe the project as adapted from the production platform and then scrubbed, not as a clean-room rebuild.
 - Hosting: gabrielbulacio.com now goes through Cloudflare's proxy, which strips the origin's response headers (`docs/DEPLOY.md`, step 4). The deploy docs no longer claim that pushing to `main` deploys.
 - Architecture page: the diagram's first box says English / Hebrew (it still said ES / EN), and the stack names the hosting model instead of a vendor.
 
-## 0.6.0 — 2026-10-14 · Worklog Lakehouse page, favicon, Claude Code setup
+## 0.6.0 — 2026-10-14 · Worklog Lakehouse page, favicon
 
 - Site: a card on the personal page and a case study at `/projects/worklog-lakehouse` for the second project, a Microsoft Fabric medallion that also runs locally. Its code is its own repo, [gabebulacio/worklog-lakehouse](https://github.com/gabebulacio/worklog-lakehouse).
 - Favicon and home-screen icons from the Bulacio coat of arms, redrawn with heavier lines on a light tile so it reads at 16 px and on dark tab bars (`app/favicon.ico`, `app/icon.png`, `app/apple-icon.png`).
-- Claude Code setup: `CLAUDE.md` and project skills (`verify`, `semantic-layer`, `evals`, `pipeline`, `web-ui`, `new-project`, `deploy`, `adr`, `run-app`).
 
 ## 0.5.0 — 2026-10-14 · English and Hebrew
 

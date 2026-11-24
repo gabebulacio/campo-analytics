@@ -85,9 +85,9 @@ Shareable links: `/projects/campo-analytics?q=<question>` asks on load; add `&la
 
 ## How this was built
 
-This repo is a public adaptation of a private project of mine. Claude Code did the adapting: it reworked the existing code and spec documents into this version, on synthetic data and without client names, and I reviewed each change and added my own before committing. That is why the early commits are large: each one is a reviewed batch, not a day of typing.
+This repo is a public adaptation of a private project of mine, reworked from the existing code and spec documents onto synthetic data and without client names. I reviewed every change before committing it. That is why the early commits are large: each one is a reviewed batch, not a day of typing.
 
-[CLAUDE.md](CLAUDE.md) and the [project skills](.claude/skills/) are the working agreement: the rules the agent follows (the LLM never writes business logic, the golden set never becomes prompt examples, every string in English and Hebrew) and the checks it runs before anything counts as done. Nothing merges unless CI passes: tests, compiler snapshots, schema drift and the eval gates above.
+The working rules: the LLM never writes business logic, the golden set never becomes prompt examples, and every string is in English and Hebrew. Nothing merges unless CI passes: tests, compiler snapshots, schema drift and the eval gates above.
 
 ## Repo map
 

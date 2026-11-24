@@ -27,8 +27,8 @@ export const T = {
         he: "בעבודה בניתי פלטפורמה כזאת ב-Microsoft Fabric, בייצור: היא מביאה שעות מדווחות משתי מערכות דיווח שעות אל ה-lakehouse שמאחורי הדוחות של הכספים. החלק הקשה לא היה ה-APIs, אלא האנשים. אותו אדם הופיע עם כתובות מייל שונות, דומיינים ישנים ושמות משתמש הפוכים (\"last.first\"). חשבונות שהושבתו חזרו עם מייל ריק, רשומות נערכו או נמחקו שבועות אחר כך, ומפתחות הפרויקטים היו חייבים להישאר קבועים כי הכספים הסתמכו עליהם.",
       },
       {
-        en: "This project adapts that platform, with Claude Code, for a fictional company on synthetic data, so it can be public and anyone can run it. Everything that identified the employer, its people or its clients was removed.",
-        he: "הפרויקט הזה מעבד את הפלטפורמה הזאת, בעזרת Claude Code, לחברה בדיונית עם נתונים סינתטיים, כדי שיוכל להיות ציבורי וכל אחד יוכל להריץ אותו. כל מה שזיהה את המעסיק, את האנשים שלו או את הלקוחות שלו הוסר.",
+        en: "This project adapts that platform for a fictional company on synthetic data, so it can be public and anyone can run it. Everything that identified the employer, its people or its clients was removed.",
+        he: "הפרויקט הזה מעבד את הפלטפורמה הזאת לחברה בדיונית עם נתונים סינתטיים, כדי שיוכל להיות ציבורי וכל אחד יוכל להריץ אותו. כל מה שזיהה את המעסיק, את האנשים שלו או את הלקוחות שלו הוסר.",
       },
     ],
   },

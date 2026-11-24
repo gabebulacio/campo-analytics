@@ -58,3 +58,7 @@ deploy/api-bundle/
 scripts/private_terms.local.txt
 # Positioning decisions (employment and client questions): local only
 docs/consulting/positioning.md
+
+# Local agent setup (not published)
+CLAUDE.md
+.claude/

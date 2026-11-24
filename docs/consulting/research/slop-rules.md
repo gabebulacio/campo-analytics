@@ -107,16 +107,16 @@ Each answer is yes or no. A "no" is a fail and needs a fix or a written reason.
 2. Never add errors or "messiness" to look human. seniority-pass already forbids it, and Wikipedia lists mixed register and imperfect grammar as unreliable signals anyway [S4].
 3. The real risk runs the other way: asking an LLM to "make my English better" is the step that injects the strong-signal vocabulary (Liang's rewrite experiment shows the polish changes word choice enough to flip detectors) [S6]. Run the lint after every AI polish pass, and prefer targeted fixes (R14) over whole-page rewrites.
 4. Formal transitions ("Furthermore", "Moreover") and avoiding repeated words are taught in ESL and in Romance-language schools; Wikipedia notes repetition avoidance by non-native editors explicitly [S4]. Keep L9 at warn and never block on it.
-5. Spanish uses the raya (long dash) for asides, so some dash use may be the author's own habit. In English copy the T2 limits still apply, because the drafting model (Claude) is the known high-dash source [S11, S12].
+5. Spanish uses the raya (long dash) for asides, so some dash use may be the author's own habit. In English copy the T2 limits still apply, because language models are a known high-dash source [S11, S12].
 6. Encoding matters on Windows: agentic.md found slop_lint.py read files as cp1252, so em dashes and emoji passed silently. The validator must open files with `encoding="utf-8"` and fail on decode errors.
 
 ## 4. What the existing tooling gets right, misses, and gets wrong
 
-Compared: the private case kit, the private case kit, `~/.claude/skills/seniority-pass/SKILL.md` and `scan.py`.
+Compared: the private case kit, the private case kit, a seniority-pass checklist and `scan.py`.
 
 **Supported by the sources.**
 - Vocabulary: delve, pivotal, crucial, testament, showcase, landscape, tapestry, realm, "serves as / stands as", "in today's", "it's important to note", "in conclusion" [S1 to S4, S7]. The scan.py and slop_lint lists overlap the evidence well for 2023 to 2025 models.
-- Em-dash chains (slop_lint: 2+ per line; scan.py: density per 1k words). Supported, and still relevant because the drafting model is Claude [S11, S12]; scan.py's density approach is the better design.
+- Em-dash chains (slop_lint: 2+ per line; scan.py: density per 1k words). Supported, and still relevant because language models overuse them [S11, S12]; scan.py's density approach is the better design.
 - "Not just X but Y" and "It's not X, it's Y" [S4, S10]. Emoji, bold-label bullets, Title Case, rule of three, closing summaries (seniority-pass lists all of them) [S4].
 - Purple gradients, Inter-everywhere, three-card grids, generic hero (seniority-pass) [S21, S22]. Evidence is practitioner-grade, not experimental.
 - voice.md's "counts carry their denominator" and "caveats sit beside the number" match the substantiation logic of S19 and the trust findings of S15 to S18. This is the most valuable rule in the set and no script enforces it yet.
